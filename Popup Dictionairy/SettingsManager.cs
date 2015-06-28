@@ -1,38 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Configuration;
 using System.Windows.Forms;
-using System.ComponentModel;
 
 namespace Popup_Dictionairy
 {
-    class SettingsManager : INotifyPropertyChanged
+    internal class SettingsManager : INotifyPropertyChanged
     {
-        private static  SettingsManager _instance;
-
+        private static SettingsManager _instance;
 
         public event EventHandler<int> QuestionIntervalChanged;
- 
+
         private SettingsManager()
         {
-            
-        }
-         
-        public static SettingsManager Current 
-        { 
-            get 
-            {
-                return _instance??(_instance = new SettingsManager());
-            } 
-       
-        
         }
 
-        public int QuestionIntervalSeconds 
-        { 
+        public static SettingsManager Current
+        {
+            get
+            {
+                return _instance ?? (_instance = new SettingsManager());
+            }
+        }
+
+        public int QuestionIntervalSeconds
+        {
             get
             {
                 return Properties.Settings.Default.QuestionIntervalSeconds;
@@ -41,44 +37,39 @@ namespace Popup_Dictionairy
             {
                 if (QuestionIntervalSeconds != value)
                 {
-                    
                     Properties.Settings.Default.QuestionIntervalSeconds = value;
-                    
+
                     OnQuestionIntervalChanged(value);
                 }
             }
         }
 
-        private void DisplayMessage(string message)
+        private void DisplayMessage(string parameterName)
         {
-
-            MessageBox.Show("The following parameter may not be defined: {0}", message);
+            MessageBox.Show("The following parameter may not be defined: {0}", parameterName);
         }
 
         public void Save()
         {
-
             Properties.Settings.Default.Save();
-            
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName)
         {
-            if(PropertyChanged != null)
+            if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-
         }
+
         private void OnQuestionIntervalChanged(int interval)
         {
             if (QuestionIntervalChanged != null)
             {
-                QuestionIntervalChanged(this, interval * 1000);
+                QuestionIntervalChanged(this, interval);
             }
-
         }
     }
 }

@@ -12,7 +12,6 @@ namespace Popup_Dictionairy
 {
     public partial class PreferencesForm : Form
     {
-        
         public PreferencesForm()
         {
             InitializeComponent();
@@ -22,17 +21,14 @@ namespace Popup_Dictionairy
         private void pfButtonOK_Click(object sender, EventArgs e)
         {
             //Save data and close form
-            SettingsManager.Current.QuestionIntervalSeconds = int.Parse(pfTxtInterval.Text); //Quick and dirty
+            SettingsManager.Current.QuestionIntervalSeconds = int.Parse(pfTxtInterval.Text) * 1000; //Quick and dirty
             SettingsManager.Current.Save();
             this.Close();
-            
         }
 
         public void FillForm()
         {
-            pfTxtInterval.Text = SettingsManager.Current.QuestionIntervalSeconds.ToString();
+            pfTxtInterval.Text = (SettingsManager.Current.QuestionIntervalSeconds / 1000).ToString();
         }
-
-
     }
 }

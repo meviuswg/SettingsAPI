@@ -12,23 +12,24 @@ namespace Popup_Dictionairy
 {
     public partial class DictionairyForm : Form
     {
-        int interval;
-        Timer timer1;
+        private int interval;
+        private Timer timer1;
 
         public DictionairyForm()
         {
-
             interval = SettingsManager.Current.QuestionIntervalSeconds;
             timer1 = new Timer();
-            timer1.Interval = interval * 1000;
+            timer1.Interval = interval;
             timer1.Enabled = true;
             timer1.Tick += timer1_Tick;
             SettingsManager.Current.QuestionIntervalChanged += Current_QuestionIntervalChanged;
             InitializeComponent();
-            
+            notifyIcon1.BalloonTipClicked += notifyIcon1_BalloonTipClicked;
+            notifyIcon1.BalloonTipTitle = "Popup Dictionairy";
+            notifyIcon1.BalloonTipText = String.Format("The program will popup every {0} seconds. Click here if you want to change the interval.", (interval / 1000).ToString());
         }
 
-        void Current_QuestionIntervalChanged(object sender, int e)
+        private void Current_QuestionIntervalChanged(object sender, int e)
         {
             timer1.Stop();
             timer1.Interval = e;
@@ -38,10 +39,6 @@ namespace Popup_Dictionairy
 
         private void DictionairyForm_Resize(object sender, EventArgs e)
         {
-            notifyIcon1.BalloonTipTitle = "Popup Dictionairy";
-            notifyIcon1.BalloonTipText = String.Format("The program will popup every {0} seconds. Click here if you want to be asked extra questions.",interval.ToString());
-            
-
             if (FormWindowState.Minimized == this.WindowState)
             {
                 notifyIcon1.Visible = true;
@@ -52,8 +49,12 @@ namespace Popup_Dictionairy
             else if (FormWindowState.Normal == this.WindowState)
             {
                 notifyIcon1.Visible = false;
-
             }
+        }
+
+        private void notifyIcon1_BalloonTipClicked(object sender, EventArgs e)
+        {
+            settingsToolStripMenuItem1_Click(null, null);
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -77,21 +78,23 @@ namespace Popup_Dictionairy
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            
-            if(this.WindowState == FormWindowState.Minimized)
+            if (this.WindowState == FormWindowState.Minimized)
             {
                 timer1.Stop();
                 //this.WindowState = FormWindowState.Maximized;
                 //this.Show();
                 //this.Activate();
                 QuestionForm qf = new QuestionForm();
-                qf.FormClosed += (d,a) => { timer1.Start(); };
+                qf.FormClosed += (d, a) => { timer1.Start(); };
                 qf.Show();
                 qf.Activate();
             }
-            
         }
 
-        
+        private void dictionaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TranslationsForm tf = new TranslationsForm();
+            tf.Show();
+        }
     }
 }

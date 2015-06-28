@@ -76,16 +76,15 @@
             // dictionaryToolStripMenuItem
             // 
             this.dictionaryToolStripMenuItem.Name = "dictionaryToolStripMenuItem";
-            this.dictionaryToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.dictionaryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.dictionaryToolStripMenuItem.Text = "Dictionary";
+            this.dictionaryToolStripMenuItem.Click += new System.EventHandler(this.dictionaryToolStripMenuItem_Click);
             // 
             // verbsToolStripMenuItem
             // 
             this.verbsToolStripMenuItem.Name = "verbsToolStripMenuItem";
-            this.verbsToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.verbsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.verbsToolStripMenuItem.Text = "Verbs";
-           
-          
             // 
             // DictionairyForm
             // 
