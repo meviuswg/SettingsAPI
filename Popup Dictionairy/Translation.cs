@@ -6,25 +6,33 @@ using System.Threading.Tasks;
 
 namespace Popup_Dictionairy
 {
-    internal class Translation
+   internal class Translation
     {
         private string fromLanguage;
-
+        private string toLanguage;
+        
+        public Translation()
+        {
+            
+        }
+        
+        public Translation(string fromLanguage, string toLanguage)
+        {
+            this.fromLanguage = fromLanguage;
+            this.toLanguage = toLanguage;
+        }
+        
         public string FromLanguage
         {
             get { return fromLanguage; }
             set { fromLanguage = value; }
         }
 
-        private string toLanguage;
-
         public string ToLanguage
         {
             get { return toLanguage; }
             set { toLanguage = value; }
         }
-
-        //private int correctAnswers;
-        //private DateTime lastCorrectAnswerDate;
+ 
     }
 }
