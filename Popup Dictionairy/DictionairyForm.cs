@@ -26,7 +26,7 @@ namespace Popup_Dictionairy
             InitializeComponent();
             notifyIcon1.BalloonTipClicked += notifyIcon1_BalloonTipClicked;
             notifyIcon1.BalloonTipTitle = "Popup Dictionairy";
-            notifyIcon1.BalloonTipText = String.Format("The program will popup every {0} seconds. Click here if you want to change the interval.", (interval / 1000).ToString());
+            notifyIcon1.BalloonTipText = String.Format("The program will popup every {0} seconds. Click here if you want to change the interval.", (interval).ToString());
         }
 
         private void Current_QuestionIntervalChanged(object sender, int e)
@@ -34,6 +34,7 @@ namespace Popup_Dictionairy
             timer1.Stop();
             timer1.Interval = e;
             interval = e / 1000;
+            notifyIcon1.BalloonTipText = String.Format("The program will popup every {0} seconds. Click here if you want to change the interval.", (interval).ToString());
             timer1.Start();
         }
 
