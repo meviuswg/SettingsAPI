@@ -10,7 +10,7 @@ namespace Popup_Dictionairy
     {
         private Translation[] questionList;
         private int size;
-        private int currentTranslationIndex = 0;
+        private int currentTranslationIndex = -1;
 
         public QuestionSession()
             : this(10)
@@ -20,6 +20,7 @@ namespace Popup_Dictionairy
         public QuestionSession(int numberOfQuestions)
         {
             size = numberOfQuestions;
+            this.Init();
         }
 
         public Translation Next()
@@ -35,8 +36,31 @@ namespace Popup_Dictionairy
 
         private void Init()
         {
-            questionList = (from translation in TranslationProvider.Instance.Translations
-                            select translation).Take(size).ToArray();
+            int questionIndex = 0;
+            Translation[] allTranslations = (from translation in TranslationProvider.Instance.Translations
+                            select translation).ToArray();
+
+
+
+            if(size > allTranslations.Length)
+            {
+                size = allTranslations.Length;
+            }
+            questionList = new Translation[size];
+            Random rnd = new Random();
+
+            while (questionIndex < size)
+            {
+                int translationIndex = rnd.Next(0, allTranslations.Length);
+                Translation t = allTranslations[translationIndex];
+                if(Array.IndexOf(questionList, t) == -1)
+                {
+                    questionList[questionIndex] = t;
+                    questionIndex++;
+
+                }
+
+            }
         }
     }
 }
