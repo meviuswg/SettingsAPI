@@ -10,6 +10,8 @@ namespace Popup_Dictionairy
     {
         private string fromLanguage;
         private string toLanguage;
+        //private int 
+
         
         public Translation()
         {
@@ -31,7 +33,7 @@ namespace Popup_Dictionairy
         public string ToLanguage
         {
             get { return toLanguage; }
-            set { toLanguage = value; }
+            set { toLanguage = value;}
         }
  
     }
