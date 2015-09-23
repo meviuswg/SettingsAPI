@@ -4,14 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Popup_Dictionairy
 {
     internal class QuestionSession
     {
-        private Translation[] questionList;
+        //private Translation[] questionList;
         Translation[] allTranslations;
         private int size;
-        private int currentTranslationIndex = -1;
+        private int[] chosenQuestions;
+        int currentTranslationIndex;
+        int questionNumber;
 
         public QuestionSession()
             : this(10)
@@ -21,48 +24,55 @@ namespace Popup_Dictionairy
         public QuestionSession(int numberOfQuestions)
         {
             size = numberOfQuestions;
+            chosenQuestions = new int[size];
             this.Init();
         }
 
         public Translation Next()
         {
-            currentTranslationIndex++;
 
-            if (currentTranslationIndex > questionList.Length - 1)
+
+            
+            if (questionNumber > chosenQuestions.Length - 1)
                 return null;
-
-            var translation = questionList[currentTranslationIndex];
+            currentTranslationIndex = chosenQuestions[questionNumber];
+            var translation = allTranslations[currentTranslationIndex];
+            questionNumber++;
             return translation;
         }
 
         public void UpdateCurrent(Translation t)
         {
-            questionList[currentTranslationIndex] = t;
+            allTranslations[currentTranslationIndex] = t;
 
         }
 
         private void Init()
         {
-            int questionIndex = 0;
-            allTranslations = (   from translation in TranslationProvider.Instance.Translations
-                                                select translation).ToArray();
+            questionNumber = 0;
+            
+            allTranslations =  (  from translation in TranslationProvider.Instance.Translations    
+                                  where translation.CorrectAnswers < 3 //Ik werk dus met deze set, en deze set sla ik later op. De volgende keer dat ik een questionsession laad, worden degene die 
+                                  //ik de vorige sessie niet goed heb beantwoord dus niet mee opgehaald. Als ik na die sessie opsla mis ik dus translations.
+                                  select translation).ToArray();
 
 
-
-            if(size > allTranslations.Length)
+            if (size > allTranslations.Length)
             {
                 size = allTranslations.Length;
             }
-            questionList = new Translation[size];
-            Random rnd = new Random();
 
+           
+            //questionList = new Translation[size];
+            Random rnd = new Random();
+            int questionIndex = 0;
             while (questionIndex < size)
             {
                 int translationIndex = rnd.Next(0, allTranslations.Length);
-                Translation t = allTranslations[translationIndex];
-                if(Array.IndexOf(questionList, t) == -1)
+
+                if (Array.IndexOf(chosenQuestions, translationIndex) == -1)
                 {
-                    questionList[questionIndex] = t;
+                    chosenQuestions[questionIndex] = translationIndex;
                     questionIndex++;
                 }
 
@@ -73,11 +83,9 @@ namespace Popup_Dictionairy
         {
 
             //Nope dit is hem ook niet. 
-            foreach (Translation t in questionList)
-            { 
-                
-            
-            }
+            TranslationProvider.Instance.Translations.Clear();
+            TranslationProvider.Instance.Translations.AddRange(allTranslations);
+            TranslationProvider.Instance.Save();
 
         }
 
