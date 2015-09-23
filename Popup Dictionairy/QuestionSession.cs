@@ -9,6 +9,7 @@ namespace Popup_Dictionairy
     internal class QuestionSession
     {
         private Translation[] questionList;
+        Translation[] allTranslations;
         private int size;
         private int currentTranslationIndex = -1;
 
@@ -34,11 +35,17 @@ namespace Popup_Dictionairy
             return translation;
         }
 
+        public void UpdateCurrent(Translation t)
+        {
+            questionList[currentTranslationIndex] = t;
+
+        }
+
         private void Init()
         {
             int questionIndex = 0;
-            Translation[] allTranslations = (from translation in TranslationProvider.Instance.Translations
-                            select translation).ToArray();
+            allTranslations = (   from translation in TranslationProvider.Instance.Translations
+                                                select translation).ToArray();
 
 
 
@@ -57,10 +64,22 @@ namespace Popup_Dictionairy
                 {
                     questionList[questionIndex] = t;
                     questionIndex++;
-
                 }
 
             }
         }
+
+        public void SaveScore()
+        {
+
+            //Nope dit is hem ook niet. 
+            foreach (Translation t in questionList)
+            { 
+                
+            
+            }
+
+        }
+
     }
 }

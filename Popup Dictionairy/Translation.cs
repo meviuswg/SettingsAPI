@@ -10,7 +10,8 @@ namespace Popup_Dictionairy
     {
         private string fromLanguage;
         private string toLanguage;
-        //private int 
+        private int correctAnswers;
+        private DateTime lastCorrectAnswer;
 
         
         public Translation()
@@ -34,6 +35,18 @@ namespace Popup_Dictionairy
         {
             get { return toLanguage; }
             set { toLanguage = value;}
+        }
+
+        public int CorrectAnswers
+        {
+            get { return correctAnswers; }
+            set { correctAnswers = value; }
+        }
+
+        public DateTime LastCorrectAnswer
+        {
+            get { return lastCorrectAnswer; }
+            set { lastCorrectAnswer = value; }
         }
  
     }
