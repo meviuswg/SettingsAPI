@@ -12,7 +12,7 @@ namespace Popup_Dictionairy
         //private Translation[] questionList;
         Translation[] allTranslations;
         private int size;
-        private int[] chosenQuestions;
+        private int?[] chosenQuestions;
         int currentTranslationIndex;
         int questionNumber;
 
@@ -24,7 +24,7 @@ namespace Popup_Dictionairy
         public QuestionSession(int numberOfQuestions)
         {
             size = numberOfQuestions;
-            chosenQuestions = new int[size];
+            chosenQuestions = new int?[size];
             this.Init();
         }
 
@@ -35,7 +35,7 @@ namespace Popup_Dictionairy
             
             if (questionNumber > chosenQuestions.Length - 1)
                 return null;
-            currentTranslationIndex = chosenQuestions[questionNumber];
+            currentTranslationIndex = chosenQuestions[questionNumber].Value;
             var translation = allTranslations[currentTranslationIndex];
             questionNumber++;
             return translation;
@@ -62,20 +62,28 @@ namespace Popup_Dictionairy
                 size = allTranslations.Length;
             }
 
-           
-            //questionList = new Translation[size];
-            Random rnd = new Random();
-            int questionIndex = 0;
-            while (questionIndex < size)
+
+            try
             {
-                int translationIndex = rnd.Next(0, allTranslations.Length);
-
-                if (Array.IndexOf(chosenQuestions, translationIndex) == -1)
+                //questionList = new Translation[size];
+                Random rnd = new Random();
+                int questionIndex = 0;
+                while (questionIndex < size)
                 {
-                    chosenQuestions[questionIndex] = translationIndex;
-                    questionIndex++;
-                }
+                    int translationIndex = rnd.Next(0, allTranslations.Length);
 
+                    if (Array.IndexOf(chosenQuestions, translationIndex) == -1)
+                    {
+                        chosenQuestions[questionIndex] = translationIndex;
+                        questionIndex++;
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+                
+                throw;
             }
         }
 

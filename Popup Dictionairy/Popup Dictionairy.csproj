@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="README.txt" />
     <Content Include="Resources\Gakuseisean-Ivista-2-Files-Font.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
