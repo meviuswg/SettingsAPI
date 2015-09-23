@@ -63,7 +63,7 @@ namespace Popup_Dictionairy
             //questionList = new Translation[size];
             Random rnd = new Random();
             int questionIndex = 0;
-            while (questionIndex < size)
+            while (questionIndex < size - 1)
             {
                 int translationIndex = rnd.Next(0, allTranslations.Length);
 
@@ -79,8 +79,8 @@ namespace Popup_Dictionairy
         {
 
             //Nope dit is hem ook niet. 
-            TranslationProvider.Instance.Translations.Clear();
-            TranslationProvider.Instance.Translations.AddRange(allTranslations);
+            //TranslationProvider.Instance.Translations.Clear();
+            //TranslationProvider.Instance.Translations.AddRange(allTranslations);
             TranslationProvider.Instance.Save();
 
         }
