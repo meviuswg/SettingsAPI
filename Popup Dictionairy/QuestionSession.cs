@@ -29,9 +29,7 @@ namespace Popup_Dictionairy
         }
 
         public Translation Next()
-        {
-
-
+        { 
 
             if (questionNumber > chosenQuestions.Length - 1)
                 return null;
