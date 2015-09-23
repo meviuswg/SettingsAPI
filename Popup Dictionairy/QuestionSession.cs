@@ -32,7 +32,7 @@ namespace Popup_Dictionairy
         {
 
 
-            
+
             if (questionNumber > chosenQuestions.Length - 1)
                 return null;
             currentTranslationIndex = chosenQuestions[questionNumber].Value;
@@ -50,11 +50,11 @@ namespace Popup_Dictionairy
         private void Init()
         {
             questionNumber = 0;
-            
-            allTranslations =  (  from translation in TranslationProvider.Instance.Translations    
-                                  where translation.CorrectAnswers < 3 //Ik werk dus met deze set, en deze set sla ik later op. De volgende keer dat ik een questionsession laad, worden degene die 
-                                  //ik de vorige sessie niet goed heb beantwoord dus niet mee opgehaald. Als ik na die sessie opsla mis ik dus translations.
-                                  select translation).ToArray();
+
+            allTranslations = (from translation in TranslationProvider.Instance.Translations
+                               where translation.CorrectAnswers < 3 //Ik werk dus met deze set, en deze set sla ik later op. De volgende keer dat ik een questionsession laad, worden degene die 
+                               //ik de vorige sessie niet goed heb beantwoord dus niet mee opgehaald. Als ik na die sessie opsla mis ik dus translations.
+                               select translation).ToArray();
 
 
             if (size > allTranslations.Length)
@@ -62,28 +62,18 @@ namespace Popup_Dictionairy
                 size = allTranslations.Length;
             }
 
-
-            try
+            //questionList = new Translation[size];
+            Random rnd = new Random();
+            int questionIndex = 0;
+            while (questionIndex < size)
             {
-                //questionList = new Translation[size];
-                Random rnd = new Random();
-                int questionIndex = 0;
-                while (questionIndex < size)
+                int translationIndex = rnd.Next(0, allTranslations.Length);
+
+                if (Array.IndexOf(chosenQuestions, translationIndex) == -1)
                 {
-                    int translationIndex = rnd.Next(0, allTranslations.Length);
-
-                    if (Array.IndexOf(chosenQuestions, translationIndex) == -1)
-                    {
-                        chosenQuestions[questionIndex] = translationIndex;
-                        questionIndex++;
-                    }
-
+                    chosenQuestions[questionIndex] = translationIndex;
+                    questionIndex++;
                 }
-            }
-            catch (Exception)
-            {
-                
-                throw;
             }
         }
 
