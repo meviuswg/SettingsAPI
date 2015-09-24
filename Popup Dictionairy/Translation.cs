@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Popup_Dictionairy
 {
-   internal class Translation
+   public class Translation
     {
         private string fromLanguage;
         private string toLanguage;

@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Popup_Dictionairy
 {
-    internal class TranslationProvider
+    public class TranslationProvider
     {
         private List<Translation> translations;
         private static TranslationProvider _instance;
@@ -28,6 +28,13 @@ namespace Popup_Dictionairy
 
         private void Init()
         {
+            Load();
+        }
+
+        public static TranslationProvider Instance { get { return _instance ?? (_instance = new TranslationProvider()); } }
+
+        public void Load()
+        {
             string fileName = Path.Combine(Application.UserAppDataPath, "translations.jsn");
             var data = PersistenceHelper.Load<List<Translation>>(fileName);
             if (data != null)
@@ -35,10 +42,7 @@ namespace Popup_Dictionairy
                 translations = data;
             }
         }
-
-        public static TranslationProvider Instance { get { return _instance ?? (_instance = new TranslationProvider()); } }
-
-        internal void Save()
+        public void Save()
         {
             PersistenceHelper.Save(translations, Path.Combine(Application.UserAppDataPath, "translations.jsn"));
         }

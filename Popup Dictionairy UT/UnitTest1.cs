@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Popup_Dictionairy;
+using System.Collections.Generic;
 
 namespace Popup_Dictionairy_UT
 {
@@ -7,9 +9,22 @@ namespace Popup_Dictionairy_UT
     public class UnitTest1
     {
         [TestMethod]
-        public void TestMethod1()
+        public void AddAndReloadTranslationsTest()
         {
-            //wheehooo
+            ICollection<Translation> translations;
+            int initCount;
+            translations = TranslationProvider.Instance.Translations;
+            initCount = translations.Count;
+
+            translations.Add(new Translation { FromLanguage = "A", ToLanguage = "B" });
+
+            TranslationProvider.Instance.Save();
+            TranslationProvider.Instance.Load();
+
+            translations = TranslationProvider.Instance.Translations;
+
+            Assert.IsTrue(translations.Count - 1 == initCount);
+
         }
     }
 }
