@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace PopupDictionairy.App.Model
 {
-    public class QuestionSession
+    public class QuestionSession : IQuestionSession
     {
         //private Translation[] questionList;
         private Translation[] translations;

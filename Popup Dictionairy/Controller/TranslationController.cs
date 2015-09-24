@@ -1,5 +1,4 @@
 ﻿using PopupDictionairy.App.Model;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,19 +11,16 @@ namespace PopupDictionairy.App.Controller
         private bool initialized;
         private ITranslationQuestionSelector questionSelector;
 
-
         public TranslationsController(ITranslationsPersistenceProvider persistenceProvider)
             : this(persistenceProvider, new TranslationQuestionSelector())
         {
-
         }
+
         public TranslationsController(ITranslationsPersistenceProvider persistenceProvider, ITranslationQuestionSelector questionSelector)
         {
             this.persistenceProvider = persistenceProvider;
             this.questionSelector = questionSelector;
         }
-
-
 
         public List<Translation> Translations
         {

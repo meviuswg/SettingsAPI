@@ -1,4 +1,5 @@
 ﻿using PopupDictionairy.App.Controller;
+using PopupDictionairy.App.Model;
 using System;
 using System.Windows.Forms;
 
@@ -88,7 +89,8 @@ namespace PopupDictionairy.App
                 //TODO: QuestionsPerSession
                 //QuestionForm qf = new QuestionForm(controller.GetTranslationsForSession(SettingsManager.Current.QuestionPerSession);
 
-                QuestionForm qf = new QuestionForm(controller.GetTranslationsForSession(2));
+                QuestionSession session = new QuestionSession(controller.GetTranslationsForSession(2));
+                QuestionForm qf = new QuestionForm(session);
 
                 qf.FormClosed += (d, a) => { timer1.Start(); };
                 qf.Show();

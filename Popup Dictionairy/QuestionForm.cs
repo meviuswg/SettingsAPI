@@ -7,14 +7,14 @@ namespace PopupDictionairy.App
 {
     public partial class QuestionForm : Form
     {
-        private QuestionSession session;
+        private IQuestionSession session;
         private Translation current;
 
-        public QuestionForm(IEnumerable<Translation> translations)
+        public QuestionForm(IQuestionSession session)
         {
             InitializeComponent();
 
-            session = new QuestionSession(translations);
+            this.session = session; 
             this.ProcessAndDisplayTranslation();
         }
 

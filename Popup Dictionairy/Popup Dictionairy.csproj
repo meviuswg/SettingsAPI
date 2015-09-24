@@ -86,6 +86,7 @@
     <Compile Include="DictionairyForm.Designer.cs">
       <DependentUpon>DictionairyForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\IQuestionSession.cs" />
     <Compile Include="Model\QuestionSession.cs" />
     <Compile Include="Model\Translation.cs" />
     <Compile Include="PreferencesForm.cs">
