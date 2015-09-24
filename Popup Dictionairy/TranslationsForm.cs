@@ -1,5 +1,5 @@
 ﻿using PopupDictionairy.App.Model;
-using PopupDictionary.App.Controller;
+using PopupDictionairy.App.Controller;
 using System;
 using System.ComponentModel;
 using System.Linq;

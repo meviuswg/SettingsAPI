@@ -1,4 +1,4 @@
-﻿using PopupDictionary.App.Controller;
+﻿using PopupDictionairy.App.Controller;
 using System;
 using System.Windows.Forms;
 

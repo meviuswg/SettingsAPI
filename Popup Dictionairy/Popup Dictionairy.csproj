@@ -76,8 +76,10 @@
   <ItemGroup>
     <Compile Include="Container.cs" />
     <Compile Include="Controller\FileSystemPersistenceProvider.cs" />
+    <Compile Include="Controller\ITranslationQuestionSelector.cs" />
     <Compile Include="Controller\ITranslationsPersistenceProvider.cs" />
     <Compile Include="Controller\TranslationController.cs" />
+    <Compile Include="Controller\TranslationQuestionSelector.cs" />
     <Compile Include="DictionairyForm.cs">
       <SubType>Form</SubType>
     </Compile>

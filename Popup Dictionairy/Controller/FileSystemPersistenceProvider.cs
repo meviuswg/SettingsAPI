@@ -3,7 +3,7 @@ using PopupDictionairy.Util;
 using System.Collections.Generic;
 using System.IO;
 
-namespace PopupDictionary.App.Controller
+namespace PopupDictionairy.App.Controller
 {
     public class FileSystemPersistenceProvider : ITranslationsPersistenceProvider
     {
@@ -15,6 +15,7 @@ namespace PopupDictionary.App.Controller
         public FileSystemPersistenceProvider(string userAppdataPath)
             : this(userAppdataPath, "translations.jsn")
         {
+            
         }
 
         public FileSystemPersistenceProvider(string userAppdataPath, string fileName)

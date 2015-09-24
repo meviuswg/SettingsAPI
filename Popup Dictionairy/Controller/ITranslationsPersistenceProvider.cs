@@ -1,7 +1,7 @@
 ﻿using PopupDictionairy.App.Model;
 using System.Collections.Generic;
 
-namespace PopupDictionary.App.Controller
+namespace PopupDictionairy.App.Controller
 {
     public interface ITranslationsPersistenceProvider
     {
