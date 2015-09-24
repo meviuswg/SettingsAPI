@@ -70,31 +70,33 @@
             this.dictionaryToolStripMenuItem,
             this.verbsToolStripMenuItem});
             this.manageTranslationsToolStripMenuItem.Name = "manageTranslationsToolStripMenuItem";
-            this.manageTranslationsToolStripMenuItem.Size = new System.Drawing.Size(129, 20);
+            this.manageTranslationsToolStripMenuItem.Size = new System.Drawing.Size(128, 20);
             this.manageTranslationsToolStripMenuItem.Text = "Manage Translations";
             // 
             // dictionaryToolStripMenuItem
             // 
             this.dictionaryToolStripMenuItem.Name = "dictionaryToolStripMenuItem";
-            this.dictionaryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dictionaryToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.dictionaryToolStripMenuItem.Text = "Dictionary";
             this.dictionaryToolStripMenuItem.Click += new System.EventHandler(this.dictionaryToolStripMenuItem_Click);
             // 
             // verbsToolStripMenuItem
             // 
             this.verbsToolStripMenuItem.Name = "verbsToolStripMenuItem";
-            this.verbsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.verbsToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.verbsToolStripMenuItem.Text = "Verbs";
             // 
             // DictionairyForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(284, 71);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(300, 90);
             this.Name = "DictionairyForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Popup Dictionairy";
             this.Resize += new System.EventHandler(this.DictionairyForm_Resize);
             this.menuStrip1.ResumeLayout(false);
