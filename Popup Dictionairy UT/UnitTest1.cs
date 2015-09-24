@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Popup_Dictionairy_UT
 {
@@ -8,7 +6,8 @@ namespace Popup_Dictionairy_UT
     public class UnitTest1
     {
         [TestMethod]
-        public void AddAndReloadTranslationsTest(){}
+        public void AddAndReloadTranslationsTest() { }
+
         //{
         //    ICollection<Translation> translations;
         //    int initCount;
@@ -24,6 +23,6 @@ namespace Popup_Dictionairy_UT
 
         //    Assert.IsTrue(translations.Count - 1 == initCount);
 
-      //  }
+        //  }
     }
 }

@@ -1,12 +1,7 @@
-﻿
-using PopupDictionairy.App.Model;
+﻿using PopupDictionairy.App.Model;
 using PopupDictionairy.Util;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PopupDictionary.App.Controller
 {
@@ -20,19 +15,19 @@ namespace PopupDictionary.App.Controller
         public FileSystemPersistenceProvider(string userAppdataPath)
             : this(userAppdataPath, "translations.jsn")
         {
-
         }
+
         public FileSystemPersistenceProvider(string userAppdataPath, string fileName)
         {
             _userAppdataPath = userAppdataPath;
             _fileName = fileName;
 
             _filePath = Path.Combine(_userAppdataPath, _fileName);
-
         }
+
         public void SaveTranslations(IEnumerable<Translation> translations)
         {
-            Directory.CreateDirectory(_userAppdataPath);   
+            Directory.CreateDirectory(_userAppdataPath);
             PersistenceHelper.Save(translations, _filePath);
         }
 

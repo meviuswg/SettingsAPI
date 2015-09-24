@@ -1,30 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PopupDictionairy.App.Model
 {
-   public class Translation : IEquatable<Translation>
+    public class Translation : IEquatable<Translation>
     {
         private string fromLanguage;
         private string toLanguage;
         private int correctAnswers;
         private DateTime lastCorrectAnswer;
 
-        
         public Translation()
         {
-            
         }
-        
+
         public Translation(string fromLanguage, string toLanguage)
         {
             this.fromLanguage = fromLanguage;
             this.toLanguage = toLanguage;
         }
-        
+
         public string FromLanguage
         {
             get { return fromLanguage; }
@@ -34,7 +28,7 @@ namespace PopupDictionairy.App.Model
         public string ToLanguage
         {
             get { return toLanguage; }
-            set { toLanguage = value;}
+            set { toLanguage = value; }
         }
 
         public int CorrectAnswers
@@ -48,7 +42,6 @@ namespace PopupDictionairy.App.Model
             get { return lastCorrectAnswer; }
             set { lastCorrectAnswer = value; }
         }
-
 
         public bool Equals(Translation other)
         {
