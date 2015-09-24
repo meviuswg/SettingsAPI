@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PopupDictionary.App.Controller;
+using System;
 using System.Windows.Forms;
 
-namespace Popup_Dictionairy
+namespace PopupDictionairy.App
 {
     public partial class DictionairyForm : Form
     {
         private int interval;
         private Timer timer1;
+        private TranslationsController controller;
 
         public DictionairyForm()
         {
@@ -24,6 +19,10 @@ namespace Popup_Dictionairy
             timer1.Tick += timer1_Tick;
             SettingsManager.Current.QuestionIntervalChanged += Current_QuestionIntervalChanged;
             InitializeComponent();
+
+            FileSystemPersistenceProvider persisteneProvider = new FileSystemPersistenceProvider(Application.UserAppDataPath);
+            controller = new TranslationsController(persisteneProvider);
+
             notifyIcon1.BalloonTipClicked += notifyIcon1_BalloonTipClicked;
             notifyIcon1.BalloonTipTitle = "Popup Dictionairy";
             notifyIcon1.BalloonTipText = String.Format("The program will popup every {0} seconds. Click here if you want to change the interval.", (interval / 1000).ToString());
@@ -85,7 +84,12 @@ namespace Popup_Dictionairy
                 //this.WindowState = FormWindowState.Maximized;
                 //this.Show();
                 //this.Activate();
-                QuestionForm qf = new QuestionForm();
+
+                //TODO: QuestionsPerSession
+                //QuestionForm qf = new QuestionForm(controller.GetTranslationsForSession(SettingsManager.Current.QuestionPerSession);
+
+                QuestionForm qf = new QuestionForm(controller.GetTranslationsForSession(2));
+
                 qf.FormClosed += (d, a) => { timer1.Start(); };
                 qf.Show();
                 qf.Activate();
@@ -94,7 +98,7 @@ namespace Popup_Dictionairy
 
         private void dictionaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TranslationsForm tf = new TranslationsForm();
+            TranslationsForm tf = new TranslationsForm(controller);
             tf.Show();
         }
     }

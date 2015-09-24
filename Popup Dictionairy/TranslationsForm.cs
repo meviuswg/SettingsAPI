@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PopupDictionairy.App.Model;
+using PopupDictionary.App.Controller;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,17 +10,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Popup_Dictionairy
+namespace PopupDictionairy.App
 {
     public partial class TranslationsForm : Form
     {
         private BindingList<Translation> translationList;
+        private TranslationsController controller;
 
-        public TranslationsForm()
+        public TranslationsForm(TranslationsController controller)
         {
             InitializeComponent();
 
-            translationList = new BindingList<Translation>(TranslationProvider.Instance.Translations.ToList());
+            this.controller = controller;
+            translationList = new BindingList<Translation>(controller.Translations.ToList());
             this.dataGridView1.DataSource = translationList;
         }
 
@@ -29,9 +33,9 @@ namespace Popup_Dictionairy
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            TranslationProvider.Instance.Translations.Clear();
-            TranslationProvider.Instance.Translations.AddRange(translationList);
-            TranslationProvider.Instance.Save();
+            controller.Translations.Clear();
+            controller.Translations.AddRange(translationList);
+            controller.Save();
             this.Close();
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PopupDictionairy.App.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,20 +9,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Popup_Dictionairy
+namespace PopupDictionairy.App
 {
     public partial class QuestionForm : Form
     {
         QuestionSession session;
-        Translation t;        
-        
+        Translation current;         
 
-
-        public QuestionForm()
+        public QuestionForm(IEnumerable<Translation> translations)
         {
             InitializeComponent();
 
-            session = new QuestionSession(2);            
+            session = new QuestionSession(translations);            
             this.ProcessAndDisplayTranslation();
         }
 
@@ -37,26 +36,29 @@ namespace Popup_Dictionairy
             
             if (!String.IsNullOrEmpty(givenAnswer))
             {
-                if(t.ToLanguage == givenAnswer)
+                if (current.ToLanguage == givenAnswer)
                 {
-                    t.CorrectAnswers += 1;
-                    t.LastCorrectAnswer = DateTime.Now;
+                    current.CorrectAnswers += 1;
+                    current.LastCorrectAnswer = DateTime.Now;
                     MessageBox.Show("You answered correctly!");
+                }
+                else
+                {
+                    MessageBox.Show("You're Stupid!!!","You answer was not correctly",  MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                    session.UpdateCurrent(t);
                 }
                 
             }
 
             //Get next translation
-            t = session.Next();
+            current = session.Next();
             txtAnswer.Text = String.Empty;
-            if (t != null) 
+            if (current != null) 
             {
-                lblQuestion.Text = t.FromLanguage;
+                lblQuestion.Text = current.FromLanguage;
                 return;
-            }
-            session.SaveScore();
+            } 
+ 
             this.Close();
 
 

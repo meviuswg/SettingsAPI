@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Popup_Dictionairy
+namespace PopupDictionairy.App
 {
     static class Program
     {
@@ -13,26 +13,11 @@ namespace Popup_Dictionairy
         /// </summary>
         [STAThread]
         static void Main()
-        {
-
-           
+        { 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DictionairyForm());
+            Application.Run(new DictionairyForm()); 
 
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-
+        } 
     }
 }

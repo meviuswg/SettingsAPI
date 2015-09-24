@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Popup_Dictionairy
+namespace PopupDictionairy.App
 {
     public partial class PreferencesForm : Form
     {

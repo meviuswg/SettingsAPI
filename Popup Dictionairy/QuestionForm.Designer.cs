@@ -1,4 +1,4 @@
-﻿namespace Popup_Dictionairy
+﻿namespace PopupDictionairy.App
 {
     partial class QuestionForm
     {

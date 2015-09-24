@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Popup_Dictionairy
+namespace PopupDictionairy.App.Model
 {
-   public class Translation
+   public class Translation : IEquatable<Translation>
     {
         private string fromLanguage;
         private string toLanguage;
@@ -48,6 +48,11 @@ namespace Popup_Dictionairy
             get { return lastCorrectAnswer; }
             set { lastCorrectAnswer = value; }
         }
- 
+
+
+        public bool Equals(Translation other)
+        {
+            return string.Concat(fromLanguage, toLanguage) == string.Concat(other.FromLanguage, other.ToLanguage);
+        }
     }
 }

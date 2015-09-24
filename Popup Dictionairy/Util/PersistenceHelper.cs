@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
-using System.Windows.Forms;
 
-namespace Popup_Dictionairy.Util
+namespace PopupDictionairy.Util
 {
     internal class PersistenceHelper
     {
