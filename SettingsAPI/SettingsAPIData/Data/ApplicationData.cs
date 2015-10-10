@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SettingsAPIData.Models
+namespace SettingsAPIData.Data
 {
     public partial class ApplicationData
     {

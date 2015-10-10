@@ -24,7 +24,7 @@ CREATE TABLE dbo.settings_directory (
 	,[name] VARCHAR(20)
 	,description VARCHAR(150)
 	,CONSTRAINT pk_settings_directory PRIMARY KEY (id)
-	,CONSTRAINT ux_settings_directory_name UNIQUE ([name])
+	,CONSTRAINT ux_settings_directory_name UNIQUE ([name],[application_id])
 	,CONSTRAINT fk_settings_directory_application_id FOREIGN KEY ([application_id]) REFERENCES settings_application([id])
 	)
 GO

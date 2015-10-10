@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace SettingsAPIData.Model
 {
-    public class RepositoryModel
+    public class VersionModel
     {
+        public int Version { get; set; }
+
+        public DateTime Created { get; set; }
     }
 }

@@ -1,8 +1,8 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Data.Entity.Infrastructure;
-using SettingsAPIData.Models.Mapping;
-using SettingsAPIData.Models;
+using SettingsAPIData.Data;
+using SettingsAPIData.Data.Mapping;
 
 namespace SettingsAPIData
 {

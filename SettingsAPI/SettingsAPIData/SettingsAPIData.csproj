@@ -41,6 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,13 +51,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiKey.cs" />
+    <Compile Include="ApplicationDataController.cs" />
+    <Compile Include="BaseDataController.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="IApiKey.cs" />
     <Compile Include="ISettingsDataController.cs" />
     <Compile Include="Model\ApplicationModel.cs" />
     <Compile Include="Model\DirectoryAccessModel.cs" />
     <Compile Include="Model\DirectoryModel.cs" />
-    <Compile Include="Model\RepositoryModel.cs" />
+    <Compile Include="Model\VersionModel.cs" />
     <Compile Include="Model\SettingModel.cs" />
     <Compile Include="SettingsAuthorizationException.cs" />
     <Compile Include="SettingsStoreException.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="Data\Directorydata.cs" />
     <Compile Include="Data\RepositoryData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ApiKeyGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -15,13 +15,13 @@ namespace SettingsAPI.Controllers
 
         }
 
-        public IEnumerable<RepositoryModel> Get(string applicationName)
+        public IEnumerable<VersionModel> Get(string applicationName)
         {
             return null;
         }
 
 
-        public IEnumerable<RepositoryModel> Get(string applicationName, int version)
+        public IEnumerable<VersionModel> Get(string applicationName, int version)
         {
             return null;
 

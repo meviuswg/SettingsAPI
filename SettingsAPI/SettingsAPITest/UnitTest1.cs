@@ -35,5 +35,17 @@ namespace SettingsAPITest
 
             var data3 = controller.GetSetting(store, "MySettingKey");
         }
+
+        [TestMethod]
+        public void MyTestMethod()
+        {
+            ApplicationDataController controller = new ApplicationDataController(new SettingsDbContext(), new ApiKey("=a33a5f531f49480eac31d64d02163bcf"));
+
+            var apps = controller.GetApplications();
+
+            var a = apps.FirstOrDefault();
+
+            var newApp = controller.CreateApplication("FirstApp");
+        }
     }
 }

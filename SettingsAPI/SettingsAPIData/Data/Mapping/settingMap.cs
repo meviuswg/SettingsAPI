@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 
-namespace SettingsAPIData.Models.Mapping
+namespace SettingsAPIData.Data.Mapping
 {
     public class settingMap : EntityTypeConfiguration<SettingData>
     {

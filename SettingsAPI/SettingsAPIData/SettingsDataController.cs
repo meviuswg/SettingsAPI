@@ -1,5 +1,5 @@
-﻿using SettingsAPIData.Model;
-using SettingsAPIData.Models;
+﻿using SettingsAPIData.Data;
+using SettingsAPIData.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,16 +8,11 @@ using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
-    public class SettingsDataController : IDisposable, ISettingsDataController
-    {
-        SettingsDbContext context;
-        private IApiKey keyProvider;
-
-
-        public SettingsDataController(SettingsDbContext context, IApiKey apiKeyProvider)
+    public class SettingsDataController : BaseDataController, ISettingsDataController
+    {  
+        public SettingsDataController(SettingsDbContext Context, IApiKey apikey)
+            : base(Context, apikey)
         {
-            this.context = context;
-            this.keyProvider = apiKeyProvider;
         }
 
         public void SaveSetting(SettingStore store, SettingModel setting)
@@ -56,7 +51,7 @@ namespace SettingsAPIData
                         existingOrNew = CreateDataForStore(store);
                         existingOrNew.SettingKey = item.Key;
                         existingOrNew.SettingValue = item.Value;
-                        context.Settings.Add(existingOrNew);
+                        Context.Settings.Add(existingOrNew);
                     }
                     else
                     {
@@ -65,7 +60,7 @@ namespace SettingsAPIData
                 }
             }
 
-            context.SaveChanges();
+            Context.SaveChanges();
         }
 
         public SettingModel GetSetting(SettingStore store, string settingKey)
@@ -100,10 +95,10 @@ namespace SettingsAPIData
 
             if (access != null)
             {
-                var r = context.GetRepository(store.ApplicationName, store.Version);
-                var d = context.GetDirectory(store.ApplicationName, store.Directory);
+                var r = Context.GetRepository(store.ApplicationName, store.Version);
+                var d = Context.GetDirectory(store.ApplicationName, store.Directory);
 
-                return context.Settings.Where(s =>
+                return Context.Settings.Where(s =>
                      s.RepositoryId == r.Id
                   && s.DirectoryId == d.Id
                   && (s.ObjecId == store.ObjectId || store.ObjectId == null));
@@ -112,38 +107,19 @@ namespace SettingsAPIData
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Read, store.Directory, CurrentIdentity);
             }
-        }
-
-        private ApiKeyData CurrentApiKey
-        {
-            get
-            {
-                return context.ApiKeys.SingleOrDefault(a => a.ApiKey == keyProvider.Key);
-            }
-        }
-
-        private int CurrentIdentity
-        {
-            get
-            {
-                if (CurrentApiKey != null)
-                    return CurrentApiKey.Id;
-
-                return -1;
-            }
-        }
+        } 
 
         private SettingData CreateDataForStore(SettingStore store)
         {
             SettingData data = new SettingData();
 
-            var repository = context.GetRepository(store.ApplicationName, store.Version);
+            var repository = Context.GetRepository(store.ApplicationName, store.Version);
 
             if (repository == null)
             {
                 throw new SettingsStoreException("Repository does not exist.");
             }
-            var directory = context.GetDirectory(store.ApplicationName, store.Directory);
+            var directory = Context.GetDirectory(store.ApplicationName, store.Directory);
 
             if (directory == null)
             {
@@ -156,15 +132,7 @@ namespace SettingsAPIData
 
             return data;
 
-        }
-
-        public void Dispose()
-        {
-            if (context != null)
-            {
-                context.Dispose();
-            }
-        }
+        } 
 
         public bool AllowRead(SettingStore store)
         {
@@ -207,8 +175,8 @@ namespace SettingsAPIData
         }
 
         private DirectoryAccessModel GetAccessData(SettingStore store)
-        { 
-            var dir = context.GetDirectory(store.ApplicationName, store.Directory);
+        {
+            var dir = Context.GetDirectory(store.ApplicationName, store.Directory);
 
             if (IsMasterKey)
             {
@@ -222,30 +190,30 @@ namespace SettingsAPIData
                 };
             }
 
-            var accessData = context.Access.Where(
-                 d => d.DirectoryId == dir.Id                
-              && d.ApiKeyId == CurrentIdentity).SingleOrDefault();      
+            var accessData = Context.Access.Where(
+                 d => d.DirectoryId == dir.Id
+              && d.ApiKeyId == CurrentIdentity).SingleOrDefault();
 
             if (accessData != null && accessData.ApiKey.Active)
             {
                 return new DirectoryAccessModel
                 {
                     DirectoryId = dir.Id,
-                    AllowWrite =  accessData.AllowWrite,
-                    AllowDelete =   accessData.AllowDelete,
-                    AllowCreate =  accessData.AllowCreate
+                    AllowWrite = accessData.AllowWrite,
+                    AllowDelete = accessData.AllowDelete,
+                    AllowCreate = accessData.AllowCreate
 
                 };
             }
-             
+
             return null;
         }
 
         public bool Exists(SettingStore store)
         {
-            var repository = context.GetRepository(store.ApplicationName, store.Version);
+            var repository = Context.GetRepository(store.ApplicationName, store.Version);
 
-            var directory = context.GetDirectory(store.ApplicationName, store.Directory);
+            var directory = Context.GetDirectory(store.ApplicationName, store.Directory);
 
             return (repository != null && directory != null);
         }
@@ -260,9 +228,5 @@ namespace SettingsAPIData
             return false;
         }
 
-        private bool IsMasterKey
-        {
-            get { return keyProvider.Key == Constants.MASTER_API_KEY; }
-        }
     }
 }
