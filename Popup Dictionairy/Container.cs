@@ -1,3 +1,0 @@
-﻿namespace PopupDictionairy.App
-{
-}
