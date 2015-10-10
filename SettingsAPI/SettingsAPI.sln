@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsAPITest", "Settings
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sql", "Sql", "{B0F5A862-8B87-4557-A2B3-7787F1910D23}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\IT Mobile\SQL Management\fieldplan_Settings_3.sql = ..\..\..\IT Mobile\SQL Management\fieldplan_Settings_3.sql
+		SettingsDb.sql = SettingsDb.sql
 	EndProjectSection
 EndProject
 Global
