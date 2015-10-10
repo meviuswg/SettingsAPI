@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsAPI", "SettingsAPI\SettingsAPI.csproj", "{5F220C78-9D73-4C0A-B51A-E7704952A4A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsManager", "SettingsManager\SettingsManager.csproj", "{FB97B024-6FCB-4335-928A-3A319E7A97E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsAPIClient", "SettingsAPIClient\SettingsAPIClient.csproj", "{54E44B32-BBBA-4CF1-8F55-2142304A5E91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsAPIData", "SettingsAPIData\SettingsAPIData.csproj", "{188CBAFB-6B00-455E-91C0-F4428B470A31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsAPITest", "SettingsAPITest\SettingsAPITest.csproj", "{54429B8C-2471-4251-AB1A-043D6ABC056C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sql", "Sql", "{B0F5A862-8B87-4557-A2B3-7787F1910D23}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\IT Mobile\SQL Management\fieldplan_Settings_3.sql = ..\..\..\IT Mobile\SQL Management\fieldplan_Settings_3.sql
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F220C78-9D73-4C0A-B51A-E7704952A4A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F220C78-9D73-4C0A-B51A-E7704952A4A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F220C78-9D73-4C0A-B51A-E7704952A4A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F220C78-9D73-4C0A-B51A-E7704952A4A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB97B024-6FCB-4335-928A-3A319E7A97E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB97B024-6FCB-4335-928A-3A319E7A97E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB97B024-6FCB-4335-928A-3A319E7A97E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB97B024-6FCB-4335-928A-3A319E7A97E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54E44B32-BBBA-4CF1-8F55-2142304A5E91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54E44B32-BBBA-4CF1-8F55-2142304A5E91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54E44B32-BBBA-4CF1-8F55-2142304A5E91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54E44B32-BBBA-4CF1-8F55-2142304A5E91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{188CBAFB-6B00-455E-91C0-F4428B470A31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{188CBAFB-6B00-455E-91C0-F4428B470A31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{188CBAFB-6B00-455E-91C0-F4428B470A31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{188CBAFB-6B00-455E-91C0-F4428B470A31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54429B8C-2471-4251-AB1A-043D6ABC056C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54429B8C-2471-4251-AB1A-043D6ABC056C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54429B8C-2471-4251-AB1A-043D6ABC056C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54429B8C-2471-4251-AB1A-043D6ABC056C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
