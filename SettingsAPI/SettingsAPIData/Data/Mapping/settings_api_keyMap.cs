@@ -3,7 +3,7 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace SettingsAPIData.Data.Mapping
 {
-    public class settings_api_keyMap : EntityTypeConfiguration<ApiKeyData>
+    internal class settings_api_keyMap : EntityTypeConfiguration<ApiKeyData>
     {
         public settings_api_keyMap()
         {
@@ -20,14 +20,14 @@ namespace SettingsAPIData.Data.Mapping
             this.Property(t => t.ApplicationId).HasColumnName("application_id");
             this.Property(t => t.ApiKey).HasColumnName("apikey");
             this.Property(t => t.LastUsed).HasColumnName("last_used");
-            this.Property(t => t.EditDirectories).HasColumnName("edit_directories");
+            this.Property(t => t.AdminKey).HasColumnName("admin_key");
             this.Property(t => t.Active).HasColumnName("active");
             this.Property(t => t.Created).HasColumnName("created");
 
             // Relationships
             this.HasRequired(t => t.Application)
                 .WithMany(t => t.ApiKeys)
-                .HasForeignKey(d => d.ApplicationId);
+                .HasForeignKey(d => d.ApplicationId); 
 
         }
     }

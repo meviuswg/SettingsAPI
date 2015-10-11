@@ -12,7 +12,8 @@ namespace SettingsAPITest
         [TestMethod]
         public void TestMethod1()
         {
-            SettingsDataController controller = new SettingsDataController(new SettingsDbContext(), new ApiKey("a33a5f531f49480eac31d64d02163bcf"));
+            SettingsRepository repository = new SettingsRepository(new SettingsDbContext(), new ApiKey("a33a5f531f49480eac31d64d02163bcf"));
+            SettingsDataController controller = new SettingsDataController(repository);
 
             SettingStore store = new SettingStore("_system", "_directory");
 
@@ -39,7 +40,8 @@ namespace SettingsAPITest
         [TestMethod]
         public void MyTestMethod()
         {
-            ApplicationDataController controller = new ApplicationDataController(new SettingsDbContext(), new ApiKey("=a33a5f531f49480eac31d64d02163bcf"));
+            SettingsRepository repository = new SettingsRepository(new SettingsDbContext(), new ApiKey("a33a5f531f49480eac31d64d02163bcf"));
+            ApplicationDataController controller = new ApplicationDataController(repository);
 
             var apps = controller.GetApplications();
 

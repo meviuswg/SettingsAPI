@@ -13,6 +13,6 @@ namespace SettingsAPIData.Model
         public string Name { get; internal set; }
         public IEnumerable<VersionModel> Versions { get;  set; }
         public IEnumerable<DirectoryModel> Directories { get;  set; }
-        public bool EditDirectories { get; internal set; }
+        public bool AllowEdit { get; internal set; }
     }
 }

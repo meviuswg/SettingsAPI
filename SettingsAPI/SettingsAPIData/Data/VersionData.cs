@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SettingsAPIData.Data
 {
-    public partial class RepositoryData
+    public partial class VersionData
     {
-        public RepositoryData()
+        public VersionData()
         {
             this.Settings = new List<SettingData>();
         }

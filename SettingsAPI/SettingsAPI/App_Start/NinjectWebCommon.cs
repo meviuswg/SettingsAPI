@@ -67,20 +67,15 @@ namespace SettingsAPI.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<SettingsDbContext>()
-                .To<SettingsDbContext>();
+            kernel.Bind<SettingsDbContext>().To<SettingsDbContext>().InRequestScope();
+            kernel.Bind<IApiKey>().To<HttpContextCachApiKey>();  
 
-            kernel
-                .Bind<ISettingsDataController>()
-                .To<SettingsDataController>() 
-                .WithConstructorArgument(
-                 "context",
-                 ctx => ctx.Kernel.Get<SettingsDbContext>()
-                 )
-                 .WithConstructorArgument(
-                   "apiKeyProvider",
-                 new HttpContextCachApiKey()
-                );
+            kernel.Bind<ISettingsRepository>().To<SettingsRepository>();
+
+            kernel.Bind<ISettingsDataController>().To<SettingsDataController>();
+
+            kernel.Bind<IApplicationDataController>().To<ApplicationDataController>();
+
         }
     }
 }

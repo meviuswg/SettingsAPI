@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
-    public class SettingsDataController : BaseDataController, ISettingsDataController
-    {  
-        public SettingsDataController(SettingsDbContext Context, IApiKey apikey)
-            : base(Context, apikey)
+    public class SettingsDataController : ISettingsDataController
+    {
+        ISettingsRepository Repository;
+
+        public SettingsDataController(ISettingsRepository repository) 
         {
+            Repository = repository;
         }
 
         public void SaveSetting(SettingStore store, SettingModel setting)
@@ -41,7 +43,7 @@ namespace SettingsAPIData
                     }
                     else
                     {
-                        throw new SettingsAuthorizationException(AuthorizationScope.Key, AuthorizationLevel.Write, item.Key, CurrentIdentity);
+                        throw new SettingsAuthorizationException(AuthorizationScope.Key, AuthorizationLevel.Write, item.Key, Repository.CurrentIdentity);
                     }
                 }
                 else
@@ -51,16 +53,16 @@ namespace SettingsAPIData
                         existingOrNew = CreateDataForStore(store);
                         existingOrNew.SettingKey = item.Key;
                         existingOrNew.SettingValue = item.Value;
-                        Context.Settings.Add(existingOrNew);
+                        Repository.Context.Settings.Add(existingOrNew);
                     }
                     else
                     {
-                        throw new SettingsAuthorizationException(AuthorizationScope.Key, AuthorizationLevel.Create, item.Key, CurrentIdentity);
+                        throw new SettingsAuthorizationException(AuthorizationScope.Key, AuthorizationLevel.Create, item.Key, Repository.CurrentIdentity);
                     }
                 }
             }
 
-            Context.SaveChanges();
+            Repository.Context.SaveChanges();
         }
 
         public SettingModel GetSetting(SettingStore store, string settingKey)
@@ -95,17 +97,17 @@ namespace SettingsAPIData
 
             if (access != null)
             {
-                var r = Context.GetRepository(store.ApplicationName, store.Version);
-                var d = Context.GetDirectory(store.ApplicationName, store.Directory);
+                var r = Repository.Context.GetRepository(store.ApplicationName, store.Version);
+                var d = Repository.Context.GetDirectory(store.ApplicationName, store.Directory);
 
-                return Context.Settings.Where(s =>
-                     s.RepositoryId == r.Id
+                return Repository.Context.Settings.Where(s =>
+                     s.VersionId == r.Id
                   && s.DirectoryId == d.Id
                   && (s.ObjecId == store.ObjectId || store.ObjectId == null));
             }
             else
             {
-                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Read, store.Directory, CurrentIdentity);
+                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Read, store.Directory, Repository.CurrentIdentity);
             }
         } 
 
@@ -113,13 +115,13 @@ namespace SettingsAPIData
         {
             SettingData data = new SettingData();
 
-            var repository = Context.GetRepository(store.ApplicationName, store.Version);
+            var repository = Repository.Context.GetRepository(store.ApplicationName, store.Version);
 
             if (repository == null)
             {
                 throw new SettingsStoreException("Repository does not exist.");
             }
-            var directory = Context.GetDirectory(store.ApplicationName, store.Directory);
+            var directory = Repository.Context.GetDirectory(store.ApplicationName, store.Directory);
 
             if (directory == null)
             {
@@ -176,9 +178,12 @@ namespace SettingsAPIData
 
         private DirectoryAccessModel GetAccessData(SettingStore store)
         {
-            var dir = Context.GetDirectory(store.ApplicationName, store.Directory);
+            if (Repository.CurrentApiKey == null)
+                return null;
 
-            if (IsMasterKey)
+            var dir = Repository.Context.GetDirectory(store.ApplicationName, store.Directory);
+
+            if (Repository.IsMasterKey)
             {
                 return new DirectoryAccessModel
                 {
@@ -190,9 +195,9 @@ namespace SettingsAPIData
                 };
             }
 
-            var accessData = Context.Access.Where(
+            var accessData = Repository.Context.Access.Where(
                  d => d.DirectoryId == dir.Id
-              && d.ApiKeyId == CurrentIdentity).SingleOrDefault();
+              && d.ApiKeyId == Repository.CurrentIdentity).SingleOrDefault();
 
             if (accessData != null && accessData.ApiKey.Active)
             {
@@ -211,9 +216,9 @@ namespace SettingsAPIData
 
         public bool Exists(SettingStore store)
         {
-            var repository = Context.GetRepository(store.ApplicationName, store.Version);
+            var repository = Repository.Context.GetRepository(store.ApplicationName, store.Version);
 
-            var directory = Context.GetDirectory(store.ApplicationName, store.Directory);
+            var directory = Repository.Context.GetDirectory(store.ApplicationName, store.Directory);
 
             return (repository != null && directory != null);
         }

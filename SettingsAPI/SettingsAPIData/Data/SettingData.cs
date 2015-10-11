@@ -7,14 +7,14 @@ namespace SettingsAPIData.Data
     public partial class SettingData : IEquatable<string>, IEquatable<SettingModel>
     {
         public int ObjecId { get; set; }
-        public int RepositoryId { get; set; }
+        public int VersionId { get; set; }
         public int DirectoryId { get; set; }
         public string SettingKey { get; set; }
         public string SettingValue { get; set; }
         public Nullable<System.DateTime> Created { get; set; }
         public Nullable<System.DateTime> Modified { get; set; }
-        public virtual Directorydata Directory { get; set; }
-        public virtual RepositoryData Repository { get; set; }
+        public virtual DirectoryData Directory { get; set; }
+        public virtual VersionData Repository { get; set; }
 
         public ApplicationData Application
         {

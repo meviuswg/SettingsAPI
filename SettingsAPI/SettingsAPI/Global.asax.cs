@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SettingsAPIData;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -22,6 +24,15 @@ namespace SettingsAPI
 
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             GlobalConfiguration.Configuration.Formatters.Remove(GlobalConfiguration.Configuration.Formatters.XmlFormatter);
+#if DEBUG
+            SetupDebug();
+#endif
+        }
+        private void SetupDebug()
+        {
+            Log.Logger = (ex) =>  Debug.WriteLine(ex);
+            SettingsAPIData.SettingsStoreException.Log = (m) => Log.Message(m);
+
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)
@@ -32,7 +43,10 @@ namespace SettingsAPI
 
         private void SetAPIKey()
         {
-            if (HttpContext.Current.Request.Url.LocalPath.ToLower().Contains("/api/"))
+
+            var localPath = HttpContext.Current.Request.Url.LocalPath.ToLower();
+
+            if (!localPath.Contains("/help/api") && localPath.Contains("/api/"))
             {
                 var queryString = HttpUtility.ParseQueryString(HttpContext.Current.Request.QueryString.ToString());
 

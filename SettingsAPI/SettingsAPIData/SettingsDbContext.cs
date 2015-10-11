@@ -16,14 +16,15 @@ namespace SettingsAPIData
         public SettingsDbContext()
             : base("Name=SettingsDb")
         {
+         
         }
 
         public DbSet<SettingData> Settings { get; set; }
         public DbSet<DirectoryAccessData> Access { get; set; }
         public DbSet<ApiKeyData> ApiKeys { get; set; }
         public DbSet<ApplicationData> Applications { get; set; }
-        public DbSet<Directorydata> Directories { get; set; }
-        public DbSet<RepositoryData> Repositories { get; set; }
+        public DbSet<DirectoryData> Directories { get; set; }
+        public DbSet<VersionData> Versions { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -32,15 +33,15 @@ namespace SettingsAPIData
             modelBuilder.Configurations.Add(new settings_api_keyMap());
             modelBuilder.Configurations.Add(new settings_applicationMap());
             modelBuilder.Configurations.Add(new settings_directoryMap());
-            modelBuilder.Configurations.Add(new settings_repositoryMap());
+            modelBuilder.Configurations.Add(new settings_versionMap());
         }
 
-        public RepositoryData GetRepository(string applicationName, int version)
+        public VersionData GetRepository(string applicationName, int version)
         {
-            return this.Repositories.SingleOrDefault(a => a.Application.Name.ToLower() == applicationName.ToLower() && a.Version == version);
+            return this.Versions.SingleOrDefault(a => a.Application.Name.ToLower() == applicationName.ToLower() && a.Version == version);
         }
 
-        public Directorydata GetDirectory(string applicationName, string directoryName)
+        public DirectoryData GetDirectory(string applicationName, string directoryName)
         {
             return this.Directories.SingleOrDefault(a => a.Application.Name.ToLower() == applicationName.ToLower() && a.Name.ToLower() == directoryName.ToLower());
         }

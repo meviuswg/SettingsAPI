@@ -4,18 +4,18 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace SettingsAPIData.Data.Mapping
 {
-    public class settingMap : EntityTypeConfiguration<SettingData>
+    internal class settingMap : EntityTypeConfiguration<SettingData>
     {
         public settingMap()
         {
             // Primary Key
-            this.HasKey(t => new { t.ObjecId, t.RepositoryId, t.DirectoryId, t.SettingKey });
+            this.HasKey(t => new { t.ObjecId, t.VersionId, t.DirectoryId, t.SettingKey });
 
             // Properties
             this.Property(t => t.ObjecId)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
-            this.Property(t => t.RepositoryId)
+            this.Property(t => t.VersionId)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
             this.Property(t => t.DirectoryId)
@@ -28,7 +28,7 @@ namespace SettingsAPIData.Data.Mapping
             // Table & Column Mappings
             this.ToTable("settings");
             this.Property(t => t.ObjecId).HasColumnName("object_id");
-            this.Property(t => t.RepositoryId).HasColumnName("repository_id");
+            this.Property(t => t.VersionId).HasColumnName("version_id");
             this.Property(t => t.DirectoryId).HasColumnName("directory_id");
             this.Property(t => t.SettingKey).HasColumnName("setting_key");
             this.Property(t => t.SettingValue).HasColumnName("setting_value");
@@ -41,10 +41,7 @@ namespace SettingsAPIData.Data.Mapping
                 .HasForeignKey(d => d.DirectoryId);
             this.HasRequired(t => t.Repository)
                 .WithMany(t => t.Settings)
-                .HasForeignKey(d => d.RepositoryId);
-
- 
-
+                .HasForeignKey(d => d.VersionId); 
         }
     }
 }

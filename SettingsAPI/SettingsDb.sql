@@ -12,7 +12,7 @@ CREATE TABLE dbo.settings_application (
 	[id] INT NOT NULL identity(1, 1)
 	,[name] VARCHAR(50) NOT NULL
 	,[description] NVARCHAR(150) NULL
-	,[created] DATETIME CONSTRAINT def_settings_application_created DEFAULT(getdate())
+	,[created] DATETIME NOT NULL CONSTRAINT def_settings_application_created DEFAULT(getdate())
 	,CONSTRAINT pk_settings_application PRIMARY KEY (id)
 	,CONSTRAINT ux_settings_application_name UNIQUE ([name])
 	)
@@ -23,23 +23,24 @@ CREATE TABLE dbo.settings_directory (
 	,application_id INT
 	,[name] VARCHAR(20)
 	,description VARCHAR(150)
+	,created datetime not null  CONSTRAINT def_ssettings_directory_created DEFAULT(getdate()) 
 	,CONSTRAINT pk_settings_directory PRIMARY KEY (id)
 	,CONSTRAINT ux_settings_directory_name UNIQUE ([name],[application_id])
 	,CONSTRAINT fk_settings_directory_application_id FOREIGN KEY ([application_id]) REFERENCES settings_application([id])
 	)
 GO
 
-CREATE TABLE dbo.settings_repository (
-	repository_id INT identity(1, 1)
+CREATE TABLE dbo.settings_version (
+	 version_id INT identity(1, 1)
 	,application_id INT NOT NULL
-	,[version] INT NOT NULL CONSTRAINT def_setting_repository_repository DEFAULT(1)
-	,created DATETIME NOT NULL CONSTRAINT def_setting_repository_created DEFAULT(getdate())
-	,CONSTRAINT ux_settings_repository_application_repository UNIQUE (
+	,[version] INT NOT NULL CONSTRAINT def_setting_version_version DEFAULT(1)
+	,created DATETIME NOT NULL CONSTRAINT def_setting_version_created DEFAULT(getdate())
+	,CONSTRAINT ux_settings_version_application_version UNIQUE (
 		application_id
 		,[version]
 		)
-	,CONSTRAINT pk_settings_repository PRIMARY KEY (repository_id)
-	,CONSTRAINT fk_settings_repository_application_id FOREIGN KEY (application_id) REFERENCES settings_application(id)
+	,CONSTRAINT pk_settings_version PRIMARY KEY (version_id)
+	,CONSTRAINT fk_settings_version_application_id FOREIGN KEY (application_id) REFERENCES settings_application(id)
 	)
 GO
 
@@ -48,7 +49,7 @@ CREATE TABLE dbo.settings_api_key (
 	,[application_id] INT NOT NULL
 	,[apikey] NVARCHAR(50)
 	,last_used DATETIME NULL
-	,edit_directories BIT NOT NULL CONSTRAINT def_settings_api_key_edit_directories DEFAULT(1)
+	,admin_key BIT NOT NULL CONSTRAINT def_settings_api_key_edit_directories DEFAULT(1)
 	,[active] BIT NOT NULL CONSTRAINT def_settings_api_key_active DEFAULT(1)
 	,created DATETIME NOT NULL CONSTRAINT def_settings_api_key_created DEFAULT(getdate())
 	,CONSTRAINT pk_settings_api_key PRIMARY KEY ([id])
@@ -73,9 +74,55 @@ CREATE TABLE dbo.settings_api_directory_access (
 	)
 GO
 
+CREATE TRIGGER   [dbo].[trigger_directory_access_master_key_admin_keys]
+   ON   [dbo].[settings_directory]
+   AFTER INSERT 
+AS 
+BEGIN
+	 -- inserts the master api key and application admin keys to allow full access.
+
+	 insert into  [dbo].[settings_api_directory_access](apikey_id,directory_id,allow_create,allow_delete,allow_write)
+	 select
+	 -1
+	 ,i.id
+	 ,1
+	 ,1
+	 ,1
+	 from inserted i
+	 union
+	 select 
+	  a.id
+	 ,b.id
+	 ,1
+	 ,1
+	 ,1
+	 from settings_api_key a
+	  join inserted b
+		on b.application_id = a.application_id
+	 where a.admin_key = 1 
+
+END
+GO
+
+CREATE TRIGGER   [dbo].[trigger_directory_access_delete]
+   ON   [dbo].[settings_directory]
+   AFTER DELETE 
+AS 
+BEGIN
+	 
+	 delete [dbo].[settings_api_directory_access]
+	 select  
+	 *
+	 from [dbo].[settings_api_directory_access] a 
+	 join deleted b on a.directory_id = b.id
+	 
+
+END
+GO
+
 CREATE TABLE dbo.settings (
 	[object_id] INT
-	,[repository_id] INT NOT NULL
+	,[version_id] INT NOT NULL
 	,[directory_id] INT NOT NULL
 	,[setting_key] VARCHAR(50) NOT NULL
 	,[setting_value] NVARCHAR(max) NULL
@@ -83,11 +130,11 @@ CREATE TABLE dbo.settings (
 	,[modified] DATETIME NULL
 	,CONSTRAINT pk_settings PRIMARY KEY (
 		[object_id]
-		,[repository_id]
+		,[version_id]
 		,[directory_id]
 		,[setting_key]
 		)
-	,CONSTRAINT fk_settings_repository_id FOREIGN KEY (repository_id) REFERENCES settings_repository(repository_id)
+	,CONSTRAINT fk_settings_version_id FOREIGN KEY (version_id) REFERENCES settings_version(version_id)
 	,CONSTRAINT fk_settings_directory_id FOREIGN KEY (directory_id) REFERENCES settings_directory(id)
 	)
 GO
@@ -116,6 +163,25 @@ VALUES (
 	)
 
 SET IDENTITY_INSERT settings_application OFF
+
+SET IDENTITY_INSERT settings_api_key ON
+INSERT INTO settings_api_key (
+	 [id]
+	,[apikey]
+	,application_id
+	)
+VALUES (
+	-1
+	,@masterKey
+	,- 1
+	)
+	,(
+	 1
+	,@sampleKey
+	,1
+	)
+SET IDENTITY_INSERT settings_api_key OFF
+
 SET IDENTITY_INSERT settings_directory ON
 
 INSERT INTO settings_directory (
@@ -140,7 +206,7 @@ VALUES (
 	1
 	,1
 	,'Application'
-	,'Standard directory for Application specific settings. When used, the object_id of the settings should be 0.'
+	,'Standard directory for Application specific settings.'
 	)
 	,(
 	2
@@ -152,12 +218,12 @@ VALUES (
 	3
 	,1
 	,'User'
-	,'Standard directory for User specific settings. When used, the object_id of the setting is expected to be the user_id a valid user.'
+	,'Standard directory for User specific settings. When used, the object_id of the setting is expected to be the user_id a existing user.'
 	)
 
 SET IDENTITY_INSERT settings_directory OFF
 
-INSERT INTO settings_repository (
+INSERT INTO settings_version (
 	application_id
 	,[version]
 	)
@@ -168,46 +234,6 @@ VALUES (
 	,(
 	1
 	,1
-	);
+	); 
 
-INSERT INTO settings_api_key (
-	[apikey]
-	,application_id
-	)
-VALUES (
-	@masterKey
-	,- 1
-	)
-	,(
-	@sampleKey
-	,1
-	)
-
-INSERT INTO settings_api_directory_access (
-	[apikey_id]
-	,directory_id
-	,allow_write
-	,allow_delete
-	,allow_create
-	)
-VALUES (
-	1
-	,- 1
-	,1
-	,1
-	,1
-	)
-	,(
-	2
-	,1
-	,0
-	,0
-	,0
-	)
-	,(
-	2
-	,2
-	,1
-	,1
-	,1
-	);
+ 

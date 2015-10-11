@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
@@ -52,9 +53,15 @@
   <ItemGroup>
     <Compile Include="ApiKey.cs" />
     <Compile Include="ApplicationDataController.cs" />
-    <Compile Include="BaseDataController.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="Model\SaveApplicationModel.cs" />
+    <Compile Include="Model\SaveDirectoryModel.cs" />
+    <Compile Include="SettingsDuplicateException.cs" />
+    <Compile Include="SettingsRepository.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="IApiKey.cs" />
+    <Compile Include="IApplicationDataController.cs" />
+    <Compile Include="ISettingsRepository.cs" />
     <Compile Include="ISettingsDataController.cs" />
     <Compile Include="Model\ApplicationModel.cs" />
     <Compile Include="Model\DirectoryAccessModel.cs" />
@@ -62,6 +69,7 @@
     <Compile Include="Model\VersionModel.cs" />
     <Compile Include="Model\SettingModel.cs" />
     <Compile Include="SettingsAuthorizationException.cs" />
+    <Compile Include="SettingsNotFoundException.cs" />
     <Compile Include="SettingsStoreException.cs" />
     <Compile Include="SettingStore.cs" />
     <Compile Include="SettingsDataController.cs" />
@@ -71,13 +79,13 @@
     <Compile Include="Data\Mapping\settings_api_keyMap.cs" />
     <Compile Include="Data\Mapping\settings_applicationMap.cs" />
     <Compile Include="Data\Mapping\settings_directoryMap.cs" />
-    <Compile Include="Data\Mapping\settings_repositoryMap.cs" />
+    <Compile Include="Data\Mapping\settings_versionMap.cs" />
     <Compile Include="Data\SettingData.cs" />
     <Compile Include="Data\DirectoryAccessData.cs" />
     <Compile Include="Data\ApiKeyData.cs" />
     <Compile Include="Data\ApplicationData.cs" />
     <Compile Include="Data\Directorydata.cs" />
-    <Compile Include="Data\RepositoryData.cs" />
+    <Compile Include="Data\VersionData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ApiKeyGenerator.cs" />
   </ItemGroup>

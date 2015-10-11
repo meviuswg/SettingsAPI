@@ -14,5 +14,7 @@ namespace SettingsAPIData.Model
         public int Items { get; internal set; }
         public string Name { get; internal set; }
         public bool AllowWrite { get; internal set; }
+
+
     }
 }

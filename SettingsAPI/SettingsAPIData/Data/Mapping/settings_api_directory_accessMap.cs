@@ -4,7 +4,7 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace SettingsAPIData.Data.Mapping
 {
-    public class settings_api_directory_accessMap : EntityTypeConfiguration<DirectoryAccessData>
+    internal class settings_api_directory_accessMap : EntityTypeConfiguration<DirectoryAccessData>
     {
         public settings_api_directory_accessMap()
         {

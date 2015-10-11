@@ -100,7 +100,7 @@ namespace SettingsAPI.Controllers
                     {
                         controller.SaveSettings(store, value);
                     }
-                    catch (SettingsAuthorizationException ex)
+                    catch (SettingsAuthorizationException)
                     {
                         throw new HttpResponseException(HttpStatusCode.Forbidden); 
                     }

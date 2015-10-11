@@ -3,7 +3,7 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace SettingsAPIData.Data.Mapping
 {
-    public class settings_directoryMap : EntityTypeConfiguration<Directorydata>
+    internal class settings_directoryMap : EntityTypeConfiguration<DirectoryData>
     {
         public settings_directoryMap()
         {
@@ -23,6 +23,7 @@ namespace SettingsAPIData.Data.Mapping
             this.Property(t => t.ApplicationId).HasColumnName("application_id");
             this.Property(t => t.Name).HasColumnName("name");
             this.Property(t => t.Description).HasColumnName("description");
+            this.Property(t => t.Created).HasColumnName("created");
 
             // Relationships
             this.HasOptional(t => t.Application)
