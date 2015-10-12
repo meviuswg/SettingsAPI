@@ -22,8 +22,7 @@ namespace SettingsAPIData
         private SettingsDbContext Context
         {
             get
-            {
-
+            { 
                 if (!_dbOnline)
                 {
                     try
@@ -35,8 +34,7 @@ namespace SettingsAPIData
                     {
                         Log.Exception(ex);
                         throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE);
-                    }
-
+                    } 
                 }
                 try
                 {
@@ -53,7 +51,7 @@ namespace SettingsAPIData
 
         public ApiKeyModel GetKey(string apiKey)
         {
-            var data = GetData(apiKey);
+            var data = GetData(apiKey); 
 
             if (data != null)
             {
@@ -86,7 +84,10 @@ namespace SettingsAPIData
 
         private ApiKeyData GetData(string key)
         {
-            return Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key);
+            var data = Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key);
+            context.Entry<ApiKeyData>(data).Reload();
+            context.Entry<ApiKeyData>(data).Collection<DirectoryAccessData>("Access").Query();
+            return data;
         }
 
         public void SetUsed(string apiKey)

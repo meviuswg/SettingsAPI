@@ -53,7 +53,7 @@ namespace SettingsAPITest
 
             ApplicationRepository controller = new ApplicationRepository(repository, provider);
 
-            bool create  = provider.AllowDeleteSetting("_system", "_direotory");
+            bool create  = provider.AllowDeleteSetting("_system", "_directory");
             var apps = controller.GetApplications();
 
             var a = apps.FirstOrDefault();

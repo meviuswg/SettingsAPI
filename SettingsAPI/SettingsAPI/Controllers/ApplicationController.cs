@@ -15,12 +15,11 @@ namespace SettingsAPI.Controllers
     public class ApplicationController : BaseApiController
     {
         private IApplicationRepository controller;
-        private ISettingsAuthorizationProvider auth;
 
-        public ApplicationController(IApplicationRepository controller, ISettingsAuthorizationProvider authProvider)
+
+        public ApplicationController(IApplicationRepository controller)
         {
             this.controller = controller;
-            this.auth = authProvider;
         }
 
         [HttpGet]
@@ -34,7 +33,7 @@ namespace SettingsAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Error(ex.Message);
+                return Error(ex);
             }
         }
 
@@ -45,13 +44,7 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-
-                var application = controller.GetApplication(applicationName);
-
-                if (application != null)
-                    return Ok(application);
-                else
-                    return NotFound();
+                return Ok(controller.GetApplication(applicationName));
             }
             catch (Exception ex)
             {
@@ -66,13 +59,7 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                var directorties = controller.GetDirectories(applicationName);
-
-                if (directorties != null)
-                    return Ok(directorties);
-                else
-                    return NotFound();
-
+                return Ok(controller.GetDirectories(applicationName));
             }
             catch (Exception ex)
             {
@@ -87,13 +74,7 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                var directorty = controller.GetDirectory(applicationName, directoryName);
-
-                if (directorty != null)
-                    return Ok(directorty);
-                else
-                    return NotFound();
-
+                return Ok(controller.GetDirectory(applicationName, directoryName));
             }
             catch (Exception ex)
             {
@@ -108,14 +89,7 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-
-                var versions = controller.GetVersions(applicationName);
-
-                if (versions != null)
-                    return Ok(versions);
-                else
-                    return NotFound();
-
+                return Ok(controller.GetVersions(applicationName));
             }
             catch (Exception ex)
             {
@@ -130,13 +104,7 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                var v = controller.GetVersion(applicationName, version);
-
-                if (v != null)
-                    return Ok(v);
-                else
-                    return NotFound();
-
+                return Ok(controller.GetVersion(applicationName, version));
             }
             catch (Exception ex)
             {
@@ -150,14 +118,15 @@ namespace SettingsAPI.Controllers
         [ResponseType(typeof(ApplicationModel))]
         public IHttpActionResult CreateApplication(string applicationName)
         {
-            if (auth.AllowCreateApplication(applicationName))
+            try
             {
                 return CreateApplication(new SaveApplicationModel { Name = applicationName });
             }
-            else
+            catch (Exception ex)
             {
-                return Forbidden();
+                return Error(ex);
             }
+
         }
 
         [HttpPost]
@@ -167,22 +136,12 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                if (auth.AllowCreateApplication(value.Name))
-                {
-                    var application = controller.CreateApplication(value.Name, value.Description, value.DirectoryName, value.DirectoryDescription);
-                    return Ok(application);
-
-                }
-                else
-                {
-                    return Forbidden();
-                }
+                return Ok(controller.CreateApplication(value.Name, value.Description, value.DirectoryName, value.DirectoryDescription));
             }
             catch (Exception ex)
             {
                 return Error(ex);
             }
-
         }
 
 
@@ -193,25 +152,9 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                if (auth.AllowDeleteApplication(applicationName))
-                {
-                    var application = controller.GetApplication(applicationName);
+                controller.DeleteApplication(applicationName);
+                return Ok();
 
-                    if (application != null)
-                    {
-                        controller.DeleteApplication(applicationName);
-                        return Ok();
-                    }
-                    else
-                    {
-                        return NotFound();
-                    }
-
-                }
-                else
-                {
-                    return Forbidden();
-                }
             }
             catch (Exception ex)
             {
@@ -234,15 +177,8 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                if (auth.AllowCreateDirectory(applicationName, value.Name))
-                {
-                    controller.CreateDirectory(applicationName, value.Name, value.Description);
-                    return Ok();
-                }
-                else
-                {
-                    return Forbidden();
-                }
+                controller.CreateDirectory(applicationName, value.Name, value.Description);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -257,15 +193,8 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                if (auth.AllowDeleteDirectory(applicationName, directoryName))
-                {
-                    controller.DeleteDirectory(applicationName, directoryName);
-                    return Ok();
-                }
-                else
-                {
-                    return Forbidden();
-                }
+                controller.DeleteDirectory(applicationName, directoryName);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -275,21 +204,14 @@ namespace SettingsAPI.Controllers
 
 
         [HttpPost]
-        [Route("api/application/{applicationName}/versions")]
+        [Route("api/application/{applicationName}/versions/{version}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult CreateVersion(string applicationName, int version)
         {
             try
             {
-                if (auth.AllowCreateVersion(applicationName))
-                {
-                    controller.CreateVersion(applicationName, version);
-                    return Ok();
-                }
-                else
-                {
-                    return Forbidden();
-                }
+                controller.CreateVersion(applicationName, version);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -303,16 +225,9 @@ namespace SettingsAPI.Controllers
         public IHttpActionResult DeleteVersion(string applicationName, int version)
         {
             try
-            {
-                if (auth.AllowDeleteVersion(applicationName))
-                {
-                    controller.CreateVersion(applicationName, version);
-                    return Ok();
-                }
-                else
-                {
-                    return Forbidden();
-                }
+            { 
+                controller.DeleteVersion(applicationName, version);
+                return Ok(); 
             }
             catch (Exception ex)
             {

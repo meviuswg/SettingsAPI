@@ -76,10 +76,12 @@ namespace SettingsAPIData
 
             List<string> roles = new List<string>();
 
-            if (data != null)
+            if (data != null && data.Active)
             {
                 if (data.AdminKey || data.Id == Constants.SYSTEM_MASTER_KEY_ID)
+                {
                     roles.Add(Constants.SECURITY_ROLE_ADMIN);
+                }
 
                 if (data.Id == Constants.SYSTEM_MASTER_KEY_ID)
                     roles.Add(Constants.SECURITY_ROLE_MASTER);

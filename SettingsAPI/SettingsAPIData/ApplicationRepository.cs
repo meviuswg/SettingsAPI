@@ -31,11 +31,7 @@ namespace SettingsAPIData
         }
 
         public IEnumerable<VersionModel> GetVersions(string applicationName)
-        {
-            if(!Auth.AllowCreateVersion(applicationName))
-            {
-                throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
-            }
+        { 
             var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
   
             if (application == null)
@@ -61,49 +57,68 @@ namespace SettingsAPIData
 
         public void CreateVersion(string applicationName, int version)
         {
-            var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
-
-            if (application == null)
+            if (Auth.AllowCreateVersion(applicationName))
             {
-                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
+                var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
+
+                if (application == null)
+                {
+                    throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
+                }
+
+                var data = GetVersionsFromStore(applicationName, version).SingleOrDefault();
+
+                if (data != null)
+                {
+                    throw new SettingsDuplicateException(Constants.ERROR_VERION_ALREADY_EXISTS);
+                }
+
+                data = new VersionData();
+                data.ApplicationId = application.Id;
+                data.Created = DateTime.UtcNow;
+                data.Version = version;
+                application.Versions.Add(data);
+                Repository.Save();
             }
-
-            var data = GetVersionsFromStore(applicationName, version).SingleOrDefault();
-
-            if(data != null)
+            else
             {
-                throw new SettingsDuplicateException(Constants.ERROR_VERION_ALREADY_EXISTS); 
+                throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
             }
-
-            data = new VersionData();
-            data.ApplicationId = application.Id;
-            data.Created = DateTime.UtcNow;
         }
 
         public void DeleteVersion(string applicationName, int version)
         {
-            var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
-
-            if (application == null)
+            if (Auth.AllowDeleteVersion(applicationName))
             {
-                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
+                var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
+
+                if (application == null)
+                {
+                    throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
+                }
+
+                var data = GetVersionsFromStore(applicationName, version).SingleOrDefault();
+
+                if (data == null)
+                {
+                    throw new SettingsNotFoundException(Constants.ERROR_VERION_UNKNOWN);
+                }
+
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    var settings = Repository.Context.Settings.Where(s => s.VersionId == data.Id);
+                    Repository.Context.Settings.RemoveRange(settings);
+                    Repository.Context.SaveChanges();
+
+                    Repository.Context.Versions.Remove(data);
+                    Repository.Context.SaveChanges();
+
+                    scope.Complete();
+                }
             }
-
-            var data = GetVersionsFromStore(applicationName, version).SingleOrDefault();
-
-            if (data == null)
+            else
             {
-                throw new SettingsNotFoundException(Constants.ERROR_VERION_UNKNOWN);
-            }
-
-            using (TransactionScope scope = new TransactionScope())
-            {
-                var settings = Repository.Context.Settings.Where(s => s.VersionId == data.Id);
-                Repository.Context.Settings.RemoveRange(settings);
-                Repository.Context.SaveChanges();
-
-                Repository.Context.Versions.Remove(data);
-                Repository.Context.SaveChanges();
+                throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
             }
 
         }
@@ -281,6 +296,11 @@ namespace SettingsAPIData
                                     Created = app.Created,
                                 });
 
+            if(!string.IsNullOrWhiteSpace(applicationName) && applications.SingleOrDefault() == null)
+            {
+                throw new SettingsNotFoundException(applicationName);
+            }
+
             return applications;
         }
 
@@ -313,11 +333,11 @@ namespace SettingsAPIData
                 throw new SettingsStoreException(Constants.ERROR_APPLICATION_ALREADY_EXISTS);
             }
 
+            application = new ApplicationData();
+            var directory = new DirectoryData();
             using (TransactionScope scope = new TransactionScope())
             {
-
-                application = new ApplicationData();
-
+                 
                 application.Name = applicationName;
 
                 if (string.IsNullOrWhiteSpace(applicationDescription))
@@ -331,8 +351,8 @@ namespace SettingsAPIData
                 Repository.Context.Applications.Add(application);
                 Repository.Context.SaveChanges();
 
-                VersionData repository = new VersionData { Version = 1, Created = DateTime.UtcNow, ApplicationId = application.Id };
-                Repository.Context.Versions.Add(repository);
+                VersionData version = new VersionData { Version = 1, Created = DateTime.UtcNow, ApplicationId = application.Id };
+                Repository.Context.Versions.Add(version);
                 Repository.Context.SaveChanges();
  
 
@@ -346,7 +366,7 @@ namespace SettingsAPIData
                     directoryDescription = Constants.DEAULT_DIRECTORY_DESCRIPTION;
                 }
 
-                DirectoryData directory = new DirectoryData();
+                directory = new DirectoryData();
                 directory.Name = directoryName;
                 directory.Description = directoryDescription;
                 directory.ApplicationId = application.Id;
@@ -365,15 +385,18 @@ namespace SettingsAPIData
                 access.AllowDelete = true;
                 access.AllowCreate = true;
                 access.ApiKey = apiKey;
-                access.Directory = directory;
+                access.Directory = directory; 
 
                 Repository.Context.Access.Add(access);
 
                 Repository.Context.SaveChanges();
+              
 
                 scope.Complete();
             }
 
+            //To load the autocreated accessrights.
+            Repository.Context.Entry<DirectoryData>(directory).Collection("Access").Load();
             return GetApplication(applicationName);
          
         }
