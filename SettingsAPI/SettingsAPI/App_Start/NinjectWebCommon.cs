@@ -67,14 +67,19 @@ namespace SettingsAPI.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<SettingsDbContext>().To<SettingsDbContext>().InRequestScope();
-            kernel.Bind<IApiKey>().To<HttpContextCachApiKey>();  
+            kernel.Bind<SettingsDbContext>().To<SettingsDbContext>(); 
+
+            kernel.Bind<IApiKey>().To<PrincipalApiKey>();  
+
+            kernel.Bind<IApiKeyRepository>().To<ApiKeyRepository>().InRequestScope();
+
+            kernel.Bind<ISettingsAuthorizationProvider>().To<SettingsAuthorizationProvider>().InRequestScope();
+
+            kernel.Bind<ISettingsStore>().To<SettingsStore>().InRequestScope();
 
             kernel.Bind<ISettingsRepository>().To<SettingsRepository>();
 
-            kernel.Bind<ISettingsDataController>().To<SettingsDataController>();
-
-            kernel.Bind<IApplicationDataController>().To<ApplicationDataController>();
+            kernel.Bind<IApplicationRepository>().To<ApplicationRepository>();
 
         }
     }

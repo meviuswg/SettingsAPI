@@ -1,265 +1,322 @@
 ﻿using SettingsAPIData;
 using SettingsAPIData.Model;
+using SettingsAPIShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace SettingsAPI.Controllers
 {
+    [Authorize]
     public class ApplicationController : BaseApiController
     {
-        private IApplicationDataController controller;
+        private IApplicationRepository controller;
+        private ISettingsAuthorizationProvider auth;
 
-        public ApplicationController(IApplicationDataController controller)
+        public ApplicationController(IApplicationRepository controller, ISettingsAuthorizationProvider authProvider)
         {
             this.controller = controller;
+            this.auth = authProvider;
         }
 
         [HttpGet]
         [Route("api/application/")]
-        public IEnumerable<ApplicationModel> Get()
+        [ResponseType(typeof(ApplicationModel[]))]
+        public IHttpActionResult Get()
         {
-            if (controller.AllowRead())
+            try
             {
-                return controller.GetApplications();
+                return Ok(controller.GetApplications());
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.Forbidden);
+                return Error(ex.Message);
             }
         }
 
         [HttpGet]
         [Route("api/application/{applicationName}")]
-        public ApplicationModel Get(string applicationName)
+        [ResponseType(typeof(ApplicationModel))]
+        public IHttpActionResult Get(string applicationName)
         {
-            if (controller.AllowRead())
+            try
             {
+
                 var application = controller.GetApplication(applicationName);
 
                 if (application != null)
-                    return application;
+                    return Ok(application);
                 else
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                    return NotFound();
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.Forbidden);
+                return Error(ex);
             }
         }
 
         [HttpGet]
         [Route("api/application/{applicationName}/directories")]
-        public IEnumerable<DirectoryModel> GetDirectories(string applicationName)
+        [ResponseType(typeof(DirectoryModel[]))]
+        public IHttpActionResult GetDirectories(string applicationName)
         {
-            if (controller.AllowRead())
+            try
             {
-                var directories = controller.GetDirectories(applicationName);
+                var directorties = controller.GetDirectories(applicationName);
 
-                if (directories != null)
-                    return directories;
+                if (directorties != null)
+                    return Ok(directorties);
                 else
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                    return NotFound();
+
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.Forbidden);
+                return Error(ex);
             }
         }
 
         [HttpGet]
         [Route("api/application/{applicationName}/directories/{directoryName}")]
-        public DirectoryModel GetDirectory(string applicationName, string directoryName)
+        [ResponseType(typeof(DirectoryModel))]
+        public IHttpActionResult GetDirectory(string applicationName, string directoryName)
         {
-            if (controller.AllowRead())
+            try
             {
-                var directory = controller.GetDirectory(applicationName, directoryName);
+                var directorty = controller.GetDirectory(applicationName, directoryName);
 
-                if (directory != null)
-                    return directory;
+                if (directorty != null)
+                    return Ok(directorty);
                 else
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                    return NotFound();
+
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.Forbidden);
+                return Error(ex);
             }
         }
 
         [HttpGet]
         [Route("api/application/{applicationName}/versions")]
-        public IEnumerable<VersionModel> GetVersions(string applicationName)
+        [ResponseType(typeof(VersionModel[]))]
+        public IHttpActionResult GetVersions(string applicationName)
         {
-            if (controller.AllowRead())
+            try
             {
-                var application = controller.GetApplication(applicationName);
 
-                if (application != null)
-                    return application.Versions;
+                var versions = controller.GetVersions(applicationName);
+
+                if (versions != null)
+                    return Ok(versions);
                 else
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                    return NotFound();
+
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.Forbidden);
+                return Error(ex);
             }
         }
 
         [HttpGet]
         [Route("api/application/{applicationName}/versions/{version}")]
-        public HttpResponseMessage GetVersion(string applicationName, int version)
+        [ResponseType(typeof(VersionModel))]
+        public IHttpActionResult GetVersion(string applicationName, int version)
         {
             try
             {
-                if (controller.AllowRead())
-                {
-                    var application = controller.GetApplication(applicationName);
+                var v = controller.GetVersion(applicationName, version);
 
-                    if (application != null && application.Versions.Count() > 0)
-                        return Request.CreateResponse<VersionModel>(application.Versions.SingleOrDefault(v => v.Version == version));
-                    else
-                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Application unknown");
-                }
+                if (v != null)
+                    return Ok(v);
                 else
-                {
-                    return Request.CreateResponse(HttpStatusCode.Forbidden);
-                }
-            }
-            catch (SettingsStoreException ex)
-            {
-                Log.Exception(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+                    return NotFound();
+
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Constants.ERROR_MESSAGE_INTERNAL_ERROR);
+                return Error(ex);
             }
         }
 
 
         [HttpPost]
         [Route("api/application/{applicationName}", Order = 0)]
-        public HttpResponseMessage CreateApplication(string applicationName)
+        [ResponseType(typeof(ApplicationModel))]
+        public IHttpActionResult CreateApplication(string applicationName)
         {
-            return CreateApplication(new SaveApplicationModel { Name = applicationName });
+            if (auth.AllowCreateApplication(applicationName))
+            {
+                return CreateApplication(new SaveApplicationModel { Name = applicationName });
+            }
+            else
+            {
+                return Forbidden();
+            }
         }
 
         [HttpPost]
         [Route("api/application", Order = 1)]
-        public HttpResponseMessage CreateApplication([FromBody]SaveApplicationModel value)
+        [ResponseType(typeof(ApplicationModel))]
+        public IHttpActionResult CreateApplication([FromBody]SaveApplicationModel value)
         {
             try
             {
-                var application = controller.CreateApplication(value.Name, value.Description, value.DirectoryName, value.DirectoryDescription);
+                if (auth.AllowCreateApplication(value.Name))
+                {
+                    var application = controller.CreateApplication(value.Name, value.Description, value.DirectoryName, value.DirectoryDescription);
+                    return Ok(application);
 
-                return Request.CreateResponse<ApplicationModel>(application);
-            }
-            catch (SettingsStoreException ex)
-            {
-                Log.Exception(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+                }
+                else
+                {
+                    return Forbidden();
+                }
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Constants.ERROR_MESSAGE_INTERNAL_ERROR);
+                return Error(ex);
             }
-           
+
         }
 
 
         [HttpDelete]
         [Route("api/application/{applicationName}")]
-        public void DeleteApplication(string applicationName)
+        [ResponseType(typeof(void))]
+        public IHttpActionResult DeleteApplication(string applicationName)
         {
-            if (controller.AllowDelete())
+            try
             {
-                var application = controller.GetApplication(applicationName);
+                if (auth.AllowDeleteApplication(applicationName))
+                {
+                    var application = controller.GetApplication(applicationName);
 
-                if (application != null)
-                    controller.DeleteApplication(applicationName);
+                    if (application != null)
+                    {
+                        controller.DeleteApplication(applicationName);
+                        return Ok();
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+
+                }
                 else
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                {
+                    return Forbidden();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.Forbidden);
+                return Error(ex);
             }
         }
 
         [HttpPost]
         [Route("api/application/{applicationName}/directories/{directoryName}")]
-        public HttpResponseMessage CreateDirectory(string applicationName, string directoryName)
+        [ResponseType(typeof(void))]
+        public IHttpActionResult CreateDirectory(string applicationName, string directoryName)
         {
             return CreateDirectory(applicationName, new SaveDirectoryModel { Name = directoryName });
         }
 
         [HttpPost]
         [Route("api/application/{applicationName}/directories")]
-        public HttpResponseMessage CreateDirectory(string applicationName, [FromBody] SaveDirectoryModel value)
+        [ResponseType(typeof(void))]
+        public IHttpActionResult CreateDirectory(string applicationName, [FromBody] SaveDirectoryModel value)
         {
             try
             {
-                controller.CreateDirectory(applicationName, value.Name, value.Description);
-                return OkResponse();
+                if (auth.AllowCreateDirectory(applicationName, value.Name))
+                {
+                    controller.CreateDirectory(applicationName, value.Name, value.Description);
+                    return Ok();
+                }
+                else
+                {
+                    return Forbidden();
+                }
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Constants.ERROR_MESSAGE_INTERNAL_ERROR);
+                return Error(ex);
             }
         }
 
         [HttpDelete]
         [Route("api/application/{applicationName}/directories/{directoryName}")]
-        public HttpResponseMessage DeleteDirectory(string applicationName, string directoryName)
+        [ResponseType(typeof(void))]
+        public IHttpActionResult DeleteDirectory(string applicationName, string directoryName)
         {
             try
             {
-                controller.DeleteDirectory(applicationName, directoryName);
-                return OkResponse();
+                if (auth.AllowDeleteDirectory(applicationName, directoryName))
+                {
+                    controller.DeleteDirectory(applicationName, directoryName);
+                    return Ok();
+                }
+                else
+                {
+                    return Forbidden();
+                }
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Constants.ERROR_MESSAGE_INTERNAL_ERROR);
+                return Error(ex);
             }
         }
 
 
         [HttpPost]
         [Route("api/application/{applicationName}/versions")]
-        public HttpResponseMessage CreateVersion(string applicationName, int version)
+        [ResponseType(typeof(void))]
+        public IHttpActionResult CreateVersion(string applicationName, int version)
         {
             try
             {
-                controller.CreateVersion(applicationName, version);
-                return OkResponse();
+                if (auth.AllowCreateVersion(applicationName))
+                {
+                    controller.CreateVersion(applicationName, version);
+                    return Ok();
+                }
+                else
+                {
+                    return Forbidden();
+                }
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Constants.ERROR_MESSAGE_INTERNAL_ERROR);
+                return Error(ex);
             }
         }
 
         [HttpDelete]
         [Route("api/application/{applicationName}/versions/{version}")]
-        public HttpResponseMessage DeleteVersion(string applicationName, int version)
+        [ResponseType(typeof(void))]
+        public IHttpActionResult DeleteVersion(string applicationName, int version)
         {
             try
             {
-                controller.CreateVersion(applicationName, version);
-                return OkResponse();
+                if (auth.AllowDeleteVersion(applicationName))
+                {
+                    controller.CreateVersion(applicationName, version);
+                    return Ok();
+                }
+                else
+                {
+                    return Forbidden();
+                }
             }
             catch (Exception ex)
             {
-                Log.Exception(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Constants.ERROR_MESSAGE_INTERNAL_ERROR);
+                return Error(ex);
             }
         }
     }

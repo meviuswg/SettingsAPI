@@ -6,14 +6,16 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace SettingsAPI.Controllers
 {
+    [Authorize]
     public class SettingsController : BaseApiController
     {
-        private ISettingsDataController controller;
+        private ISettingsRepository controller;
 
-        public SettingsController(ISettingsDataController controller)
+        public SettingsController(ISettingsRepository controller)
         {
             this.controller = controller;
         }
@@ -21,66 +23,84 @@ namespace SettingsAPI.Controllers
 
         [HttpGet]
         [Route("api/settings/{applicationName}/{version}/{directory}/")]
-        public IEnumerable<SettingModel> Get(string applicationName, int version, string directory)
+        [ResponseType(typeof(SettingModel[]))]
+        public IHttpActionResult Get(string applicationName, int version, string directory)
         {
             return Get(new SettingStore(applicationName, version, directory));
         }
 
         [HttpGet]
         [Route("api/settings/{applicationName}/{version}/{directory}/{objectId}")]
-        public IEnumerable<SettingModel> Get(string applicationName, int version, string directory, int objectId)
+        [ResponseType(typeof(SettingModel[]))]
+        public IHttpActionResult Get(string applicationName, int version, string directory, int objectId)
         {
             return Get(new SettingStore(applicationName, version, directory, objectId));
         }
 
         [HttpGet]
         [Route("api/settings/{applicationName}/{version}/{directory}/{objectId}/{key}")]
-        public SettingModel Get(string applicationName, int version, string directory, int objectId, string key)
+        [ResponseType(typeof(SettingModel))]
+        public IHttpActionResult Get(string applicationName, int version, string directory, int objectId, string key)
         {
             return Get(new SettingStore(applicationName, version, directory, objectId), key);
         }
 
-        public IEnumerable<SettingModel> Get(SettingStore store)
+        public IHttpActionResult Get(SettingStore store)
         {
-            if (controller.Exists(store))
-            {
-                if (controller.AllowRead(store))
+            try
+            { 
+                if (controller.Exists(store))
                 {
-                    return controller.GetSettings(store);
+                    if (controller.AllowRead(store))
+                    {
+                       return Ok(controller.GetSettings(store));
+                    }
+                    else
+                    {
+                        return Forbidden();
+                    }
                 }
                 else
                 {
-                    throw new HttpResponseException(HttpStatusCode.Forbidden);
+                    return NotFound();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
-            }               
+                return Error(ex);
+            }
         }
 
-        public SettingModel Get(SettingStore store, string key)
+        public IHttpActionResult Get(SettingStore store, string key)
         {
-            if (controller.Exists(store))
+            try
             {
-                if (controller.AllowRead(store))
+                if (controller.Exists(store))
                 {
-                    return controller.GetSetting(store, key);
+                    if (controller.AllowRead(store))
+                    {
+                        return Ok(controller.GetSetting(store, key));
+                    }
+                    else
+                    {
+                        return Forbidden();
+                    }
                 }
                 else
                 {
-                    throw new HttpResponseException(HttpStatusCode.Forbidden);
+                    return NotFound();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return Error(ex);
             }
         }
 
         [HttpPost]
         [Route("api/settings/{applicationName}/{version}/{directory}/{objectId}/{key}")]
-        public HttpResponseMessage Post(string applicationName, int version, string directory, int objectId, string key, [FromBody]string value)
+        [ResponseType(typeof(void))]
+        public IHttpActionResult Post(string applicationName, int version, string directory, int objectId, string key, [FromBody]string value)
         {
             SettingModel model = new SettingModel { Key = key, ObjectId = objectId, Value = value };
             return Post(applicationName, version, directory, new[] { model });
@@ -88,36 +108,42 @@ namespace SettingsAPI.Controllers
 
         [HttpPost]
         [Route("api/settings/{applicationName}/{version}/{directory}/")]
-        public HttpResponseMessage Post(string applicationName, int version, string directory, [FromBody]IEnumerable<SettingModel> value)
+        [ResponseType(typeof(void))]
+        public IHttpActionResult Post(string applicationName, int version, string directory, [FromBody]IEnumerable<SettingModel> value)
         {
             var store = new SettingStore(applicationName, version, directory);
 
-            if (controller.Exists(store))
+            try
             {
-                if (controller.AllowWrite(store))
+                if (controller.Exists(store))
                 {
-                    try
+                    if (controller.AllowWrite(store))
                     {
-                        controller.SaveSettings(store, value);
-                    }
-                    catch (SettingsAuthorizationException)
-                    {
-                        throw new HttpResponseException(HttpStatusCode.Forbidden); 
-                    }
+                        try
+                        {
+                            controller.SaveSettings(store, value);
+                        }
+                        catch (SettingsAuthorizationException ex)
+                        {
+                            return Forbidden(ex.Message);
+                        }
 
-                    return OkResponse();
+                        return Ok();
+                    }
+                    else
+                    {
+                        return Forbidden();
+                    }
                 }
                 else
                 {
-                    throw new HttpResponseException(HttpStatusCode.Forbidden);
+                    return NotFound();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return Error(ex);
             }
-
         }
-
     }
 }

@@ -1,9 +1,12 @@
-﻿using System;
+﻿using SettingsAPIData;
+using SettingsAPIShared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -21,6 +24,21 @@ namespace SettingsAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, model);
         }
 
+        protected HttpResponseMessage ForbiddenReponse()
+        {
+            return Request.CreateResponse(HttpStatusCode.Forbidden);
+        }
+
+        protected HttpResponseMessage ErrorReponse()
+        {
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Constants.ERROR_INTERNAL_ERROR);
+        }
+
+        protected HttpResponseMessage ErrorReponse(string message)
+        {
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, message);
+        }
+
         protected HttpResponseMessage NotFoundReponse()
         {
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -31,6 +49,38 @@ namespace SettingsAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.NotFound, model);
         }
 
+        protected IHttpActionResult Forbidden(string message)
+        {
+            return Content<string>(HttpStatusCode.Forbidden, message);
+        }
+
+        protected IHttpActionResult Forbidden()
+        {
+            return Content<string>(HttpStatusCode.Forbidden, Constants.ERROR_FORBIDDEN);
+        }
+
+        protected IHttpActionResult Error()
+        {
+            return Content<string>(HttpStatusCode.InternalServerError, Constants.ERROR_INTERNAL_ERROR);
+        }
+
+        protected IHttpActionResult Error(string message)
+        {
+            return Content<string>(HttpStatusCode.InternalServerError, message);
+        }
+
+        protected IHttpActionResult Error(Exception ex)
+        {
+            Log.Exception(ex);
+
+            string message = Constants.ERROR_INTERNAL_ERROR;
+
+            if(ex is SettingsStoreException)
+            {
+                message = ex.Message;
+            }
+            return Content<string>(HttpStatusCode.InternalServerError, message);
+        }
 
     }
 }

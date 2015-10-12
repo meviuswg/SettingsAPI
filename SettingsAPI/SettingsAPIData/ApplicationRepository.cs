@@ -1,6 +1,7 @@
 ﻿using SettingsAPIData.Data;
 using SettingsAPIData.Model;
 using SettingsAPIData.Util;
+using SettingsAPIShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +11,31 @@ using System.Transactions;
 
 namespace SettingsAPIData
 {
-    public class ApplicationDataController : IApplicationDataController
+    public class ApplicationRepository : IApplicationRepository
     {
-        ISettingsRepository Repository;
-        public ApplicationDataController(ISettingsRepository repository)
+        private ISettingsStore Repository;
+        private ISettingsAuthorizationProvider Auth;
+
+        public ApplicationRepository(ISettingsStore repository, ISettingsAuthorizationProvider authorizationProvider)
         {
             Repository = repository;
+            Auth = authorizationProvider;
         }
-         
+
 
         #region Version
+        public VersionModel GetVersion(string applicationName, int version)
+        {
+            var versions = GetVersions(applicationName);
+            return versions.SingleOrDefault(v => v.Version == version);
+        }
+
         public IEnumerable<VersionModel> GetVersions(string applicationName)
         {
+            if(!Auth.AllowCreateVersion(applicationName))
+            {
+                throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
+            }
             var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
   
             if (application == null)
@@ -199,7 +213,7 @@ namespace SettingsAPIData
             {
                 DirectoryModel model = new DirectoryModel();
 
-                DirectoryAccessData currentAccess = item.Access.FirstOrDefault(a => a.ApiKeyId == Repository.CurrentIdentity);
+                DirectoryAccessData currentAccess = item.Access.FirstOrDefault(a => a.ApiKeyId == Auth.CurrentIdentity.Id);
 
                 model.AllowCreate = currentAccess.AllowCreate;
                 model.AllowDelete = currentAccess.AllowDelete;
@@ -225,7 +239,7 @@ namespace SettingsAPIData
                 directoryName = null;
 
             var data = (from dir in Repository.Context.Directories
-                        where dir.Access.FirstOrDefault(acc => acc.ApiKeyId == Repository.CurrentIdentity) != null
+                        where dir.Access.FirstOrDefault(acc => acc.ApiKeyId == Auth.CurrentIdentity.Id) != null
                         && dir.Application.Name == applicationName
                         && (dir.Name == directoryName || true == (directoryName == null))
                         select dir);
@@ -259,11 +273,11 @@ namespace SettingsAPIData
 
                                     Versions = GetVersions(app.Name),
 
-                                    AllowEdit = (app.ApiKeys.FirstOrDefault(a => a.Id == Repository.CurrentIdentity && a.AdminKey) != null
-                                                       || true == Repository.IsMasterKey),
+                                    AllowEdit = (app.ApiKeys.FirstOrDefault(a => a.Id == Auth.CurrentIdentity.Id && a.AdminKey) != null
+                                                       || true == Auth.IsMasterKey),
 
 
-                                    Directories = GetDirectories(applicationName),
+                                    Directories = GetDirectories(app.Name),
                                     Created = app.Created,
                                 });
 
@@ -282,9 +296,9 @@ namespace SettingsAPIData
 
         public ApplicationModel CreateApplication(string applicationName, string applicationDescription, string directoryName, string directoryDescription)
         {
-            if(!Repository.IsMasterKey)
+            if(!Auth.IsMasterKey)
             {
-                throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Create, applicationName, Repository.CurrentIdentity);
+                throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
             }
 
             if (string.IsNullOrWhiteSpace(applicationName))
@@ -374,8 +388,8 @@ namespace SettingsAPIData
 
             var applications = (from app in Repository.Context.Applications
                                 where (app.Name == applicationName || applicationName == null) &&
-                                (app.ApiKeys.FirstOrDefault(a => a.Id == Repository.CurrentIdentity) != null
-                                || true == Repository.IsMasterKey)
+                                (app.ApiKeys.FirstOrDefault(a => a.Id == Auth.CurrentIdentity.Id) != null
+                                || true == Auth.IsMasterKey)
                                 select app);
 
             return applications;
@@ -426,7 +440,7 @@ namespace SettingsAPIData
             }
             else
             {
-                throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Delete, applicationName, Repository.CurrentIdentity);
+                throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Delete, applicationName, Auth.CurrentIdentity.Id);
             }
         }
 
@@ -434,12 +448,12 @@ namespace SettingsAPIData
 
         public bool AllowRead()
         {
-            return Repository.CurrentApiKey != null;
+            return Auth.CurrentApiKey != null;
         }
 
         public bool AllowDelete()
         {
-            return Repository.IsMasterKey;
+            return Auth.IsMasterKey;
         }
     }
 }

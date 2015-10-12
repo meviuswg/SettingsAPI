@@ -12,8 +12,13 @@ namespace SettingsAPITest
         [TestMethod]
         public void TestMethod1()
         {
-            SettingsRepository repository = new SettingsRepository(new SettingsDbContext(), new ApiKey("a33a5f531f49480eac31d64d02163bcf"));
-            SettingsDataController controller = new SettingsDataController(repository);
+            SettingsStore repository = new SettingsStore(new SettingsDbContext());
+            ApiKeyRepository apiKeyRepository = new ApiKeyRepository(new SettingsDbContext());
+            SettingsAuthorizationProvider provider = new SettingsAuthorizationProvider(apiKeyRepository);
+
+            provider.Validate("=a33a5f531f49480eac31d64d02163bcf");
+
+            SettingsRepository controller = new SettingsRepository(repository, provider);
 
             SettingStore store = new SettingStore("_system", "_directory");
 
@@ -40,9 +45,15 @@ namespace SettingsAPITest
         [TestMethod]
         public void MyTestMethod()
         {
-            SettingsRepository repository = new SettingsRepository(new SettingsDbContext(), new ApiKey("a33a5f531f49480eac31d64d02163bcf"));
-            ApplicationDataController controller = new ApplicationDataController(repository);
+         
+            SettingsStore repository = new SettingsStore(new SettingsDbContext());
+            ApiKeyRepository apiKeyRepository = new ApiKeyRepository(new SettingsDbContext()); 
+            SettingsAuthorizationProvider provider = new SettingsAuthorizationProvider(apiKeyRepository); 
+            provider.Validate("=a33a5f531f49480eac31d64d02163bcf");
 
+            ApplicationRepository controller = new ApplicationRepository(repository, provider);
+
+            bool create  = provider.AllowDeleteSetting("_system", "_direotory");
             var apps = controller.GetApplications();
 
             var a = apps.FirstOrDefault();

@@ -3,7 +3,7 @@ using SettingsAPIData.Model;
 
 namespace SettingsAPIData
 {
-    public interface IApplicationDataController
+    public interface IApplicationRepository
     {
         ApplicationModel CreateApplication(string applicationName);
         ApplicationModel CreateApplication(string applicationName, string applicationDescription);
@@ -11,10 +11,11 @@ namespace SettingsAPIData
         IEnumerable<ApplicationModel> GetApplications();
         ApplicationModel GetApplication(string name);
         IEnumerable<DirectoryModel> GetDirectories(string applicationName);
-         DirectoryModel GetDirectory(string applicationName, string directoryName);
+        DirectoryModel GetDirectory(string applicationName, string directoryName);
         void CreateDirectory(string applicationName, string directoryName, string description);
         void DeleteDirectory(string applicationName, string directoryName);
-        IEnumerable<VersionModel> GetVersions(string applicationName); 
+        VersionModel GetVersion(string applicationName, int version);
+        IEnumerable<VersionModel> GetVersions(string applicationName);
         void CreateVersion(string applicationName, int version);
         void DeleteVersion(string applicationName, int version);
         bool AllowRead();

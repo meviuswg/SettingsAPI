@@ -145,6 +145,7 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthenticationFilter.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\HttpContextCachApiKey.cs" />
@@ -180,7 +181,6 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ApplicationController.cs" />
@@ -244,6 +244,10 @@
     <ProjectReference Include="..\SettingsAPIData\SettingsAPIData.csproj">
       <Project>{188cbafb-6b00-455e-91c0-f4428b470a31}</Project>
       <Name>SettingsAPIData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SettingsAPIShared\SettingsAPIShared.csproj">
+      <Project>{aa7f7e44-d64a-46a5-8e95-745c97ff53f7}</Project>
+      <Name>SettingsAPIShared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

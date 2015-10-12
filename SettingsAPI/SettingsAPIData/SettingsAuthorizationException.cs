@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SettingsAPIShared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,8 @@ namespace SettingsAPIData
 {
     public enum AuthorizationScope
     {
-        Application, Directory, Key
+        Application, Directory, Key,
+        Version
     }
 
     public enum AuthorizationLevel

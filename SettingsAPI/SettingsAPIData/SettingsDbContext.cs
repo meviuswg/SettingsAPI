@@ -36,14 +36,5 @@ namespace SettingsAPIData
             modelBuilder.Configurations.Add(new settings_versionMap());
         }
 
-        public VersionData GetRepository(string applicationName, int version)
-        {
-            return this.Versions.SingleOrDefault(a => a.Application.Name.ToLower() == applicationName.ToLower() && a.Version == version);
-        }
-
-        public DirectoryData GetDirectory(string applicationName, string directoryName)
-        {
-            return this.Directories.SingleOrDefault(a => a.Application.Name.ToLower() == applicationName.ToLower() && a.Name.ToLower() == directoryName.ToLower());
-        }
     }
 }

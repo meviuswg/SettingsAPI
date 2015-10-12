@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SettingsAPIData.Model
 {
+    [DisplayName("SaveApplication")]
     public class SaveApplicationModel
     {
         public string Description { get; set; }
