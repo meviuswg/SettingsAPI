@@ -1,9 +1,4 @@
 ﻿using SettingsAPIShared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
@@ -27,8 +22,8 @@ namespace SettingsAPIData
 
         public SettingsAuthorizationException(AuthorizationScope scope, AuthorizationLevel level, string objectName, int identity) : this(scope, level, objectName, identity, Constants.ERROR_ACCESS_DENIED)
         {
-
         }
+
         public SettingsAuthorizationException(AuthorizationScope scope, AuthorizationLevel level, string objectName, int identity, string message) : base(message)
         {
             _scope = scope;

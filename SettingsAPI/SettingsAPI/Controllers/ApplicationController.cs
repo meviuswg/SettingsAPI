@@ -1,11 +1,6 @@
 ﻿using SettingsAPIData;
 using SettingsAPIData.Model;
-using SettingsAPIShared;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -15,7 +10,6 @@ namespace SettingsAPI.Controllers
     public class ApplicationController : BaseApiController
     {
         private IApplicationRepository controller;
-
 
         public ApplicationController(IApplicationRepository controller)
         {
@@ -112,7 +106,6 @@ namespace SettingsAPI.Controllers
             }
         }
 
-
         [HttpPost]
         [Route("api/application/{applicationName}", Order = 0)]
         [ResponseType(typeof(ApplicationModel))]
@@ -126,7 +119,6 @@ namespace SettingsAPI.Controllers
             {
                 return Error(ex);
             }
-
         }
 
         [HttpPost]
@@ -144,7 +136,6 @@ namespace SettingsAPI.Controllers
             }
         }
 
-
         [HttpDelete]
         [Route("api/application/{applicationName}")]
         [ResponseType(typeof(void))]
@@ -154,7 +145,6 @@ namespace SettingsAPI.Controllers
             {
                 controller.DeleteApplication(applicationName);
                 return Ok();
-
             }
             catch (Exception ex)
             {
@@ -202,7 +192,6 @@ namespace SettingsAPI.Controllers
             }
         }
 
-
         [HttpPost]
         [Route("api/application/{applicationName}/versions/{version}")]
         [ResponseType(typeof(void))]
@@ -225,9 +214,9 @@ namespace SettingsAPI.Controllers
         public IHttpActionResult DeleteVersion(string applicationName, int version)
         {
             try
-            { 
+            {
                 controller.DeleteVersion(applicationName, version);
-                return Ok(); 
+                return Ok();
             }
             catch (Exception ex)
             {

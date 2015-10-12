@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SettingsAPIData;
 using SettingsAPIData.Model;
+using System.Linq;
 
 namespace SettingsAPITest
 {
@@ -34,7 +33,7 @@ namespace SettingsAPITest
 
             if (controller.AllowWrite(store))
             {
-              controller.SaveSetting(store, setting);
+                controller.SaveSetting(store, setting);
             }
 
             var data2 = controller.GetSettings(store).ToList();
@@ -45,15 +44,14 @@ namespace SettingsAPITest
         [TestMethod]
         public void MyTestMethod()
         {
-         
             SettingsStore repository = new SettingsStore(new SettingsDbContext());
-            ApiKeyRepository apiKeyRepository = new ApiKeyRepository(new SettingsDbContext()); 
-            SettingsAuthorizationProvider provider = new SettingsAuthorizationProvider(apiKeyRepository); 
+            ApiKeyRepository apiKeyRepository = new ApiKeyRepository(new SettingsDbContext());
+            SettingsAuthorizationProvider provider = new SettingsAuthorizationProvider(apiKeyRepository);
             provider.Validate("=a33a5f531f49480eac31d64d02163bcf");
 
             ApplicationRepository controller = new ApplicationRepository(repository, provider);
 
-            bool create  = provider.AllowDeleteSetting("_system", "_directory");
+            bool create = provider.AllowDeleteSetting("_system", "_directory");
             var apps = controller.GetApplications();
 
             var a = apps.FirstOrDefault();

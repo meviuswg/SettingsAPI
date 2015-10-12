@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
 using System.Security.Principal;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
@@ -16,64 +13,116 @@ namespace SettingsAPIData
     /// </summary>
     public class SettingsAuthorizationProvider : ISettingsAuthorizationProvider
     {
-        IApiKeyRepository repository;
+        private IApiKeyRepository repository;
 
         public SettingsAuthorizationProvider(IApiKeyRepository repository)
         {
             this.repository = repository;
         }
 
-        public bool Validate(object apiKey)
+        public IApiKey CurrentApiKey
         {
-            IPrincipal principal;
-            bool validationResult = Validate(apiKey, out principal);
-
-            if (validationResult)
+            get
             {
-                System.Threading.Thread.CurrentPrincipal  = principal;
-            }
+                if (CurrentIdentity != null)
+                {
+                    return new ApiKey(CurrentIdentity.Name);
+                }
 
-            return validationResult;
+                return null;
+            }
         }
 
-        public bool Validate(object apiKey, out IPrincipal principal)
+        public ApiIdentity CurrentIdentity
         {
-            try
+            get
             {
-                principal = null;
-
-                string strKey = null;
-
-                if (apiKey != null)
+                if (User.Identity is ApiIdentity)
                 {
-                    strKey = apiKey.ToString();
-
-                    if (string.IsNullOrWhiteSpace(strKey))
-                        return false;
-                }
-                ApiKeyModel key = repository.GetKey(strKey);
-
-                if (key != null && key.Active)
-                {
-
-                    string[] roles = GetApiRoles(key);
-
-                    principal = (IPrincipal)new GenericPrincipal(new ApiIdentity(apiKey.ToString(), key.Id), roles.ToArray());
-                    return true;
+                    return (ApiIdentity)User.Identity;
                 }
 
+                return null;
+            }
+        }
+
+        public bool IsMasterKey
+        {
+            get
+            {
+                if (CurrentIdentity != null)
+                {
+                    return CurrentIdentity.Id == Constants.SYSTEM_MASTER_KEY_ID;
+                }
                 return false;
             }
-            catch (Exception ex)
+        }
+
+        public IPrincipal User
+        {
+            get
             {
-                Log.Exception(ex);
-                throw new AuthenticationException("Could not authenticate");
+                return System.Threading.Thread.CurrentPrincipal;
             }
         }
+
+        public bool AllowCreateApplication(string application)
+        {
+            return User.IsInRole(SecurityRoles.RoleCreateApplication(application));
+        }
+
+        public bool AllowCreateDirectory(string application, string directoryName)
+        {
+            if (!string.IsNullOrWhiteSpace(directoryName))
+            {
+                if (directoryName.StartsWith("_"))
+                {
+                    return false;
+                }
+                return User.IsInRole(SecurityRoles.RoleCreateDirectory(application, directoryName));
+            }
+
+            return false;
+        }
+
+        public bool AllowCreateSetting(string application, string directoryName)
+        {
+            return User.IsInRole(SecurityRoles.RoleCreateSetting(application, directoryName));
+        }
+
+        public bool AllowCreateVersion(string application)
+        {
+            return User.IsInRole(SecurityRoles.RoleCreateVersion(application));
+        }
+
+        public bool AllowDeleteApplication(string application)
+        {
+            return User.IsInRole(SecurityRoles.RoleDeleteApplication(application));
+        }
+
+        public bool AllowDeleteDirectory(string application, string directoryName)
+        {
+            return User.IsInRole(SecurityRoles.RoleDeleteDirectory(application, directoryName));
+        }
+
+        public bool AllowDeleteSetting(string application, string directoryName)
+        {
+            return User.IsInRole(SecurityRoles.RoleDeleteSetting(application, directoryName));
+        }
+
+        public bool AllowDeleteVersion(string application)
+        {
+            return User.IsInRole(SecurityRoles.RoleCreateVersion(application));
+        }
+
+        public bool AllowWriteSetting(string application, string directoryName)
+        {
+            return User.IsInRole(SecurityRoles.RoleWriteSetting(application, directoryName));
+        }
+
         public string[] GetApiRoles(ApiKeyModel data)
 
         {
-
             List<string> roles = new List<string>();
 
             if (data != null && data.Active)
@@ -108,106 +157,51 @@ namespace SettingsAPIData
             return roles.ToArray();
         }
 
-
-        public IPrincipal User
+        public bool Validate(object apiKey)
         {
-            get
+            IPrincipal principal;
+            bool validationResult = Validate(apiKey, out principal);
+
+            if (validationResult)
             {
-                return System.Threading.Thread.CurrentPrincipal;
+                System.Threading.Thread.CurrentPrincipal = principal;
             }
+
+            return validationResult;
         }
 
-        public ApiIdentity CurrentIdentity
+        public bool Validate(object apiKey, out IPrincipal principal)
         {
-            get
+            try
             {
-                if (User.Identity is ApiIdentity)
+                principal = null;
+
+                string strKey = null;
+
+                if (apiKey != null)
                 {
-                    return (ApiIdentity)User.Identity;
+                    strKey = apiKey.ToString();
+
+                    if (string.IsNullOrWhiteSpace(strKey))
+                        return false;
+                }
+                ApiKeyModel key = repository.GetKey(strKey);
+
+                if (key != null && key.Active)
+                {
+                    string[] roles = GetApiRoles(key);
+
+                    principal = (IPrincipal)new GenericPrincipal(new ApiIdentity(apiKey.ToString(), key.Id), roles.ToArray());
+                    return true;
                 }
 
-                return null;
-            }
-        }
-
-        public IApiKey CurrentApiKey
-        {
-            get
-            {
-                if (CurrentIdentity != null)
-                {
-                    return new ApiKey(CurrentIdentity.Name);
-                }
-
-                return null;
-            }
-        }
-
-        public bool IsMasterKey
-        {
-            get
-            {
-                if (CurrentIdentity != null)
-                {
-                    return CurrentIdentity.Id == Constants.SYSTEM_MASTER_KEY_ID;
-                }
                 return false;
             }
-        }
-
-        public bool AllowCreateApplication(string application)
-        {
-            return User.IsInRole(SecurityRoles.RoleCreateApplication(application));
-        }
-
-        public bool AllowDeleteApplication(string application)
-        {
-            return User.IsInRole(SecurityRoles.RoleDeleteApplication(application));
-        }
-
-        public bool AllowCreateDirectory(string application, string directoryName)
-        {
-            if (!string.IsNullOrWhiteSpace(directoryName))
+            catch (Exception ex)
             {
-                if (directoryName.StartsWith("_"))
-                {
-                    return false;
-                }
-                return User.IsInRole(SecurityRoles.RoleCreateDirectory(application, directoryName));
+                Log.Exception(ex);
+                throw new AuthenticationException("Could not authenticate");
             }
-
-            return false;
         }
-
-        public bool AllowDeleteDirectory(string application, string directoryName)
-        {
-            return User.IsInRole(SecurityRoles.RoleDeleteDirectory(application, directoryName));
-        }
-
-        public bool AllowCreateVersion(string application)
-        {
-            return User.IsInRole(SecurityRoles.RoleCreateVersion(application));
-        }
-
-        public bool AllowDeleteVersion(string application)
-        {
-            return User.IsInRole(SecurityRoles.RoleCreateVersion(application));
-        }
-
-        public bool AllowCreateSetting(string application, string directoryName)
-        {
-            return User.IsInRole(SecurityRoles.RoleCreateSetting(application, directoryName));
-        }
-
-        public bool AllowWriteSetting(string application, string directoryName)
-        {
-            return User.IsInRole(SecurityRoles.RoleWriteSetting(application, directoryName));
-        }
-
-        public bool AllowDeleteSetting(string application, string directoryName)
-        {
-            return User.IsInRole(SecurityRoles.RoleDeleteSetting(application, directoryName));
-        }
-
     }
 }

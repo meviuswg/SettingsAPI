@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 
@@ -33,7 +32,6 @@ namespace SettingsAPIData.Data.Mapping
             this.HasRequired(t => t.ApiKey)
                 .WithMany(t => t.Access)
                 .HasForeignKey(d => d.ApiKeyId);
-
         }
     }
 }

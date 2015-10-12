@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.ModelConfiguration;
 
 namespace SettingsAPIData.Data.Mapping
@@ -29,7 +28,6 @@ namespace SettingsAPIData.Data.Mapping
             this.HasOptional(t => t.Application)
                 .WithMany(t => t.Directories)
                 .HasForeignKey(d => d.ApplicationId);
-
         }
     }
 }

@@ -1,12 +1,6 @@
 ﻿using SettingsAPIClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SettingsManager
@@ -25,7 +19,6 @@ namespace SettingsManager
 
             SettingsStore store = new SettingsStore("_system", "_store");
             SettingsAPIClient.SettingsManager provider = new SettingsAPIClient.SettingsManager(endpoint, apiKey, store);
-
 
             var test = provider.Get();
 

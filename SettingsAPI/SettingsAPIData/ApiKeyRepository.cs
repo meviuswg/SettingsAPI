@@ -2,10 +2,7 @@
 using SettingsAPIData.Model;
 using SettingsAPIShared;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
@@ -22,7 +19,7 @@ namespace SettingsAPIData
         private SettingsDbContext Context
         {
             get
-            { 
+            {
                 if (!_dbOnline)
                 {
                     try
@@ -34,12 +31,11 @@ namespace SettingsAPIData
                     {
                         Log.Exception(ex);
                         throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE);
-                    } 
+                    }
                 }
                 try
                 {
                     return context;
-
                 }
                 catch (Exception ex)
                 {
@@ -51,7 +47,7 @@ namespace SettingsAPIData
 
         public ApiKeyModel GetKey(string apiKey)
         {
-            var data = GetData(apiKey); 
+            var data = GetData(apiKey);
 
             if (data != null)
             {
@@ -60,9 +56,8 @@ namespace SettingsAPIData
                     Active = data.Active,
                     AdminKey = data.AdminKey,
                     Id = data.Id,
-                    Key = data.ApiKey 
-                   
-                }; 
+                    Key = data.ApiKey
+                };
 
                 foreach (var item in data.Access)
                 {

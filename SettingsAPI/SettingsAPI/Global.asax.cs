@@ -1,13 +1,6 @@
-﻿using Ninject;
-using SettingsAPIData;
+﻿using SettingsAPIData;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Security.Principal;
-using System.Threading;
-using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -25,27 +18,21 @@ namespace SettingsAPI
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-        
-
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             GlobalConfiguration.Configuration.Formatters.Remove(GlobalConfiguration.Configuration.Formatters.XmlFormatter);
 #if DEBUG
             SetupDebug();
 #endif
         }
+
         private void SetupDebug()
         {
-            Log.Logger = (ex) =>  Debug.WriteLine(ex);
+            Log.Logger = (ex) => Debug.WriteLine(ex);
             SettingsAPIData.SettingsStoreException.Log = (m) => Log.Message(m);
-
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-            
         }
-         
-      
-
     }
 }

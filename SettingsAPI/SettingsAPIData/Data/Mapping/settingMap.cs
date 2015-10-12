@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 
@@ -41,7 +40,7 @@ namespace SettingsAPIData.Data.Mapping
                 .HasForeignKey(d => d.DirectoryId);
             this.HasRequired(t => t.Repository)
                 .WithMany(t => t.Settings)
-                .HasForeignKey(d => d.VersionId); 
+                .HasForeignKey(d => d.VersionId);
         }
     }
 }

@@ -1,8 +1,8 @@
+using SettingsAPI.Areas.HelpPage.ModelDescriptions;
+using SettingsAPI.Areas.HelpPage.Models;
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
-using SettingsAPI.Areas.HelpPage.ModelDescriptions;
-using SettingsAPI.Areas.HelpPage.Models;
 
 namespace SettingsAPI.Areas.HelpPage.Controllers
 {

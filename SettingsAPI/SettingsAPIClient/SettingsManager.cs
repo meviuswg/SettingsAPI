@@ -1,12 +1,8 @@
 ﻿using Newtonsoft.Json;
 using SettingsAPIClient.Util;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SettingsAPIClient
@@ -199,7 +195,6 @@ namespace SettingsAPIClient
         public async Task<bool> SaveAsync(string key, string value)
         {
             return await SaveAsync(new Setting { Key = key, Value = value });
-
         }
 
         public bool Save(string key, string value)
@@ -236,7 +231,5 @@ namespace SettingsAPIClient
         {
             return Task.Run(() => SaveAsync(key, SerializationHelper.ToBase64String(value))).Result;
         }
-
-
     }
 }

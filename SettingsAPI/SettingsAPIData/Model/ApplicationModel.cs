@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsAPIData.Model
 {
@@ -14,8 +10,8 @@ namespace SettingsAPIData.Model
         public DateTime? Created { get; internal set; }
         public string Description { get; internal set; }
         public string Name { get; internal set; }
-        public IEnumerable<VersionModel> Versions { get;  set; }
-        public IEnumerable<DirectoryModel> Directories { get;  set; }
+        public IEnumerable<VersionModel> Versions { get; set; }
+        public IEnumerable<DirectoryModel> Directories { get; set; }
         public bool AllowEdit { get; internal set; }
     }
 }

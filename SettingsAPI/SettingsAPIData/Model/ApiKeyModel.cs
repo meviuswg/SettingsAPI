@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SettingsAPIData.Model
 {
@@ -12,6 +8,7 @@ namespace SettingsAPIData.Model
         {
             Access = new List<ApiAccessModel>();
         }
+
         public int Id { get; set; }
         public string Key { get; set; }
         public bool Active { get; set; }

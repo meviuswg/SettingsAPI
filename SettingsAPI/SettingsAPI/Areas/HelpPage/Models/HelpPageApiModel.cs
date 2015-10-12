@@ -1,8 +1,8 @@
+using SettingsAPI.Areas.HelpPage.ModelDescriptions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 using System.Web.Http.Description;
-using SettingsAPI.Areas.HelpPage.ModelDescriptions;
 
 namespace SettingsAPI.Areas.HelpPage.Models
 {

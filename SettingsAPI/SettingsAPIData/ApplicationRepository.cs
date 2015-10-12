@@ -5,8 +5,6 @@ using SettingsAPIShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
 
 namespace SettingsAPIData
@@ -22,8 +20,8 @@ namespace SettingsAPIData
             Auth = authorizationProvider;
         }
 
-
         #region Version
+
         public VersionModel GetVersion(string applicationName, int version)
         {
             var versions = GetVersions(applicationName);
@@ -31,9 +29,9 @@ namespace SettingsAPIData
         }
 
         public IEnumerable<VersionModel> GetVersions(string applicationName)
-        { 
+        {
             var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
-  
+
             if (application == null)
             {
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
@@ -53,7 +51,7 @@ namespace SettingsAPIData
             }
 
             return versions;
-        } 
+        }
 
         public void CreateVersion(string applicationName, int version)
         {
@@ -120,7 +118,6 @@ namespace SettingsAPIData
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
             }
-
         }
 
         private IEnumerable<VersionData> GetVersionsFromStore(string applicationName, int? version = null)
@@ -138,7 +135,7 @@ namespace SettingsAPIData
             return data;
         }
 
-        #endregion
+        #endregion Version
 
         #region Directory
 
@@ -157,7 +154,6 @@ namespace SettingsAPIData
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
             }
 
-
             if (directory != null)
             {
                 throw new SettingsDuplicateException(Constants.ERROR_DIRECTORY_ALREADY_EXISTS);
@@ -173,7 +169,6 @@ namespace SettingsAPIData
 
                 Repository.Context.Directories.Add(directory);
                 Repository.Context.SaveChanges();
-
             }
         }
 
@@ -191,13 +186,12 @@ namespace SettingsAPIData
             if (application == null)
             {
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
-            } 
+            }
 
             if (directory != null)
             {
                 throw new SettingsNotFoundException(Constants.ERROR_DIRECTORY_UNKOWN);
             }
- 
 
             Repository.Context.Directories.Add(directory);
             Repository.Context.SaveChanges();
@@ -210,7 +204,7 @@ namespace SettingsAPIData
 
         public DirectoryModel GetDirectory(string applicationName, string directoryName)
         {
-            if(string.IsNullOrWhiteSpace(directoryName))
+            if (string.IsNullOrWhiteSpace(directoryName))
             {
                 throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
             }
@@ -262,9 +256,10 @@ namespace SettingsAPIData
             return data;
         }
 
-        #endregion
+        #endregion Directory
 
         #region Application
+
         public ApplicationModel GetApplication(string name)
         {
             return GetApplications(name).SingleOrDefault();
@@ -278,8 +273,8 @@ namespace SettingsAPIData
         private IEnumerable<ApplicationModel> GetApplications(string applicationName = null)
         {
             var data = GetApplicationsFromStore(applicationName);
-                                
-             var applications = (from app in data
+
+            var applications = (from app in data
                                 select new ApplicationModel
                                 {
                                     Name = app.Name,
@@ -291,12 +286,11 @@ namespace SettingsAPIData
                                     AllowEdit = (app.ApiKeys.FirstOrDefault(a => a.Id == Auth.CurrentIdentity.Id && a.AdminKey) != null
                                                        || true == Auth.IsMasterKey),
 
-
                                     Directories = GetDirectories(app.Name),
                                     Created = app.Created,
                                 });
 
-            if(!string.IsNullOrWhiteSpace(applicationName) && applications.SingleOrDefault() == null)
+            if (!string.IsNullOrWhiteSpace(applicationName) && applications.SingleOrDefault() == null)
             {
                 throw new SettingsNotFoundException(applicationName);
             }
@@ -316,7 +310,7 @@ namespace SettingsAPIData
 
         public ApplicationModel CreateApplication(string applicationName, string applicationDescription, string directoryName, string directoryDescription)
         {
-            if(!Auth.IsMasterKey)
+            if (!Auth.IsMasterKey)
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
             }
@@ -328,7 +322,7 @@ namespace SettingsAPIData
 
             var application = Repository.Context.Applications.FirstOrDefault(app => app.Name == applicationName);
 
-            if(application != null)
+            if (application != null)
             {
                 throw new SettingsStoreException(Constants.ERROR_APPLICATION_ALREADY_EXISTS);
             }
@@ -337,7 +331,6 @@ namespace SettingsAPIData
             var directory = new DirectoryData();
             using (TransactionScope scope = new TransactionScope())
             {
-                 
                 application.Name = applicationName;
 
                 if (string.IsNullOrWhiteSpace(applicationDescription))
@@ -354,7 +347,6 @@ namespace SettingsAPIData
                 VersionData version = new VersionData { Version = 1, Created = DateTime.UtcNow, ApplicationId = application.Id };
                 Repository.Context.Versions.Add(version);
                 Repository.Context.SaveChanges();
- 
 
                 if (string.IsNullOrWhiteSpace(directoryName))
                 {
@@ -373,24 +365,23 @@ namespace SettingsAPIData
                 directory.Created = DateTime.UtcNow;
 
                 Repository.Context.Directories.Add(directory);
-                Repository.Context.SaveChanges(); 
+                Repository.Context.SaveChanges();
 
                 ApiKeyData apiKey = new ApiKeyData { ApiKey = ApiKeyGenerator.Create(), Application = application, Active = true, AdminKey = true, Created = DateTime.UtcNow };
 
                 Repository.Context.ApiKeys.Add(apiKey);
-                Repository.Context.SaveChanges(); 
+                Repository.Context.SaveChanges();
 
                 DirectoryAccessData access = new DirectoryAccessData();
                 access.AllowWrite = true;
                 access.AllowDelete = true;
                 access.AllowCreate = true;
                 access.ApiKey = apiKey;
-                access.Directory = directory; 
+                access.Directory = directory;
 
                 Repository.Context.Access.Add(access);
 
                 Repository.Context.SaveChanges();
-              
 
                 scope.Complete();
             }
@@ -398,7 +389,6 @@ namespace SettingsAPIData
             //To load the autocreated accessrights.
             Repository.Context.Entry<DirectoryData>(directory).Collection("Access").Load();
             return GetApplication(applicationName);
-         
         }
 
         private IEnumerable<ApplicationData> GetApplicationsFromStore(string applicationName)
@@ -422,7 +412,7 @@ namespace SettingsAPIData
         {
             if (AllowDelete())
             {
-                if(string.Equals(applicationName,Constants.SYSTEM_APPLICATION_NAME, StringComparison.CurrentCultureIgnoreCase))
+                if (string.Equals(applicationName, Constants.SYSTEM_APPLICATION_NAME, StringComparison.CurrentCultureIgnoreCase))
                 {
                     throw new SettingsStoreException(Constants.ERROR_APPLICATION_CANNOT_DELETED);
                 }
@@ -437,13 +427,12 @@ namespace SettingsAPIData
                         var settings = Repository.Context.Settings.Where(s => s.DirectoryId == application.Id);
                         Repository.Context.Settings.RemoveRange(settings);
 
-                        Repository.Context.SaveChanges(); 
+                        Repository.Context.SaveChanges();
 
                         foreach (var item in directories)
                         {
                             DeleteDirectory(application.Name, item.Name);
                         }
-                    
 
                         var repositories = Repository.Context.Versions.Where(s => s.Application.Id == application.Id);
                         Repository.Context.Versions.RemoveRange(repositories);
@@ -467,7 +456,9 @@ namespace SettingsAPIData
             }
         }
 
-        #endregion 
+        #endregion Application
+
+
 
         public bool AllowRead()
         {

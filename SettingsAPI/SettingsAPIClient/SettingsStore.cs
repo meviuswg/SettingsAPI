@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SettingsAPIClient
+﻿namespace SettingsAPIClient
 {
     public class SettingsStore
     {
@@ -13,7 +7,6 @@ namespace SettingsAPIClient
 
         public SettingsStore(string applicationName, int version, string storeName) : this(applicationName, 1, storeName, null)
         {
-
         }
 
         public SettingsStore(string applicationName, int version, string storeName, int? objectId)
@@ -27,6 +20,6 @@ namespace SettingsAPIClient
         public string Application { get; set; }
         public int Version { get; set; }
         public string Name { get; set; }
-        public int? ObjectId { get; set; } 
+        public int? ObjectId { get; set; }
     }
 }

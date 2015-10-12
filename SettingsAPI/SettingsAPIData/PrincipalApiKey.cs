@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 
 namespace SettingsAPIData
 {
     public class PrincipalApiKey : IApiKey
     {
         private bool _authenticated;
+
         public string Key
         {
             get
             {
-                if(!_authenticated)
+                if (!_authenticated)
                 {
                     if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
                     {
@@ -24,10 +20,8 @@ namespace SettingsAPIData
                     _authenticated = true;
                 }
 
-               return Thread.CurrentPrincipal.Identity.Name;
+                return Thread.CurrentPrincipal.Identity.Name;
             }
         }
-
-
     }
 }

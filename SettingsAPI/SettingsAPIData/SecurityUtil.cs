@@ -1,9 +1,4 @@
 ﻿using SettingsAPIShared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
@@ -17,8 +12,8 @@ namespace SettingsAPIData
         public static string RoleDeleteApplication(string applicationName)
         {
             return Constants.SECURITY_ROLE_MASTER;
-        } 
-         
+        }
+
         public static string RoleWriteSetting(string applicationName, string directoryName)
         {
             return string.Format("Write-key@{0}:{1}", applicationName, directoryName);
@@ -48,7 +43,6 @@ namespace SettingsAPIData
         {
             return string.Format("Read-Dir@{0}:{1}", applicationName);
         }
-         
 
         public static string RoleCreateVersion(string applicationName)
         {

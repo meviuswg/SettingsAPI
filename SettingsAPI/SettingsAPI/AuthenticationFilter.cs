@@ -1,25 +1,15 @@
-﻿using SettingsAPIData;
-using SettingsAPIData.Data;
+﻿using Ninject;
+using SettingsAPIData;
 using System.Security.Principal;
 using System.Threading;
-using System.Web;
-using System.Linq;
-using System.Security;
-using System.Security.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Ninject;
-using System.Web.Http;
+using System.Web;
 using System.Web.Http.Filters;
-using SettingsAPIData.Model;
 
 namespace SettingsAPI
 {
-    public class AuthenticationFilter : IAuthenticationFilter 
+    public class AuthenticationFilter : IAuthenticationFilter
     {
-
         public bool AllowMultiple
         {
             get
@@ -27,9 +17,10 @@ namespace SettingsAPI
                 return false;
             }
         }
+
         [Inject]
         public ISettingsAuthorizationProvider Auth { get; set; }
- 
+
         public void Authenticate(HttpAuthenticationContext context)
         {
             if (context == null)
@@ -70,7 +61,6 @@ namespace SettingsAPI
 
         private void Authorize(HttpAuthenticationChallengeContext context)
         {
-
         }
     }
 }

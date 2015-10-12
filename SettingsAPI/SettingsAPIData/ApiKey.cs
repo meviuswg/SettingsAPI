@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SettingsAPIData
+﻿namespace SettingsAPIData
 {
     public class ApiKey : IApiKey
     {
@@ -14,6 +8,7 @@ namespace SettingsAPIData
         {
             _key = apiKey;
         }
+
         public string Key
         {
             get

@@ -4,16 +4,15 @@ using SettingsAPIShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
     public class SettingsRepository : ISettingsRepository
     {
-        ISettingsStore Store;
-        ISettingsAuthorizationProvider Auth;
-        public SettingsRepository(ISettingsStore store, ISettingsAuthorizationProvider provider) 
+        private ISettingsStore Store;
+        private ISettingsAuthorizationProvider Auth;
+
+        public SettingsRepository(ISettingsStore store, ISettingsAuthorizationProvider provider)
         {
             Store = store;
             Auth = provider;
@@ -68,7 +67,7 @@ namespace SettingsAPIData
         }
 
         public SettingModel GetSetting(SettingStore store, string settingKey)
-        { 
+        {
             return (from setting in GetSettingsFromStore(store)
                     where setting.SettingKey == settingKey
 
@@ -109,7 +108,7 @@ namespace SettingsAPIData
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Read, store.Directory, Auth.CurrentIdentity.Id);
             }
-        } 
+        }
 
         private SettingData CreateDataForStore(SettingStore store)
         {
@@ -133,8 +132,7 @@ namespace SettingsAPIData
             data.ObjecId = store.ObjectId ?? 0;
 
             return data;
-
-        } 
+        }
 
         public bool AllowRead(SettingStore store)
         {
@@ -191,7 +189,6 @@ namespace SettingsAPIData
                     AllowWrite = true,
                     AllowDelete = true,
                     AllowCreate = true
-
                 };
             }
 
@@ -207,7 +204,6 @@ namespace SettingsAPIData
                     AllowWrite = accessData.AllowWrite,
                     AllowDelete = accessData.AllowDelete,
                     AllowCreate = accessData.AllowCreate
-
                 };
             }
 
@@ -232,6 +228,5 @@ namespace SettingsAPIData
 
             return false;
         }
-
     }
 }

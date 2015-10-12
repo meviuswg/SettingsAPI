@@ -2,9 +2,6 @@
 using SettingsAPIData.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -19,7 +16,6 @@ namespace SettingsAPI.Controllers
         {
             this.controller = controller;
         }
-
 
         [HttpGet]
         [Route("api/settings/{applicationName}/{version}/{directory}/")]
@@ -48,12 +44,12 @@ namespace SettingsAPI.Controllers
         public IHttpActionResult Get(SettingStore store)
         {
             try
-            { 
+            {
                 if (controller.Exists(store))
                 {
                     if (controller.AllowRead(store))
                     {
-                       return Ok(controller.GetSettings(store));
+                        return Ok(controller.GetSettings(store));
                     }
                     else
                     {

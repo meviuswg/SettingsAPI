@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace SettingsAPIData.Data
 {
     public partial class DirectoryAccessData

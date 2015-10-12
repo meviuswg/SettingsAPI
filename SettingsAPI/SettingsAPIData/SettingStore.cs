@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SettingsAPIData
+﻿namespace SettingsAPIData
 {
     public class SettingStore
     {
@@ -13,7 +7,6 @@ namespace SettingsAPIData
         private int _version;
         private int? _objectId;
 
-
         public SettingStore(string application, string directory)
         {
             _applicationName = application;
@@ -21,6 +14,7 @@ namespace SettingsAPIData
             _version = 1;
             _objectId = null;
         }
+
         public SettingStore(string application, int version, string directory)
         {
             _applicationName = application;
@@ -36,10 +30,10 @@ namespace SettingsAPIData
             _version = version;
             _objectId = objectId;
         }
+
         public string ApplicationName { get { return _applicationName; } }
         public string Directory { get { return _directory; } }
         public int Version { get { return _version; } }
         public int? ObjectId { get { return _objectId; } }
-
     }
 }

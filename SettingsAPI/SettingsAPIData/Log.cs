@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
@@ -14,7 +10,7 @@ namespace SettingsAPIData
 
         public static void Message(string message)
         {
-            if(_logger != null)
+            if (_logger != null)
             {
                 _logger(message);
             }

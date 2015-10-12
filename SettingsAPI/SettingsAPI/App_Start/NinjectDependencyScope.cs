@@ -1,10 +1,6 @@
 ﻿using Ninject;
 using Ninject.Syntax;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http.Dependencies;
 
 namespace SettingsAPI.App_Start
@@ -13,7 +9,7 @@ namespace SettingsAPI.App_Start
     // which resolves services using the Ninject container.
     public class NinjectDependencyScope : IDependencyScope
     {
-        IResolutionRoot resolver;
+        private IResolutionRoot resolver;
 
         public NinjectDependencyScope(IResolutionRoot resolver)
         {
@@ -50,7 +46,7 @@ namespace SettingsAPI.App_Start
     // so we derive from NinjectScope.
     public class NinjectDependencyResolver : NinjectDependencyScope, IDependencyResolver
     {
-        Ninject.IKernel kernel;
+        private Ninject.IKernel kernel;
 
         public NinjectDependencyResolver(IKernel kernel) : base(kernel)
         {

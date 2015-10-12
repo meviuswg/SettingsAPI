@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SettingsAPIClient
@@ -18,11 +15,10 @@ namespace SettingsAPIClient
         {
             this._url = url;
             this._apiKey = apiKey;
-        } 
-
+        }
 
         protected async Task<T> Get(string url)
-        { 
+        {
             HttpClient client = CreateClient();
 
             var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
@@ -53,10 +49,8 @@ namespace SettingsAPIClient
             }
         }
 
-      
         private HttpClient CreateClient()
         {
-
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.Timeout = TimeSpan.FromSeconds(TIMEOUT);

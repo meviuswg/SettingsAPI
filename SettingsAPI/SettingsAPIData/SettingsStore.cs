@@ -1,11 +1,7 @@
 ﻿using SettingsAPIData.Data;
 using SettingsAPIShared;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsAPIData
 {
@@ -16,20 +12,16 @@ namespace SettingsAPIData
         public SettingsStore(SettingsDbContext context)
         {
             this.context = context;
-          
-
 
 #if DEBUG
             context.Database.Log = Log.Logger;
 #endif
-
         }
 
         public SettingsDbContext Context
         {
             get
             {
-
                 if (!_dbOnline)
                 {
                     try
@@ -42,12 +34,10 @@ namespace SettingsAPIData
                         Log.Exception(ex);
                         throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE);
                     }
-
                 }
                 try
                 {
                     return context;
-
                 }
                 catch (Exception ex)
                 {
@@ -60,6 +50,7 @@ namespace SettingsAPIData
         private bool _dbOnline = false;
 
         #region IDisposable Support
+
         private bool disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -74,7 +65,6 @@ namespace SettingsAPIData
                 disposedValue = true;
             }
         }
-
 
         public void Dispose()
         {
@@ -95,9 +85,7 @@ namespace SettingsAPIData
         {
             return Context.Directories.SingleOrDefault(d => d.Application.Name == applicationName && d.Name == directoryName);
         }
-        #endregion
 
-
-
+        #endregion IDisposable Support
     }
 }

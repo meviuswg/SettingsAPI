@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.ModelConfiguration;
 
 namespace SettingsAPIData.Data.Mapping
@@ -22,8 +21,6 @@ namespace SettingsAPIData.Data.Mapping
             this.HasRequired(t => t.Application)
                 .WithMany(t => t.Versions)
                 .HasForeignKey(d => d.ApplicationId);
-                
-
         }
     }
 }

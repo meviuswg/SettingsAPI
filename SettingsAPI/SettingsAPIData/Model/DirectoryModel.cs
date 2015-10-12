@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace SettingsAPIData.Model
 {
@@ -16,7 +11,5 @@ namespace SettingsAPIData.Model
         public int Items { get; internal set; }
         public string Name { get; internal set; }
         public bool AllowWrite { get; internal set; }
-
-
     }
 }

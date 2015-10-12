@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Principal;
 
 namespace SettingsAPIData
 {
@@ -17,11 +12,12 @@ namespace SettingsAPIData
             _key = apiKey;
             _identity = idenity;
         }
+
         public string AuthenticationType
         {
             get
             {
-               return "ApiKey";
+                return "ApiKey";
             }
         }
 
@@ -37,7 +33,7 @@ namespace SettingsAPIData
         {
             get
             {
-              return  _key;
+                return _key;
             }
         }
 

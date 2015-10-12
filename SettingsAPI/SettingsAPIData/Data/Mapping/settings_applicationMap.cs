@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.ModelConfiguration;
 
 namespace SettingsAPIData.Data.Mapping
@@ -24,7 +23,6 @@ namespace SettingsAPIData.Data.Mapping
             this.Property(t => t.Name).HasColumnName("name");
             this.Property(t => t.Description).HasColumnName("description");
             this.Property(t => t.Created).HasColumnName("created");
-          
         }
     }
 }

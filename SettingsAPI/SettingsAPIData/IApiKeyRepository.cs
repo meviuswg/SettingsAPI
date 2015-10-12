@@ -5,6 +5,7 @@ namespace SettingsAPIData
     public interface IApiKeyRepository
     {
         ApiKeyModel GetKey(string apiKey);
-        void SetUsed(string key); 
+
+        void SetUsed(string key);
     }
 }

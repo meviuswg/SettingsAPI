@@ -3,14 +3,12 @@
 
 namespace SettingsAPI.App_Start
 {
-    using System;
-    using System.Web;
-
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-
     using Ninject;
     using Ninject.Web.Common;
     using SettingsAPIData;
+    using System;
+    using System.Web;
     using System.Web.Http;
 
     public static class NinjectWebCommon
@@ -67,9 +65,9 @@ namespace SettingsAPI.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<SettingsDbContext>().To<SettingsDbContext>(); 
+            kernel.Bind<SettingsDbContext>().To<SettingsDbContext>();
 
-            kernel.Bind<IApiKey>().To<PrincipalApiKey>();  
+            kernel.Bind<IApiKey>().To<PrincipalApiKey>();
 
             kernel.Bind<IApiKeyRepository>().To<ApiKeyRepository>().InRequestScope();
 
@@ -80,7 +78,6 @@ namespace SettingsAPI.App_Start
             kernel.Bind<ISettingsRepository>().To<SettingsRepository>();
 
             kernel.Bind<IApplicationRepository>().To<ApplicationRepository>();
-
         }
     }
 }
