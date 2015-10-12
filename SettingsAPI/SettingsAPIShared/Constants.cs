@@ -8,7 +8,6 @@ namespace SettingsAPIShared
 {
     public static class Constants
     {
-
         public static readonly int SYSTEM_MASTER_KEY_ID = -1;
         public static readonly string SYSTEM_DIRECTORY_NAME = "_directory";
         public static readonly string SYSTEM_APPLICATION_NAME = "_system";
