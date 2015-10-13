@@ -1,9 +1,5 @@
 ﻿using SettingsAPIData.Model;
 using SettingsAPIShared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication;
 using System.Security.Principal;
 
 namespace SettingsAPIData
@@ -14,10 +10,12 @@ namespace SettingsAPIData
     public class SettingsAuthorizationProvider : ISettingsAuthorizationProvider
     {
         private IApiKeyRepository repository;
+        private SettingsAuthenticatonProvider authenticator;
 
         public SettingsAuthorizationProvider(IApiKeyRepository repository)
         {
             this.repository = repository;
+            this.authenticator = new SettingsAuthenticatonProvider(repository);
         }
 
         public IApiKey CurrentApiKey
@@ -68,7 +66,17 @@ namespace SettingsAPIData
 
         public bool AllowCreateApplication(string application)
         {
-            return User.IsInRole(SecurityRoles.RoleCreateApplication(application));
+            return User.IsInRole(SecurityRoles.RoleCreateApplication());
+        }
+
+        public bool AllowCreateDirectories(string application)
+        {
+            return User.IsInRole(SecurityRoles.RoleCreateDirectory(application));
+        }
+
+        public bool AllowCreateDirectories(string application, string directoryName)
+        {
+            return User.IsInRole(SecurityRoles.RoleCreateDirectory(application));
         }
 
         public bool AllowCreateDirectory(string application, string directoryName)
@@ -79,7 +87,7 @@ namespace SettingsAPIData
                 {
                     return false;
                 }
-                return User.IsInRole(SecurityRoles.RoleCreateDirectory(application, directoryName));
+                return User.IsInRole(SecurityRoles.RoleCreateDirectory(application));
             }
 
             return false;
@@ -121,87 +129,24 @@ namespace SettingsAPIData
         }
 
         public string[] GetApiRoles(ApiKeyModel data)
-
         {
-            List<string> roles = new List<string>();
+            return SettingsAuthorizationRoleProvider.ConstructRoles(data);
+        }
 
-            if (data != null && data.Active)
-            {
-                if (data.AdminKey || data.Id == Constants.SYSTEM_MASTER_KEY_ID)
-                {
-                    roles.Add(Constants.SECURITY_ROLE_ADMIN);
-                }
-
-                if (data.Id == Constants.SYSTEM_MASTER_KEY_ID)
-                    roles.Add(Constants.SECURITY_ROLE_MASTER);
-
-                foreach (var item in data.Access)
-                {
-                    if (item.AllowCreate)
-                    {
-                        roles.Add(SecurityRoles.RoleCreateSetting(item.ApplicationName, item.DirectoryName));
-                    }
-
-                    if (item.AllowDelete)
-                    {
-                        roles.Add(SecurityRoles.RoleDeleteSetting(item.ApplicationName, item.DirectoryName));
-                    }
-
-                    if (item.AllowWrite)
-                    {
-                        roles.Add(SecurityRoles.RoleWriteSetting(item.ApplicationName, item.DirectoryName));
-                    }
-                }
-            }
-
-            return roles.ToArray();
+        public void Invalidate()
+        {
+            if (CurrentIdentity != null)
+                repository.Invalidate(CurrentIdentity.Name);
         }
 
         public bool Validate(object apiKey)
         {
-            IPrincipal principal;
-            bool validationResult = Validate(apiKey, out principal);
-
-            if (validationResult)
-            {
-                System.Threading.Thread.CurrentPrincipal = principal;
-            }
-
-            return validationResult;
+            return authenticator.ValidateAndSetPrincipal(apiKey);
         }
 
         public bool Validate(object apiKey, out IPrincipal principal)
         {
-            try
-            {
-                principal = null;
-
-                string strKey = null;
-
-                if (apiKey != null)
-                {
-                    strKey = apiKey.ToString();
-
-                    if (string.IsNullOrWhiteSpace(strKey))
-                        return false;
-                }
-                ApiKeyModel key = repository.GetKey(strKey);
-
-                if (key != null && key.Active)
-                {
-                    string[] roles = GetApiRoles(key);
-
-                    principal = (IPrincipal)new GenericPrincipal(new ApiIdentity(apiKey.ToString(), key.Id), roles.ToArray());
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Log.Exception(ex);
-                throw new AuthenticationException("Could not authenticate");
-            }
+            return authenticator.Validate(apiKey, out principal);
         }
     }
 }

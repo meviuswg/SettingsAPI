@@ -56,7 +56,8 @@ namespace SettingsAPIData
                     Active = data.Active,
                     AdminKey = data.AdminKey,
                     Id = data.Id,
-                    Key = data.ApiKey
+                    Key = data.ApiKey,
+                    ApplicationName = data.Application.Name
                 };
 
                 foreach (var item in data.Access)
@@ -79,9 +80,7 @@ namespace SettingsAPIData
 
         private ApiKeyData GetData(string key)
         {
-            var data = Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key);
-            context.Entry<ApiKeyData>(data).Reload();
-            context.Entry<ApiKeyData>(data).Collection<DirectoryAccessData>("Access").Query();
+            ApiKeyData data = Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key); 
             return data;
         }
 
@@ -93,6 +92,17 @@ namespace SettingsAPIData
             {
                 data.LastUsed = DateTime.UtcNow;
                 Context.SaveChanges();
+            }
+        }
+
+        public void Invalidate(string apiKey)
+        {
+            ApiKeyData key = Context.ApiKeys.SingleOrDefault(k => k.ApiKey == apiKey);
+
+            if (key != null)
+            {
+                context.Entry<ApiKeyData>(key).Reload();
+                context.Entry<ApiKeyData>(key).Collection<DirectoryAccessData>("Access").Query();
             }
         }
     }

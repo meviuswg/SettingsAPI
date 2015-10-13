@@ -13,6 +13,8 @@ namespace SettingsAPIData.Model
         public string Key { get; set; }
         public bool Active { get; set; }
         public bool AdminKey { get; set; }
+        public string ApplicationName { get; internal set; }
+
         public List<ApiAccessModel> Access;
     }
 }

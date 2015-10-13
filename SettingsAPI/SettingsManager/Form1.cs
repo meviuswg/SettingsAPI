@@ -17,8 +17,8 @@ namespace SettingsManager
             string endpoint = "http://localhost:5945/api";
             string apiKey = "a33a5f531f49480eac31d64d02163bcf";
 
-            SettingsStore store = new SettingsStore("_system", "_store");
-            SettingsAPIClient.SettingsManager provider = new SettingsAPIClient.SettingsManager(endpoint, apiKey, store);
+      
+            SettingsAPIClient.SettingsManager provider = new SettingsAPIClient.SettingsManager(endpoint, apiKey);
 
             var test = provider.Get();
 

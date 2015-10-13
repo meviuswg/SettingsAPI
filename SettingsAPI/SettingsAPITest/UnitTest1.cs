@@ -21,20 +21,18 @@ namespace SettingsAPITest
 
             SettingStore store = new SettingStore("_system", "_directory");
 
-            if (controller.AllowRead(store))
-            {
-                var data = controller.GetSettings(store).ToList();
-            }
+
+            var data = controller.GetSettings(store).ToList();
+
 
             SettingModel setting = new SettingModel();
 
             setting.Key = "MySettingKey";
             setting.Value = "123123123123123";
 
-            if (controller.AllowWrite(store))
-            {
-                controller.SaveSetting(store, setting);
-            }
+
+            controller.SaveSetting(store, setting);
+
 
             var data2 = controller.GetSettings(store).ToList();
 

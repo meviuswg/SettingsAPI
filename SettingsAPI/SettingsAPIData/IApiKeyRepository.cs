@@ -6,6 +6,8 @@ namespace SettingsAPIData
     {
         ApiKeyModel GetKey(string apiKey);
 
-        void SetUsed(string key);
+        void SetUsed(string apiKey);
+
+        void Invalidate(string apiKey);
     }
 }

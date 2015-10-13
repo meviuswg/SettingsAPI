@@ -28,7 +28,7 @@ namespace SettingsAPI.Controllers
             catch (Exception ex)
             {
                 return Error(ex);
-            }
+            }   
         }
 
         [HttpGet]

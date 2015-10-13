@@ -4,54 +4,59 @@ namespace SettingsAPIData
 {
     internal static class SecurityRoles
     {
-        public static string RoleCreateApplication(string applicationName)
+        public static string RoleCreateApplication()
         {
-            return Constants.SECURITY_ROLE_MASTER;
+            return string.Format("create.application@system");
         }
 
         public static string RoleDeleteApplication(string applicationName)
         {
-            return Constants.SECURITY_ROLE_MASTER;
+            return string.Format("delete.application@{0}", applicationName); 
+        }
+
+        public static string RoleUpdateApplication(string applicationName)
+        {
+            return string.Format("update.application@{0}", applicationName);
         }
 
         public static string RoleWriteSetting(string applicationName, string directoryName)
         {
-            return string.Format("Write-key@{0}:{1}", applicationName, directoryName);
+            return string.Format("write.key@{0}.{1}", directoryName, applicationName);
         }
 
         public static string RoleCreateSetting(string applicationName, string directoryName)
         {
-            return string.Format("Create-key@{0}:{1}", applicationName, directoryName);
+            return string.Format("create.key@{0}.{1}", directoryName, applicationName);
         }
 
         public static string RoleDeleteSetting(string applicationName, string directoryName)
         {
-            return string.Format("Delete-key@{0}:{1}", applicationName, directoryName);
+            return string.Format("delete.key@{0}.{1}", directoryName, applicationName);
         }
 
-        public static string RoleCreateDirectory(string applicationName, string directoryName)
-        {
-            return Constants.SECURITY_ROLE_ADMIN;
+        public static string RoleCreateDirectory(string applicationName)
+        { 
+            return string.Format("create.directory@{0}", applicationName);
         }
 
         public static string RoleDeleteDirectory(string applicationName, string directoryName)
         {
-            return string.Format("Read-Dir@{0}:{1}", applicationName, directoryName);
+            return string.Format("read.directory@{0}", directoryName, applicationName);
         }
 
         public static string RoleDeleteDirectories(string applicationName)
         {
-            return string.Format("Read-Dir@{0}:{1}", applicationName);
+            return string.Format("read.directory@{0}", applicationName);
         }
 
         public static string RoleCreateVersion(string applicationName)
         {
-            return Constants.SECURITY_ROLE_ADMIN;
+            return string.Format("create.version@{0}", applicationName);
         }
 
         public static string RoleDeleteVersion(string applicationName)
         {
-            return Constants.SECURITY_ROLE_ADMIN;
+            return string.Format("delete.version@{0}", applicationName);
         }
     }
 }

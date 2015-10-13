@@ -7,21 +7,23 @@ namespace SettingsAPIClient
 {
     internal abstract class ApiClient<T>
     {
-        protected string _url;
+        protected string _baseUrl;
         protected string _apiKey;
         protected const int TIMEOUT = 5;
 
         public ApiClient(string url, string apiKey)
         {
-            this._url = url;
+            if (!url.EndsWith("/")) url = url.Substring(0, url.Length - 2);
+
+            this._baseUrl = url;
             this._apiKey = apiKey;
         }
 
-        protected async Task<T> Get(string url)
+        public virtual async Task<T> Get(string key = "")
         {
             HttpClient client = CreateClient();
 
-            var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
+            var response = await client.GetAsync(GetEndpoint(key), HttpCompletionOption.ResponseContentRead);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -29,14 +31,15 @@ namespace SettingsAPIClient
             }
             else
             {
-                string message = await response.Content.ReadAsStringAsync();
-                throw new SettingsException(response.StatusCode.ToString());
+                await HandleNotAcceptedStatus(response);
+
+                return default(T);
             }
         }
 
-        protected async Task<bool> Post(string url, T data)
+        public virtual async Task<bool> Post(T data)
         {
-            var response = await CreateClient().PostAsJsonAsync(url, data);
+            var response = await CreateClient().PostAsJsonAsync(GetEndpoint(), data);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -44,9 +47,31 @@ namespace SettingsAPIClient
             }
             else
             {
-                string message = await response.Content.ReadAsStringAsync();
-                throw new SettingsException(response.StatusCode.ToString());
+                return await HandleNotAcceptedStatus(response);
             }
+        }
+
+        private async Task<bool> HandleNotAcceptedStatus(HttpResponseMessage response)
+        {
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                throw new SettingAccessDeniedException(response.RequestMessage.Method.Method, response.RequestMessage.RequestUri.ToString());
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new SettingNotFoundException(response.RequestMessage.Method.Method, response.RequestMessage.RequestUri.ToString());
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+            {
+                throw new SettingAccessDeniedException(response.RequestMessage.Method.Method, response.RequestMessage.RequestUri.ToString());
+            }
+
+            string message = await response.Content.ReadAsStringAsync();
+
+            throw new SettingsRemoteStoreException(response.RequestMessage.Method.Method, response.RequestMessage.RequestUri.ToString(), message); 
+
         }
 
         private HttpClient CreateClient()
@@ -58,5 +83,14 @@ namespace SettingsAPIClient
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             return client;
         }
+
+        protected abstract string LoalPath { get; }
+
+        protected virtual string GetEndpoint(string key = "")
+        {
+            string url = string.Concat(_baseUrl, "/", LoalPath, "/", key, string.Format("?apikey={0}", _apiKey));
+            return url;
+        }
+
     }
 }

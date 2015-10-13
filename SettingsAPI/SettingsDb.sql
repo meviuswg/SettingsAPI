@@ -199,13 +199,13 @@ VALUES (
 	,(
 	- 2
 	,- 1
-	,'_directory'
+	,'_root'
 	,'System reserved directory.'
 	)
 	,(
 	1
 	,1
-	,'Application'
+	,'_root'
 	,'Standard directory for Application specific settings.'
 	)
 	,(

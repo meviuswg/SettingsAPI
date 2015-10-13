@@ -11,7 +11,7 @@ namespace SettingsAPIData
     {
         private ISettingsStore Store;
         private ISettingsAuthorizationProvider Auth;
-
+      
         public SettingsRepository(ISettingsStore store, ISettingsAuthorizationProvider provider)
         {
             Store = store;
@@ -74,8 +74,8 @@ namespace SettingsAPIData
                     select new SettingModel
                     {
                         Key = setting.SettingKey,
-                        Value = setting.SettingValue,
-                        ObjectId = setting.ObjecId
+                        Value = setting.SettingValue
+
                     }).SingleOrDefault();
         }
 
@@ -85,8 +85,7 @@ namespace SettingsAPIData
                     select new SettingModel
                     {
                         Key = setting.SettingKey,
-                        Value = setting.SettingValue,
-                        ObjectId = setting.ObjecId
+                        Value = setting.SettingValue 
                     });
         }
 
@@ -132,46 +131,6 @@ namespace SettingsAPIData
             data.ObjecId = store.ObjectId ?? 0;
 
             return data;
-        }
-
-        public bool AllowRead(SettingStore store)
-        {
-            DirectoryAccessModel accessData = GetAccessData(store);
-
-            if (accessData != null)
-                return true;
-
-            return false;
-        }
-
-        public bool AllowWrite(SettingStore store)
-        {
-            DirectoryAccessModel accessData = GetAccessData(store);
-
-            if (accessData != null && (accessData.AllowWrite || accessData.AllowCreate))
-                return true;
-
-            return false;
-        }
-
-        public bool AllowCreate(SettingStore store)
-        {
-            DirectoryAccessModel accessData = GetAccessData(store);
-
-            if (accessData != null && accessData.AllowCreate)
-                return true;
-
-            return false;
-        }
-
-        public bool AllowDelete(SettingStore store)
-        {
-            DirectoryAccessModel accessData = GetAccessData(store);
-
-            if (accessData != null && accessData.AllowDelete)
-                return true;
-
-            return false;
         }
 
         private DirectoryAccessModel GetAccessData(SettingStore store)
@@ -227,6 +186,7 @@ namespace SettingsAPIData
             }
 
             return false;
-        }
+        } 
+      
     }
 }

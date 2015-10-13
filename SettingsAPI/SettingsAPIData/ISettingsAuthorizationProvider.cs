@@ -11,6 +11,8 @@ namespace SettingsAPIData
 
         bool AllowCreateDirectory(string application, string directoryName);
 
+        bool AllowCreateDirectories(string application);
+
         bool AllowCreateSetting(string application, string directoryName);
 
         bool AllowCreateVersion(string application);
@@ -30,5 +32,7 @@ namespace SettingsAPIData
         bool Validate(object apiKey);
 
         bool IsMasterKey { get; }
+
+        void Invalidate();
     }
 }

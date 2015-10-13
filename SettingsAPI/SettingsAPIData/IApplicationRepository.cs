@@ -31,10 +31,6 @@ namespace SettingsAPIData
 
         void DeleteVersion(string applicationName, int version);
 
-        bool AllowRead();
-
-        bool AllowDelete();
-
         void DeleteApplication(string name);
     }
 }

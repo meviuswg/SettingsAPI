@@ -58,6 +58,7 @@
     <Compile Include="ISettingsAuthorizationProvider.cs" />
     <Compile Include="Model\ApiAccessModel.cs" />
     <Compile Include="SecurityUtil.cs" />
+    <Compile Include="SettingsAuthenticatonProvider.cs" />
     <Compile Include="SettingsAuthorizationProvider.cs" />
     <Compile Include="IApiKeyRepository.cs" />
     <Compile Include="Log.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Model\SaveApplicationModel.cs" />
     <Compile Include="Model\SaveDirectoryModel.cs" />
     <Compile Include="PrincipalApiKey.cs" />
+    <Compile Include="SettingsAuthorizationRoleProvider.cs" />
     <Compile Include="SettingsDuplicateException.cs" />
     <Compile Include="SettingsStore.cs" />
     <Compile Include="IApiKey.cs" />

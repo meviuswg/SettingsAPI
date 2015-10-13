@@ -11,15 +11,7 @@ namespace SettingsAPIData
 
         void SaveSetting(SettingStore store, SettingModel setting);
 
-        void SaveSettings(SettingStore store, IEnumerable<SettingModel> settings);
-
-        bool AllowRead(SettingStore store);
-
-        bool AllowWrite(SettingStore store);
-
-        bool AllowDelete(SettingStore store);
-
-        bool AllowCreate(SettingStore store);
+        void SaveSettings(SettingStore store, IEnumerable<SettingModel> settings); 
 
         bool Exists(SettingStore store);
 

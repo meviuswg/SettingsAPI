@@ -19,7 +19,7 @@ namespace SettingsAPI.Controllers
 
         [HttpGet]
         [Route("api/settings/{applicationName}/{version}/{directory}/")]
-        [ResponseType(typeof(SettingModel[]))]
+        [ResponseType(typeof(DirectoryModel))]
         public IHttpActionResult Get(string applicationName, int version, string directory)
         {
             return Get(new SettingStore(applicationName, version, directory));
@@ -45,21 +45,8 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                if (controller.Exists(store))
-                {
-                    if (controller.AllowRead(store))
-                    {
-                        return Ok(controller.GetSettings(store));
-                    }
-                    else
-                    {
-                        return Forbidden();
-                    }
-                }
-                else
-                {
-                    return NotFound();
-                }
+                return Ok(controller.GetSettings(store));
+
             }
             catch (Exception ex)
             {
@@ -71,21 +58,7 @@ namespace SettingsAPI.Controllers
         {
             try
             {
-                if (controller.Exists(store))
-                {
-                    if (controller.AllowRead(store))
-                    {
-                        return Ok(controller.GetSetting(store, key));
-                    }
-                    else
-                    {
-                        return Forbidden();
-                    }
-                }
-                else
-                {
-                    return NotFound();
-                }
+                return Ok(controller.GetSetting(store, key));
             }
             catch (Exception ex)
             {
@@ -97,44 +70,40 @@ namespace SettingsAPI.Controllers
         [Route("api/settings/{applicationName}/{version}/{directory}/{objectId}/{key}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult Post(string applicationName, int version, string directory, int objectId, string key, [FromBody]string value)
-        {
-            SettingModel model = new SettingModel { Key = key, ObjectId = objectId, Value = value };
-            return Post(applicationName, version, directory, new[] { model });
+        { 
+     
+            return Post(applicationName, version, directory, objectId, new SettingModel { Key = key, Value = value } );
         }
 
         [HttpPost]
         [Route("api/settings/{applicationName}/{version}/{directory}/")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult Post(string applicationName, int version, string directory, [FromBody]IEnumerable<SettingModel> value)
+        public IHttpActionResult PostCollection(string applicationName, int version, string directory, [FromBody]IEnumerable<SettingModel> value)
         {
             var store = new SettingStore(applicationName, version, directory);
 
             try
             {
-                if (controller.Exists(store))
-                {
-                    if (controller.AllowWrite(store))
-                    {
-                        try
-                        {
-                            controller.SaveSettings(store, value);
-                        }
-                        catch (SettingsAuthorizationException ex)
-                        {
-                            return Forbidden(ex.Message);
-                        }
+                controller.SaveSettings(store, value);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
 
-                        return Ok();
-                    }
-                    else
-                    {
-                        return Forbidden();
-                    }
-                }
-                else
-                {
-                    return NotFound();
-                }
+        [HttpPost]
+        [Route("api/settings/{applicationName}/{version}/{directory}/{objectId}")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult Post(string applicationName, int version, string directory, int objectId, [FromBody]SettingModel value)
+        {
+            var store = new SettingStore(applicationName, version, directory, objectId);
+
+            try
+            {
+                controller.SaveSetting(store, value);
+                return Ok();
             }
             catch (Exception ex)
             {
