@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApiClient.cs" />
+    <Compile Include="SettingsApiClient.cs" />
     <Compile Include="ObjectSetting.cs" />
     <Compile Include="Provider\ApplicationProvider.cs" />
     <Compile Include="Provider\SettingsProvider.cs" />
@@ -66,7 +66,7 @@
     <Compile Include="SettingNotFoundException.cs" />
     <Compile Include="SettingsApplication.cs" />
     <Compile Include="SettingsDirectory.cs" />
-    <Compile Include="SettingsRemoteStoreException.cs" />
+    <Compile Include="SettingsStoreException.cs" />
     <Compile Include="Util\SerializationHelper.cs" />
     <Compile Include="ApplicationManager.cs" />
     <Compile Include="SettingsException.cs" />

@@ -9,8 +9,8 @@ namespace SettingsAPIData
     /// </summary>
     public class SettingsAuthorizationProvider : ISettingsAuthorizationProvider
     {
-        private IApiKeyRepository repository;
         private SettingsAuthenticatonProvider authenticator;
+        private IApiKeyRepository repository;
 
         public SettingsAuthorizationProvider(IApiKeyRepository repository)
         {
@@ -66,24 +66,36 @@ namespace SettingsAPIData
 
         public bool AllowCreateApplication(string application)
         {
+            if (string.IsNullOrWhiteSpace(application))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleCreateApplication());
         }
 
         public bool AllowCreateDirectories(string application)
         {
+            if (string.IsNullOrWhiteSpace(application))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleCreateDirectory(application));
         }
 
         public bool AllowCreateDirectories(string application, string directoryName)
         {
+            if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleCreateDirectory(application));
         }
 
         public bool AllowCreateDirectory(string application, string directoryName)
         {
+            if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
+                return false;
+
             if (!string.IsNullOrWhiteSpace(directoryName))
             {
-                if (directoryName.StartsWith("_"))
+                if (directoryName.StartsWith(Constants.SYSTEM_RESERVED_PREFIX))
                 {
                     return false;
                 }
@@ -95,36 +107,70 @@ namespace SettingsAPIData
 
         public bool AllowCreateSetting(string application, string directoryName)
         {
+            if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleCreateSetting(application, directoryName));
         }
 
         public bool AllowCreateVersion(string application)
         {
+            if (string.IsNullOrWhiteSpace(application))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleCreateVersion(application));
         }
 
         public bool AllowDeleteApplication(string application)
         {
+            if (string.IsNullOrWhiteSpace(application))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleDeleteApplication(application));
         }
 
         public bool AllowDeleteDirectory(string application, string directoryName)
         {
+            if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
+                return false;
+
+            if (directoryName.StartsWith(Constants.SYSTEM_RESERVED_PREFIX))
+            {
+                return false;
+            }
+
             return User.IsInRole(SecurityRoles.RoleDeleteDirectory(application, directoryName));
         }
 
         public bool AllowDeleteSetting(string application, string directoryName)
         {
+            if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleDeleteSetting(application, directoryName));
         }
 
         public bool AllowDeleteVersion(string application)
         {
+            if (string.IsNullOrWhiteSpace(application))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleCreateVersion(application));
+        }
+
+        public bool AllowReadDirectory(string application, string directoryName)
+        {
+            if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
+                return false;
+
+            return User.IsInRole(SecurityRoles.RoleReadDirectory(application, directoryName));
         }
 
         public bool AllowWriteSetting(string application, string directoryName)
         {
+            if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
+                return false;
+
             return User.IsInRole(SecurityRoles.RoleWriteSetting(application, directoryName));
         }
 

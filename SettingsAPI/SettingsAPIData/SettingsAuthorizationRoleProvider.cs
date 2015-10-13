@@ -30,11 +30,14 @@ namespace SettingsAPIData
                 }
 
                 foreach (var item in model.Access)
-                {
+                { 
                     if (allowAdministration)
                     {
                         roles.Add(SecurityRoles.RoleDeleteDirectory(model.ApplicationName, item.DirectoryName));
                     }
+
+                    roles.Add(SecurityRoles.RoleReadDirectory(model.ApplicationName, item.DirectoryName));
+
                     if (item.AllowCreate)
                     {
                         roles.Add(SecurityRoles.RoleCreateSetting(model.ApplicationName, item.DirectoryName));

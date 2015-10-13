@@ -4,14 +4,15 @@ namespace SettingsAPIData
 {
     public interface ISettingsAuthorizationProvider
     {
-        ApiIdentity CurrentIdentity { get; }
         IApiKey CurrentApiKey { get; }
+        ApiIdentity CurrentIdentity { get; }
+        bool IsMasterKey { get; }
 
         bool AllowCreateApplication(string application);
 
-        bool AllowCreateDirectory(string application, string directoryName);
-
         bool AllowCreateDirectories(string application);
+
+        bool AllowCreateDirectory(string application, string directoryName);
 
         bool AllowCreateSetting(string application, string directoryName);
 
@@ -25,14 +26,14 @@ namespace SettingsAPIData
 
         bool AllowDeleteVersion(string application);
 
+        bool AllowReadDirectory(string application, string directoryName);
+
         bool AllowWriteSetting(string application, string directoryName);
+
+        void Invalidate();
 
         bool Validate(object apiKey, out IPrincipal principal);
 
         bool Validate(object apiKey);
-
-        bool IsMasterKey { get; }
-
-        void Invalidate();
     }
 }

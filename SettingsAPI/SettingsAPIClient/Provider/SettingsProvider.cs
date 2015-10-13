@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SettingsAPIClient.Provider
+﻿namespace SettingsAPIClient.Provider
 {
     internal class SettingsProvider : ApiClient<Setting[]>
     {
@@ -21,10 +15,6 @@ namespace SettingsAPIClient.Provider
             this.objectId = objectId;
         }
 
-        protected override string LoalPath { get { return string.Concat("settings", "/", applicationName, "/", version, "/", directory, "/", objectId); } }
-
-        
-
-   
+        public override string LoalPath { get { return string.Concat("settings", "/", applicationName, "/", version, "/", directory, "/", objectId); } }
     }
 }

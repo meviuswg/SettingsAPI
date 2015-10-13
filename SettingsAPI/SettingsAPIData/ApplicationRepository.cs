@@ -227,6 +227,13 @@ namespace SettingsAPIData
 
         public IEnumerable<DirectoryModel> GetDirectories(string applicationName)
         {
+            var application = GetApplication(applicationName);
+
+            if (application == null)
+            {
+                new SettingsNotFoundException(applicationName);
+            }
+
             return GetDirectories(applicationName, null);
         }
 
@@ -237,7 +244,14 @@ namespace SettingsAPIData
                 throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
             }
 
-            return GetDirectories(applicationName, directoryName).SingleOrDefault();
+            var directory = GetDirectories(applicationName, directoryName).SingleOrDefault();
+
+            if (directory == null)
+            {
+                new SettingsNotFoundException(directoryName);
+            }
+
+            return directory;
         }
 
         private IEnumerable<DirectoryModel> GetDirectories(string applicationName, string directoryName)
@@ -384,7 +398,7 @@ namespace SettingsAPIData
                 VersionData version = new VersionData { Version = 1, Created = DateTime.UtcNow, ApplicationId = application.Id };
                 Store.Context.Versions.Add(version);
                 Store.Context.SaveChanges();
-          
+
                 //Create application default directory
                 def_directory = new DirectoryData();
                 def_directory.Name = Constants.DEAULT_DIRECTORY_NAME;
@@ -437,7 +451,7 @@ namespace SettingsAPIData
                 scope.Complete();
                 Auth.Invalidate();
             }
-             
+
             //reload the enities the reflect the master key access created by the trigger.
             if (cust_directory != null)
                 Store.Context.Entry<DirectoryData>(cust_directory).Collection("Access").Load();

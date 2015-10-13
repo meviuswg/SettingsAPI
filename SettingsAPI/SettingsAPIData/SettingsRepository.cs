@@ -4,18 +4,43 @@ using SettingsAPIShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 
 namespace SettingsAPIData
 {
     public class SettingsRepository : ISettingsRepository
     {
-        private ISettingsStore Store;
         private ISettingsAuthorizationProvider Auth;
-      
+        private ISettingsStore Store;
+
         public SettingsRepository(ISettingsStore store, ISettingsAuthorizationProvider provider)
         {
             Store = store;
             Auth = provider;
+        }
+
+        public SettingModel GetSetting(SettingStore store, string settingKey)
+        {
+            //will authenticate
+            return (from setting in GetSettingsFromStore(store)
+                    where setting.SettingKey == settingKey
+
+                    select new SettingModel
+                    {
+                        Key = setting.SettingKey,
+                        Value = setting.SettingValue
+                    }).SingleOrDefault();
+        }
+
+        public IEnumerable<SettingModel> GetSettings(SettingStore store)
+        {
+            //will authenticate
+            return (from setting in GetSettingsFromStore(store)
+                    select new SettingModel
+                    {
+                        Key = setting.SettingKey,
+                        Value = setting.SettingValue
+                    });
         }
 
         public void SaveSetting(SettingStore store, SettingModel setting)
@@ -26,91 +51,54 @@ namespace SettingsAPIData
         public void SaveSettings(SettingStore store, IEnumerable<SettingModel> settings)
         {
             var currentSettings = GetSettingsFromStore(store);
-            var access = GetAccessData(store);
 
-            foreach (var item in settings)
+            using (TransactionScope scope = new TransactionScope())
             {
-                if (item == null || string.IsNullOrWhiteSpace(item.Key))
-                    continue;
-
-                var existingOrNew = currentSettings.SingleOrDefault(s => s.Equals(item));
-
-                if (existingOrNew != null)
+                foreach (var item in settings)
                 {
-                    if (access.AllowWrite)
+                    if (item == null || string.IsNullOrWhiteSpace(item.Key))
                     {
-                        existingOrNew.SettingValue = item.Value;
-                        existingOrNew.Modified = DateTime.UtcNow;
+                        throw new SettingsStoreException(Constants.ERROR_SETTING_NO_KEY);
+                    }
+
+                    var existingOrNew = currentSettings.SingleOrDefault(s => s.Equals(item));
+
+                    if (existingOrNew != null)
+                    {
+                        if (Auth.AllowWriteSetting(store.ApplicationName, store.DirectoryName))
+                        {
+                            existingOrNew.SettingValue = item.Value;
+                            existingOrNew.Modified = DateTime.UtcNow;
+                        }
+                        else
+                        {
+                            throw new SettingsAuthorizationException(AuthorizationScope.Setting, AuthorizationLevel.Write, store.DirectoryName, Auth.CurrentIdentity.Id);
+                        }
                     }
                     else
                     {
-                        throw new SettingsAuthorizationException(AuthorizationScope.Key, AuthorizationLevel.Write, item.Key, Auth.CurrentIdentity.Id);
+                        if (Auth.AllowCreateSetting(store.ApplicationName, store.DirectoryName))
+                        {
+                            existingOrNew = CreateDataForStore(store);
+                            existingOrNew.SettingKey = item.Key;
+                            existingOrNew.SettingValue = item.Value;
+                            Store.Context.Settings.Add(existingOrNew);
+                        }
+                        else
+                        {
+                            throw new SettingsAuthorizationException(AuthorizationScope.Setting, AuthorizationLevel.Create, store.DirectoryName, Auth.CurrentIdentity.Id);
+                        }
                     }
                 }
-                else
-                {
-                    if (access.AllowCreate)
-                    {
-                        existingOrNew = CreateDataForStore(store);
-                        existingOrNew.SettingKey = item.Key;
-                        existingOrNew.SettingValue = item.Value;
-                        Store.Context.Settings.Add(existingOrNew);
-                    }
-                    else
-                    {
-                        throw new SettingsAuthorizationException(AuthorizationScope.Key, AuthorizationLevel.Create, item.Key, Auth.CurrentIdentity.Id);
-                    }
-                }
-            }
 
-            Store.Save();
-        }
-
-        public SettingModel GetSetting(SettingStore store, string settingKey)
-        {
-            return (from setting in GetSettingsFromStore(store)
-                    where setting.SettingKey == settingKey
-
-                    select new SettingModel
-                    {
-                        Key = setting.SettingKey,
-                        Value = setting.SettingValue
-
-                    }).SingleOrDefault();
-        }
-
-        public IEnumerable<SettingModel> GetSettings(SettingStore store)
-        {
-            return (from setting in GetSettingsFromStore(store)
-                    select new SettingModel
-                    {
-                        Key = setting.SettingKey,
-                        Value = setting.SettingValue 
-                    });
-        }
-
-        private IEnumerable<SettingData> GetSettingsFromStore(SettingStore store)
-        {
-            var access = GetAccessData(store);
-
-            if (access != null)
-            {
-                var r = Store.GetVersion(store.ApplicationName, store.Version);
-                var d = Store.GetDirectory(store.ApplicationName, store.Directory);
-
-                return Store.Context.Settings.Where(s =>
-                     s.VersionId == r.Id
-                  && s.DirectoryId == d.Id
-                  && (s.ObjecId == store.ObjectId || store.ObjectId == null));
-            }
-            else
-            {
-                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Read, store.Directory, Auth.CurrentIdentity.Id);
+                Store.Save();
+                scope.Complete();
             }
         }
 
         private SettingData CreateDataForStore(SettingStore store)
         {
+            //Must be authenticated
             SettingData data = new SettingData();
 
             var repository = Store.GetVersion(store.ApplicationName, store.Version);
@@ -119,7 +107,7 @@ namespace SettingsAPIData
             {
                 throw new SettingsStoreException(Constants.ERROR_VERION_UNKNOWN);
             }
-            var directory = Store.GetDirectory(store.ApplicationName, store.Directory);
+            var directory = Store.GetDirectory(store.ApplicationName, store.DirectoryName);
 
             if (directory == null)
             {
@@ -133,60 +121,30 @@ namespace SettingsAPIData
             return data;
         }
 
-        private DirectoryAccessModel GetAccessData(SettingStore store)
+        private IEnumerable<SettingData> GetSettingsFromStore(SettingStore store)
         {
-            if (Auth.CurrentApiKey == null)
-                return null;
-
-            var dir = Store.GetDirectory(store.ApplicationName, store.Directory);
-
-            if (Auth.IsMasterKey)
+            if (!Auth.AllowReadDirectory(store.ApplicationName, store.DirectoryName))
             {
-                return new DirectoryAccessModel
-                {
-                    DirectoryId = dir.Id,
-                    AllowWrite = true,
-                    AllowDelete = true,
-                    AllowCreate = true
-                };
+                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Read, store.DirectoryName, Auth.CurrentIdentity.Id);
+            }
+            var version = Store.GetVersion(store.ApplicationName, store.Version);
+
+            if (version == null)
+            {
+                throw new SettingsNotFoundException(store.Version.ToString());
             }
 
-            var accessData = Store.Context.Access.Where(
-                 d => d.DirectoryId == dir.Id
-              && d.ApiKeyId == Auth.CurrentIdentity.Id).SingleOrDefault();
+            var directory = Store.GetDirectory(store.ApplicationName, store.DirectoryName);
 
-            if (accessData != null && accessData.ApiKey.Active)
+            if (version == null)
             {
-                return new DirectoryAccessModel
-                {
-                    DirectoryId = dir.Id,
-                    AllowWrite = accessData.AllowWrite,
-                    AllowDelete = accessData.AllowDelete,
-                    AllowCreate = accessData.AllowCreate
-                };
+                throw new SettingsNotFoundException(store.DirectoryName);
             }
 
-            return null;
+            return Store.Context.Settings.Where(s =>
+                 s.VersionId == version.Id
+              && s.DirectoryId == directory.Id
+              && (s.ObjecId == store.ObjectId || store.ObjectId == null));
         }
-
-        public bool Exists(SettingStore store)
-        {
-            var repository = Store.GetVersion(store.ApplicationName, store.Version);
-
-            var directory = Store.GetDirectory(store.ApplicationName, store.Directory);
-
-            return (repository != null && directory != null);
-        }
-
-        public bool Exists(SettingStore store, string settingKey)
-        {
-            if (Exists(store))
-            {
-                return GetSetting(store, settingKey) != null;
-            }
-
-            return false;
-        } 
-      
     }
 }

@@ -12,9 +12,5 @@ namespace SettingsAPIData
         void SaveSetting(SettingStore store, SettingModel setting);
 
         void SaveSettings(SettingStore store, IEnumerable<SettingModel> settings); 
-
-        bool Exists(SettingStore store);
-
-        bool Exists(SettingStore store, string settingKey);
     }
 }

@@ -18,6 +18,7 @@ namespace SettingsAPIClient
         private SettingsDirectory _directory;
         private DirectoryProvider _directoryProvider;
         private SettingsProvider _settingsProvider;
+        private Setting[] _items;
         private string _url;
 
         public SettingsManager(string url, string apiKey)
@@ -292,6 +293,14 @@ namespace SettingsAPIClient
             if (_directory != null)
             {
                 _settingsProvider = new SettingsProvider(_url, _apiKey, applicationName, version, directory, objectId);
+                _items = await _settingsProvider.Get();
+            }
+            else
+            {
+                if (string.Equals(directory, _DEFAULT_DIR))  
+                    throw new SettingsException(string.Format("Failed to open application '{0}' version {1}. The target does not exist or you are not authorized to access it", applicationName, version));
+                else
+                    throw new SettingsException(string.Format("Failed to open directory '{0}' of application '{1}' version {2}. The target does not exist or you are not authorized to access it", directory, applicationName, version));
             }
 
             return _directory != null;
@@ -371,6 +380,7 @@ namespace SettingsAPIClient
 
         public async Task<bool> SaveAsync(Setting[] settings)
         {
+
             return await _settingsProvider.Post(settings);
         }
 

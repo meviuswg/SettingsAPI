@@ -14,6 +14,6 @@ namespace SettingsAPIClient.Provider
             this.directory = directory;
         }
 
-        protected override string LoalPath { get { return string.Concat("application", "/", applicationName, "/directories/", directory); } } 
+        public override string LoalPath { get { return string.Concat("application", "/", applicationName, "/directories/", directory); } } 
     }
 }

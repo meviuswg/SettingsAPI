@@ -32,7 +32,7 @@
         }
 
         public string ApplicationName { get { return _applicationName; } }
-        public string Directory { get { return _directory; } }
+        public string DirectoryName { get { return _directory; } }
         public int Version { get { return _version; } }
         public int? ObjectId { get { return _objectId; } }
     }
