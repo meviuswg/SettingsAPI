@@ -12,8 +12,6 @@ namespace SettingsAPIClient
         public SettingAccessDeniedException(HttpRequestMessage message) : base(message, "Access to the resource was denied")
         {
 
-        }
-
-
+        } 
     }
 }

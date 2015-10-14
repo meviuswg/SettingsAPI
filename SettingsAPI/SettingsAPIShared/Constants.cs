@@ -3,10 +3,9 @@
     public static class Constants
     {
         public static readonly int SYSTEM_MASTER_KEY_ID = -1; 
-        public static readonly string SYSTEM_APPLICATION_NAME = "_system";
-        public static readonly string SYSTEM_RESERVED_PREFIX = "_";
+        public static readonly string SYSTEM_APPLICATION_NAME = "system";
 
-        public static readonly string DEAULT_DIRECTORY_NAME = "_root";
+        public static readonly string DEAULT_DIRECTORY_NAME = "root";
         public static readonly string DEAULT_DIRECTORY_DESCRIPTION = "";
         public static readonly string DEAULT_APPLICATION_DESCRIPTION = "";
 

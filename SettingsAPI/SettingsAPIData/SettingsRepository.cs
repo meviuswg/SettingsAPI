@@ -22,14 +22,21 @@ namespace SettingsAPIData
         public SettingModel GetSetting(SettingStore store, string settingKey)
         {
             //will authenticate
-            return (from setting in GetSettingsFromStore(store)
-                    where setting.SettingKey == settingKey
+            var value = (from s in GetSettingsFromStore(store)
+                         where s.SettingKey == settingKey
 
-                    select new SettingModel
-                    {
-                        Key = setting.SettingKey,
-                        Value = setting.SettingValue
-                    }).SingleOrDefault();
+                         select new SettingModel
+                         {
+                             Key = s.SettingKey,
+                             Value = s.SettingValue
+                         }).SingleOrDefault();
+
+            if (value == null)
+            {
+                throw new SettingsNotFoundException(settingKey);
+            }
+
+            return value;
         }
 
         public IEnumerable<SettingModel> GetSettings(SettingStore store)
@@ -101,9 +108,9 @@ namespace SettingsAPIData
             //Must be authenticated
             SettingData data = new SettingData();
 
-            var repository = Store.GetVersion(store.ApplicationName, store.Version);
+            var version = Store.GetVersion(store.ApplicationName, store.Version);
 
-            if (repository == null)
+            if (version == null)
             {
                 throw new SettingsStoreException(Constants.ERROR_VERION_UNKNOWN);
             }
@@ -114,8 +121,8 @@ namespace SettingsAPIData
                 throw new SettingsStoreException(Constants.ERROR_DIRECTORY_UNKOWN);
             }
 
-            data.Directory = directory;
-            data.Repository = repository;
+            data.DirectoryId = directory.Id;
+            data.VersionId = version.Id;
             data.ObjecId = store.ObjectId ?? 0;
 
             return data;
@@ -123,6 +130,11 @@ namespace SettingsAPIData
 
         private IEnumerable<SettingData> GetSettingsFromStore(SettingStore store)
         {
+            if (store == null || string.IsNullOrWhiteSpace(store.ApplicationName) || string.IsNullOrWhiteSpace(store.DirectoryName))
+            {
+                throw new SettingsStoreException("Invalid path");
+            }
+
             if (!Auth.AllowReadDirectory(store.ApplicationName, store.DirectoryName))
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Read, store.DirectoryName, Auth.CurrentIdentity.Id);

@@ -38,7 +38,7 @@ namespace SettingsAPIData.Data.Mapping
             this.HasRequired(t => t.Directory)
                 .WithMany(t => t.Settings)
                 .HasForeignKey(d => d.DirectoryId);
-            this.HasRequired(t => t.Repository)
+            this.HasRequired(t => t.Version)
                 .WithMany(t => t.Settings)
                 .HasForeignKey(d => d.VersionId);
         }

@@ -1,6 +1,7 @@
 ﻿using SettingsAPIData.Model;
 using SettingsAPIShared;
 using System.Security.Principal;
+using System;
 
 namespace SettingsAPIData
 {
@@ -69,7 +70,7 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleCreateApplication());
+            return User.IsInRole(SecurityRoles.RoleCreateApplication()) || IsMasterKey;
         }
 
         public bool AllowCreateDirectories(string application)
@@ -77,7 +78,7 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleCreateDirectory(application));
+            return User.IsInRole(SecurityRoles.RoleCreateDirectory(application)) || IsMasterKey;
         }
 
         public bool AllowCreateDirectories(string application, string directoryName)
@@ -85,7 +86,7 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleCreateDirectory(application));
+            return User.IsInRole(SecurityRoles.RoleCreateDirectory(application)) || IsMasterKey;
         }
 
         public bool AllowCreateDirectory(string application, string directoryName)
@@ -95,7 +96,7 @@ namespace SettingsAPIData
 
             if (!string.IsNullOrWhiteSpace(directoryName))
             {
-                if (directoryName.StartsWith(Constants.SYSTEM_RESERVED_PREFIX))
+                if (string.Equals(directoryName, Constants.DEAULT_DIRECTORY_NAME, System.StringComparison.CurrentCultureIgnoreCase))
                 {
                     return false;
                 }
@@ -110,7 +111,7 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleCreateSetting(application, directoryName));
+            return User.IsInRole(SecurityRoles.RoleCreateSetting(application, directoryName)) || IsMasterKey;
         }
 
         public bool AllowCreateVersion(string application)
@@ -118,15 +119,15 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleCreateVersion(application));
+            return User.IsInRole(SecurityRoles.RoleCreateVersion(application)) || IsMasterKey;
         }
 
         public bool AllowDeleteApplication(string application)
         {
-            if (string.IsNullOrWhiteSpace(application))
+            if (string.IsNullOrWhiteSpace(application) || string.Equals(application, Constants.SYSTEM_APPLICATION_NAME, System.StringComparison.CurrentCultureIgnoreCase))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleDeleteApplication(application));
+            return User.IsInRole(SecurityRoles.RoleDeleteApplication(application)) || IsMasterKey;
         }
 
         public bool AllowDeleteDirectory(string application, string directoryName)
@@ -134,12 +135,15 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
                 return false;
 
-            if (directoryName.StartsWith(Constants.SYSTEM_RESERVED_PREFIX))
+            if (!IsMasterKey && string.Equals(directoryName, Constants.DEAULT_DIRECTORY_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 return false;
             }
 
-            return User.IsInRole(SecurityRoles.RoleDeleteDirectory(application, directoryName));
+            if(string.Equals(application, Constants.SYSTEM_APPLICATION_NAME, System.StringComparison.CurrentCultureIgnoreCase) && string.Equals(directoryName, Constants.DEAULT_DIRECTORY_NAME, System.StringComparison.CurrentCultureIgnoreCase))
+                return false;
+
+            return User.IsInRole(SecurityRoles.RoleDeleteDirectory(application, directoryName)) || IsMasterKey;
         }
 
         public bool AllowDeleteSetting(string application, string directoryName)
@@ -147,7 +151,7 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleDeleteSetting(application, directoryName));
+            return User.IsInRole(SecurityRoles.RoleDeleteSetting(application, directoryName)) || IsMasterKey;
         }
 
         public bool AllowDeleteVersion(string application)
@@ -155,7 +159,12 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleCreateVersion(application));
+            return User.IsInRole(SecurityRoles.RoleCreateVersion(application)) || IsMasterKey;
+        }
+
+        public bool AllowReadDirectories(string application)
+        {
+            throw new NotImplementedException();
         }
 
         public bool AllowReadDirectory(string application, string directoryName)
@@ -163,7 +172,15 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleReadDirectory(application, directoryName));
+            return User.IsInRole(SecurityRoles.RoleReadDirectory(application, directoryName)) || IsMasterKey;
+        }
+
+        public bool AllowReadVersions(string application)
+        {
+            if (string.IsNullOrWhiteSpace(application))
+                return false;
+
+            return User.IsInRole(SecurityRoles.RoleReadVersions(application)) || IsMasterKey;
         }
 
         public bool AllowWriteSetting(string application, string directoryName)
@@ -171,7 +188,7 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
                 return false;
 
-            return User.IsInRole(SecurityRoles.RoleWriteSetting(application, directoryName));
+            return User.IsInRole(SecurityRoles.RoleWriteSetting(application, directoryName)) || IsMasterKey;
         }
 
         public string[] GetApiRoles(ApiKeyModel data)

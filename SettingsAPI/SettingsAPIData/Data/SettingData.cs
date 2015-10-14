@@ -13,14 +13,14 @@ namespace SettingsAPIData.Data
         public Nullable<System.DateTime> Created { get; set; }
         public Nullable<System.DateTime> Modified { get; set; }
         public virtual DirectoryData Directory { get; set; }
-        public virtual VersionData Repository { get; set; }
+        public virtual VersionData Version { get; set; }
 
         public ApplicationData Application
         {
             get
             {
-                if (Repository != null)
-                    return Repository.Application;
+                if (Version != null)
+                    return Version.Application;
 
                 return null;
             }
@@ -34,7 +34,7 @@ namespace SettingsAPIData.Data
         public bool Match(string applicationName, int version, string directory, int? objectId)
         {
             return applicationName.ToLower() == Application.Name.ToLower()
-                && Repository.Version == version
+                && Version.Version == version
                 && directory.ToLower() == Directory.Name.ToLower()
                 && objectId == null || ObjecId == objectId;
         }

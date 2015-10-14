@@ -1,4 +1,6 @@
-﻿namespace SettingsAPIData
+﻿using System;
+
+namespace SettingsAPIData
 {
     internal static class SecurityRoles
     {
@@ -15,6 +17,16 @@
         public static string RoleCreateSetting(string applicationName, string directoryName)
         {
             return string.Format("create.key@{0}.{1}", directoryName, applicationName);
+        }
+
+        internal static string RoleReadVersions(string applicationName)
+        {
+            return string.Format("read.versions@{0}", applicationName);
+        }
+
+        internal static string RoleReadDirectories(string applicationName)
+        {
+            return string.Format("read.directories@{0}", applicationName);
         }
 
         public static string RoleCreateVersion(string applicationName)

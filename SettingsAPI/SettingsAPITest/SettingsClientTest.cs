@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SettingsAPIClient;
+using System.Collections.Generic;
+
 
 namespace SettingsAPITest
 {
@@ -10,42 +12,108 @@ namespace SettingsAPITest
         private readonly string _masterKey = "=a33a5f531f49480eac31d64d02163bcf";
         private readonly string _url = "http://localhost/settings/api/";
 
+      
+
+        private string currentApplicationName;
+        private string currentDirectoryName;
+        private SettingsManager settingsManager;
         [TestMethod]
-        public void OpenRoot()
+        public void CreateApplicationMaster()
         {
-            SettingsManager settingsManager = new SettingsManager(_url, _masterKey);
+            settingsManager = new SettingsManager(_url, _masterKey);
+
+            string applicationName = RandomString();
+            string description = RandomString();
+            settingsManager.CreateApplication(applicationName, description);
+            Assert.AreEqual(settingsManager.Application.Name, applicationName);
+            Assert.AreEqual(settingsManager.Application.Description, description);
+            Assert.AreEqual(settingsManager.Directory.Name, "root");
+
+            currentApplicationName = settingsManager.Application.Name;
+        }
+
+        [TestMethod]
+        public void DeleteApplicationMaster()
+        {
+            CreateApplicationMaster();
 
             try
-            {
-                settingsManager.OpenApplication("SampleApplication");  
-                
+            {   
+                bool isDeleted = settingsManager.DeleteApplication(currentApplicationName);
+
+                Assert.IsTrue(isDeleted);
+
+                try
+                {
+                    settingsManager.OpenApplication(currentApplicationName);
+                    Assert.Fail("Open application that was deleted");
+                }
+                catch (SettingNotFoundException)
+                {
+                    //Perfect;
+                }
+
             }
             catch (SettingsException ex)
             {
-                Console.WriteLine(ex.Message);
+                Assert.Fail(ex.Message);
+            } 
+        }
+
+        [TestMethod]
+        public void CreateDirectoryMaster()
+        {
+            CreateApplicationMaster();
+
+            try
+            {
+                string directoryName = RandomString();
+                string directoryDescription = RandomString();
+                settingsManager.CreateDirectory(currentApplicationName, directoryName, directoryDescription);
+
+                Assert.AreEqual(directoryName, settingsManager.Directory.Name);
+                Assert.AreEqual(directoryDescription, settingsManager.Directory.Description);
+
+                currentDirectoryName = settingsManager.Directory.Name;
+
+            }
+            catch (SettingsException ex)
+            {
+                Assert.Fail(ex.Message);
             }
         }
 
         [TestMethod]
-        public void SaveToRoot()
+        public void DeleteDirectoryMaster()
         {
-            SettingsManager settingsManager = new SettingsManager(_url, _masterKey);
+            CreateDirectoryMaster();
 
             try
             {
-                settingsManager.OpenApplication("SampleApplication");
+                bool isDeleted = settingsManager.DeleteDirectory(currentApplicationName, currentDirectoryName);
 
-                settingsManager.Save("test", "lalalalalala");
+                Assert.IsTrue(isDeleted);
 
-                var result = settingsManager.GetString("test");
-
-                Assert.AreEqual("test", result);
+                try
+                {
+                    settingsManager.OpenDirectory(currentApplicationName, currentDirectoryName);
+                    Assert.Fail("Open application that was deleted");
+                }
+                catch (SettingNotFoundException)
+                {
+                    //Perfect;
+                }
 
             }
             catch (SettingsException ex)
             {
-                Console.WriteLine(ex.Message);
+                Assert.Fail(ex.Message);
             }
+        }
+
+        private static string RandomString()
+        {
+            return Guid.NewGuid().ToString().Replace("-", "").Substring(0, 8);
         }
     }
 }

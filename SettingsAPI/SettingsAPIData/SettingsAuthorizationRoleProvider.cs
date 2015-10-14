@@ -14,48 +14,53 @@ namespace SettingsAPIData
             {
                 bool allowAdministration = model.AdminKey || model.Id == Constants.SYSTEM_MASTER_KEY_ID;
 
+                roles.Add(SecurityRoles.RoleReadDirectories(model.ApplicationName));
+                roles.Add(SecurityRoles.RoleReadVersions(model.ApplicationName));
 
                 if (model.Id == Constants.SYSTEM_MASTER_KEY_ID)
                 {
                     roles.Add(SecurityRoles.RoleCreateApplication());
-                    roles.Add(SecurityRoles.RoleDeleteApplication(model.ApplicationName));  
-                }
-
-                if (allowAdministration)
-                {
-                    roles.Add(SecurityRoles.RoleDeleteDirectories(model.ApplicationName));
-                    roles.Add(SecurityRoles.RoleCreateDirectory(model.ApplicationName));
-                    roles.Add(SecurityRoles.RoleCreateVersion(model.ApplicationName));
-                    roles.Add(SecurityRoles.RoleDeleteVersion(model.ApplicationName));
-                }
-
+                    roles.Add(SecurityRoles.RoleDeleteApplication(model.ApplicationName));
+                } 
+           
                 foreach (var item in model.Access)
-                { 
+                {
+                  
                     if (allowAdministration)
                     {
-                        roles.Add(SecurityRoles.RoleDeleteDirectory(model.ApplicationName, item.DirectoryName));
+                        AddRoles(SecurityRoles.RoleDeleteDirectory(item.ApplicationName, item.DirectoryName), roles);
+                        AddRoles(SecurityRoles.RoleCreateDirectory(item.ApplicationName), roles);
+                        AddRoles(SecurityRoles.RoleDeleteDirectories(item.ApplicationName), roles);
+                        AddRoles(SecurityRoles.RoleCreateVersion(item.ApplicationName), roles);
+                        AddRoles(SecurityRoles.RoleDeleteVersion(item.ApplicationName), roles);
                     }
 
-                    roles.Add(SecurityRoles.RoleReadDirectory(model.ApplicationName, item.DirectoryName));
+                    AddRoles(SecurityRoles.RoleReadDirectory(item.ApplicationName, item.DirectoryName), roles);
 
                     if (item.AllowCreate)
                     {
-                        roles.Add(SecurityRoles.RoleCreateSetting(model.ApplicationName, item.DirectoryName));
+                        AddRoles(SecurityRoles.RoleCreateSetting(item.ApplicationName, item.DirectoryName), roles);
                     }
 
                     if (item.AllowDelete)
                     {
-                        roles.Add(SecurityRoles.RoleDeleteSetting(model.ApplicationName, item.DirectoryName));
+                        AddRoles(SecurityRoles.RoleDeleteSetting(item.ApplicationName, item.DirectoryName), roles);
                     }
 
                     if (item.AllowWrite)
                     {
-                        roles.Add(SecurityRoles.RoleWriteSetting(model.ApplicationName, item.DirectoryName));
+                        AddRoles(SecurityRoles.RoleWriteSetting(item.ApplicationName, item.DirectoryName), roles);
                     }
                 }
             }
 
             return roles.ToArray();
+        }
+
+        private static void AddRoles(string role, List<string> roles)
+        {
+            if (!roles.Contains(role))
+                roles.Add(role);
         }
     }
 }

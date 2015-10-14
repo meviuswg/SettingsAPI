@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SettingsAPIClient
 {
-    public abstract class ApiClient<T>
+    public abstract class ApiClient
     {
         protected const int TIMEOUT = 5;
         protected string _apiKey;
@@ -20,68 +20,160 @@ namespace SettingsAPIClient
             this._apiKey = apiKey;
         }
 
-        public abstract string LoalPath { get; }
+        public abstract string LocalPath { get; }
 
-        public virtual async Task<T> Get(string key = "")
+        protected virtual async Task<T> Get<T>()
         {
-            string endpoint = string.Empty;
+            return await Get<T>(string.Empty);
+        }
+
+        protected virtual async Task<bool> Delete()
+        {
+            return await Delete(string.Empty);
+        }
+
+        protected virtual async Task<bool> Delete(string localPath)
+        {
             HttpResponseMessage responseMessage = null;
             try
             {
                 HttpClient client = CreateHttpClient();
-                endpoint = GetEndpoint(key);
 
-                var response = await client.GetAsync(endpoint, HttpCompletionOption.ResponseContentRead);
+                string endpoint = GetEndpoint(localPath);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    return await response.Content.ReadAsAsync<T>();
-                }
-                else
-                {
-                    await handleNotOk(response);
-                }
+                responseMessage = await client.DeleteAsync(endpoint);
+
+            }
+            catch (OperationCanceledException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (TimeoutException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
             }
             catch (Exception ex)
             {
-                HandleException(responseMessage, ex);
+                throw new SettingsException(ex.Message, ex);
+            }
+
+            if (responseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                await handleNotOk(responseMessage);
+            }
+
+            return false;
+        }
+
+        protected virtual async Task<T> Get<T>(string localPath)
+        {
+            HttpResponseMessage responseMessage = null;
+            try
+            {
+                HttpClient client = CreateHttpClient();
+
+                string endpoint = GetEndpoint(localPath);
+
+                responseMessage = await client.GetAsync(endpoint, HttpCompletionOption.ResponseContentRead);
+
+            }
+            catch (OperationCanceledException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (TimeoutException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new SettingsException(ex.Message, ex);
+            }
+
+            if (responseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                try
+                {
+                    return await responseMessage.Content.ReadAsAsync<T>();
+                }
+                catch(Exception ex)
+                {
+                    throw new SettingsException("Error reading content", ex);
+                }
+            }
+            else
+            {
+                await handleNotOk(responseMessage);
             }
 
             return default(T);
 
         }
 
-        public virtual async Task<bool> Post(T data)
+        protected virtual async Task<bool> Post<T>(T data)
         {
-            string endpoint = string.Empty;
+            return await Post<T>(data, string.Empty);
+        }
+
+        protected virtual async Task<bool> Post<T>(T data, string localPath)
+        {
+
             HttpResponseMessage responseMessage = null;
             try
             {
                 HttpClient client = CreateHttpClient();
-                endpoint = GetEndpoint();
+                string endpoint = GetEndpoint(localPath);
 
-                responseMessage = await client.PostAsJsonAsync(GetEndpoint(), data);
+                responseMessage = await client.PostAsJsonAsync(endpoint, data);
 
-                if (responseMessage.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    return true;
-                }
-                else
-                {
-                    return await handleNotOk(responseMessage);
-                }
+            }
+            catch (OperationCanceledException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (TimeoutException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
             }
             catch (Exception ex)
             {
-                HandleException(responseMessage, ex);
+                throw new SettingsException(ex.Message, ex);
             }
 
-            return false;
+            if (responseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return await handleNotOk(responseMessage);
+            } 
+         
         }
 
-        public virtual string GetEndpoint(string key = "")
+        public virtual string GetEndpoint(string replacementPath = "")
         {
-            string url = string.Concat(_baseUrl, "/", LoalPath, "/", key, string.Format("?apikey={0}", _apiKey));
+            string lPath = LocalPath;
+            if (!string.IsNullOrWhiteSpace(replacementPath))
+                lPath = replacementPath;
+
+            string url = string.Concat(_baseUrl, "/", lPath, string.Format("?apikey={0}", _apiKey));
             return url;
         }
 
@@ -93,39 +185,6 @@ namespace SettingsAPIClient
 
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             return client;
-        }
-
-        private void HandleException(HttpResponseMessage message, Exception ex1)
-        {
-            if (message == null)
-            {
-                throw new SettingsException("Failed to initialize client", ex1);
-            }
-
-            try
-            {
-                throw ex1;
-            }
-            catch (OperationCanceledException ex)
-            {
-                throw new SettingsStoreException(message.RequestMessage, ex);
-            }
-            catch (TimeoutException ex)
-            {
-                throw new SettingsStoreException(message.RequestMessage, ex);
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new SettingsStoreException(message.RequestMessage, ex);
-            }
-            catch (SettingsStoreException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new SettingsException("Error", ex);
-            }
         }
 
         private async Task<bool> handleNotOk(HttpResponseMessage response)
@@ -142,7 +201,7 @@ namespace SettingsAPIClient
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                throw new SettingAccessDeniedException(response.RequestMessage);
+                throw new SettingNotFoundException(response.RequestMessage);
             }
 
             if (response.StatusCode == HttpStatusCode.Forbidden)

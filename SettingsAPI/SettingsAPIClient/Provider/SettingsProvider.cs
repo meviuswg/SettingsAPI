@@ -1,6 +1,9 @@
-﻿namespace SettingsAPIClient.Provider
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace SettingsAPIClient.Provider
 {
-    internal class SettingsProvider : ApiClient<Setting[]>
+    internal class SettingsProvider : ApiClient 
     {
         private string applicationName;
         private string directory;
@@ -15,6 +18,26 @@
             this.objectId = objectId;
         }
 
-        public override string LoalPath { get { return string.Concat("settings", "/", applicationName, "/", version, "/", directory, "/", objectId); } }
+        public async Task<bool> Save(IEnumerable<Setting> settings)
+        {
+            return await Post<IEnumerable<Setting>>(settings);
+        }
+
+        public async Task<Setting[]> Get()
+        {
+            return await Get<Setting[]>();
+        }
+
+        public async Task<Setting[]> Get(string key)
+        {
+            return await Get<Setting[]>(string.Concat(LocalPath, "/", key));
+        }
+
+        public async Task<bool> Delete(string key)
+        {
+            return await Post<string>(string.Concat(LocalPath, "/", key));
+        }
+
+        public override string LocalPath { get { return string.Concat("settings", "/", applicationName, "/", version, "/", directory, "/", objectId); } }
     }
 }

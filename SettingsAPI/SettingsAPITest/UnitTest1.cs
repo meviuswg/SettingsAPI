@@ -19,7 +19,7 @@ namespace SettingsAPITest
 
             SettingsRepository controller = new SettingsRepository(repository, provider);
 
-            SettingStore store = new SettingStore("_system", "_directory");
+            SettingStore store = new SettingStore("system", "root");
 
 
             var data = controller.GetSettings(store).ToList();
@@ -49,7 +49,7 @@ namespace SettingsAPITest
 
             ApplicationRepository controller = new ApplicationRepository(repository, provider);
 
-            bool create = provider.AllowDeleteSetting("_system", "_directory");
+            bool create = provider.AllowDeleteSetting("system", "root");
             var apps = controller.GetApplications();
 
             var a = apps.FirstOrDefault();

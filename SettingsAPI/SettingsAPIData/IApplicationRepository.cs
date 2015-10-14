@@ -17,7 +17,7 @@ namespace SettingsAPIData
 
         IEnumerable<DirectoryModel> GetDirectories(string applicationName);
 
-        DirectoryModel GetDirectory(string applicationName, string directoryName);
+        IEnumerable<DirectoryModel> GetDirectories(string applicationName, string directoryName);
 
         void CreateDirectory(string applicationName, string directoryName, string description);
 

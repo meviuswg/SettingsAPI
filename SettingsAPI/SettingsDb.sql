@@ -153,7 +153,7 @@ INSERT INTO settings_application (
 	)
 VALUES (
 	- 1
-	,'_system'
+	,'system'
 	,'System reserved Application for the Settings API and procedures.'
 	)
 	,(
@@ -193,19 +193,19 @@ INSERT INTO settings_directory (
 VALUES (
 	- 1
 	,- 1
-	,'_system'
+	,'system'
 	,'System reserved directory.'
 	)
 	,(
 	- 2
 	,- 1
-	,'_root'
+	,'root'
 	,'System reserved directory.'
 	)
 	,(
 	1
 	,1
-	,'_root'
+	,'root'
 	,'Standard directory for Application specific settings.'
 	)
 	,(

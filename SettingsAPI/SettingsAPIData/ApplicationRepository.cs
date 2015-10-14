@@ -30,14 +30,18 @@ namespace SettingsAPIData
 
         public IEnumerable<VersionModel> GetVersions(string applicationName)
         {
-            var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
+            return GetVersions(application);
+        }
 
+        private IEnumerable<VersionModel> GetVersions(ApplicationData application)
+        {
             if (application == null)
             {
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
             }
 
-            var data = GetVersionsFromStore(applicationName);
+            var data = GetVersionData(application);
 
             List<VersionModel> versions = new List<VersionModel>();
 
@@ -53,21 +57,30 @@ namespace SettingsAPIData
             return versions;
         }
 
+        private IEnumerable<VersionData> GetVersionData(ApplicationData application)
+        {
+            var data = (from ver in Store.Context.Versions
+                        where ver.ApplicationId == application.Id
+                        select ver);
+
+            return data;
+        }
+
         public void CreateVersion(string applicationName, int version)
         {
-            if (!Auth.AllowDeleteVersion(applicationName))
+            if (!Auth.AllowCreateVersion(applicationName))
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
             }
 
-            var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
 
             if (application == null)
             {
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
             }
 
-            var data = GetVersionsFromStore(applicationName, version).SingleOrDefault();
+            var data = GetVersionData(application).SingleOrDefault(v => v.Version == version);
 
             if (data != null)
             {
@@ -88,14 +101,14 @@ namespace SettingsAPIData
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Delete, applicationName, Auth.CurrentIdentity.Id);
             }
-            var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
 
             if (application == null)
             {
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
             }
 
-            var data = GetVersionsFromStore(applicationName, version).SingleOrDefault();
+            var data = GetVersionData(application).SingleOrDefault(v => v.Version == version);
 
             if (data == null)
             {
@@ -114,149 +127,52 @@ namespace SettingsAPIData
             }
         }
 
-        private IEnumerable<VersionData> GetVersionsFromStore(string applicationName, int? version = null)
-        {
-            if (string.IsNullOrWhiteSpace(applicationName))
-            {
-                throw new SettingsStoreException("Application name not provided");
-            }
-
-            var data = (from ver in Store.Context.Versions
-                        where ver.Application.Name == applicationName
-                        && (ver.Version == version || true == (version == null))
-                        select ver);
-
-            return data;
-        }
-
         #endregion Version
 
         #region Directory
 
-        public void CreateDirectory(string applicationName, string directoryName, string description)
-        {
-            if (string.IsNullOrWhiteSpace(directoryName))
-            {
-                throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
-            }
-
-            if (!Auth.AllowCreateDirectory(applicationName, directoryName))
-            {
-                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Create, directoryName, Auth.CurrentIdentity.Id);
-            }
-
-            var directory = GetDirectoriesFromStore(applicationName, directoryName).SingleOrDefault();
-
-            var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
-
-            if (application == null)
-            {
-                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
-            }
-
-            if (directory != null)
-            {
-                throw new SettingsDuplicateException(Constants.ERROR_DIRECTORY_ALREADY_EXISTS);
-            }
-
-            if (directory.Name.StartsWith(Constants.SYSTEM_RESERVED_PREFIX))
-            {
-                throw new SettingsNotFoundException(Constants.ERROR_DIRECTORY_NAME_INVALID);
-            }
-
-            using (TransactionScope scope = new TransactionScope())
-            {
-                directory = new DirectoryData();
-                directory.ApplicationId = application.Id;
-                directory.Name = directoryName;
-                directory.Description = description;
-                directory.Created = DateTime.Now;
-
-                Store.Context.Directories.Add(directory);
-                Store.Save();
-
-                scope.Complete();
-                Auth.Invalidate();
-            }
-        }
-
-        public void DeleteDirectory(string applicationName, string directoryName)
-        {
-
-            var directory = GetDirectoriesFromStore(applicationName, directoryName).SingleOrDefault();
-
-            var application = GetApplicationsFromStore(applicationName).SingleOrDefault();
-
-            if (application == null)
-            {
-                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
-            }
-
-            if (directory != null)
-            {
-                throw new SettingsNotFoundException(Constants.ERROR_DIRECTORY_UNKOWN);
-            }
-
-            if (!Auth.AllowDeleteDirectory(applicationName, directoryName))
-            {
-                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Delete, directoryName, Auth.CurrentIdentity.Id);
-            }
-
-            if (directory.Name.StartsWith(Constants.SYSTEM_RESERVED_PREFIX))
-            {
-                throw new SettingsNotFoundException(Constants.ERROR_DIRECTORY_CANNOT_DELETE);
-            }
-
-            using (TransactionScope scope = new TransactionScope())
-            {
-                var settings = Store.Context.Settings.Where(s => s.DirectoryId == directory.Id);
-                var access = Store.Context.Access.Where(s => s.DirectoryId == directory.Id);
-
-                Store.Context.Settings.RemoveRange(settings);
-                Store.Save();
-                Store.Context.Access.RemoveRange(access);
-                Store.Save();
-                Store.Context.Directories.Remove(directory);
-                Store.Save();
-
-                scope.Complete();
-
-                Auth.Invalidate();
-            }
-        }
-
         public IEnumerable<DirectoryModel> GetDirectories(string applicationName)
         {
-            var application = GetApplication(applicationName);
-
-            if (application == null)
-            {
-                new SettingsNotFoundException(applicationName);
-            }
-
             return GetDirectories(applicationName, null);
         }
 
-        public DirectoryModel GetDirectory(string applicationName, string directoryName)
+        public IEnumerable<DirectoryModel> GetDirectories(string applicationName, string directoryName)
         {
-            if (string.IsNullOrWhiteSpace(directoryName))
+            if (!string.IsNullOrWhiteSpace(directoryName))
             {
-                throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
+                if (!Auth.AllowReadDirectory(applicationName, directoryName))
+                {
+                    throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Read, applicationName, Auth.CurrentIdentity.Id);
+                }
+            }
+            else
+            {
+                if (!Auth.AllowReadDirectories(applicationName))
+                {
+                    throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Read, applicationName, Auth.CurrentIdentity.Id);
+                }
+            }
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
+            var directories = GetDirectories(application, directoryName);
+
+            if (!string.IsNullOrWhiteSpace(directoryName) && directories != null && directories.Count() == 0)
+            {
+                throw new SettingsNotFoundException(directoryName);
             }
 
-            var directory = GetDirectories(applicationName, directoryName).SingleOrDefault();
-
-            if (directory == null)
-            {
-                new SettingsNotFoundException(directoryName);
-            }
-
-            return directory;
+            return directories;
         }
 
-        private IEnumerable<DirectoryModel> GetDirectories(string applicationName, string directoryName)
+        private IEnumerable<DirectoryModel> GetDirectories(ApplicationData application, string directoryName)
         {
-            var data = GetDirectoriesFromStore(applicationName, directoryName);
+            if (application == null)
+            {
+                throw new SettingsStoreException(Constants.ERROR_APPLICATION_NO_NAME);
+            }
+
+            string applicationName = application.Name;
+
+            var data = GetDirectoriesData(application, directoryName);
 
             List<DirectoryModel> directories = new List<DirectoryModel>();
 
@@ -278,9 +194,9 @@ namespace SettingsAPIData
             return directories;
         }
 
-        private IEnumerable<DirectoryData> GetDirectoriesFromStore(string applicationName, string directoryName)
+        private IEnumerable<DirectoryData> GetDirectoriesData(ApplicationData application, string directoryName)
         {
-            if (string.IsNullOrWhiteSpace(applicationName))
+            if (application == null)
             {
                 throw new SettingsStoreException(Constants.ERROR_APPLICATION_NO_NAME);
             }
@@ -290,11 +206,98 @@ namespace SettingsAPIData
 
             var data = (from dir in Store.Context.Directories
                         where dir.Access.FirstOrDefault(acc => acc.ApiKeyId == Auth.CurrentIdentity.Id) != null
-                        && dir.Application.Name == applicationName
+                        && dir.ApplicationId == application.Id
                         && (dir.Name == directoryName || true == (directoryName == null))
                         select dir);
 
             return data;
+        }
+
+        public void CreateDirectory(string applicationName, string directoryName, string description)
+        {
+            if (string.IsNullOrWhiteSpace(directoryName))
+            {
+                throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
+            }
+
+            if (!Auth.AllowCreateDirectory(applicationName, directoryName))
+            {
+                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Create, directoryName, Auth.CurrentIdentity.Id);
+            }
+
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
+
+            if (application == null)
+            {
+                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
+            }
+
+            var directory = GetDirectoriesData(application, directoryName).SingleOrDefault();
+
+            if (directory != null)
+            {
+                throw new SettingsDuplicateException(Constants.ERROR_DIRECTORY_ALREADY_EXISTS);
+            }
+
+            if (string.Equals(directoryName, Constants.DEAULT_DIRECTORY_NAME, System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                throw new SettingsNotFoundException(Constants.ERROR_DIRECTORY_NAME_INVALID);
+            }
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                directory = new DirectoryData();
+                directory.ApplicationId = application.Id;
+                directory.Name = directoryName;
+                directory.Description = description;
+                directory.Created = DateTime.Now;
+
+                Store.Context.Directories.Add(directory);
+                Store.Save();
+
+                scope.Complete();
+            }
+
+            Auth.Invalidate();
+        }
+
+        public void DeleteDirectory(string applicationName, string directoryName)
+        {
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
+
+            if (application == null)
+            {
+                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
+            }
+
+            var directory = GetDirectoriesData(application, directoryName).SingleOrDefault();
+
+            if (directory == null)
+            {
+                throw new SettingsNotFoundException(Constants.ERROR_DIRECTORY_UNKOWN);
+            }
+
+            if (!Auth.AllowDeleteDirectory(applicationName, directoryName))
+            {
+                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Delete, directoryName, Auth.CurrentIdentity.Id);
+            }
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required))
+            {
+                var settings = Store.Context.Settings.Where(s => s.DirectoryId == directory.Id);
+                var access = Store.Context.Access.Where(s => s.DirectoryId == directory.Id);
+
+                Store.Context.Settings.RemoveRange(settings);
+                Store.Save();
+                Store.Context.Access.RemoveRange(access);
+                Store.Save();
+                Store.Context.Directories.Remove(directory);
+                Store.Save();
+
+                scope.Complete();
+            }
+
+            Auth.Invalidate();
         }
 
         #endregion Directory
@@ -303,7 +306,19 @@ namespace SettingsAPIData
 
         public ApplicationModel GetApplication(string name)
         {
-            return GetApplications(name).SingleOrDefault();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new SettingsStoreException(Constants.ERROR_APPLICATION_NO_NAME);
+            }
+
+            var application = GetApplications(name).SingleOrDefault();
+
+            if (application == null)
+            {
+                throw new SettingsNotFoundException(name);
+            }
+
+            return application;
         }
 
         public IEnumerable<ApplicationModel> GetApplications()
@@ -313,7 +328,7 @@ namespace SettingsAPIData
 
         private IEnumerable<ApplicationModel> GetApplications(string applicationName = null)
         {
-            var data = GetApplicationsFromStore(applicationName);
+            var data = GetApplicationsData(applicationName);
 
             List<ApplicationModel> applicationModels = new List<ApplicationModel>();
 
@@ -324,7 +339,7 @@ namespace SettingsAPIData
                 model.Name = item.Name;
                 model.Description = item.Description;
                 model.Versions = GetVersions(item.Name);
-                model.Directories = GetDirectories(item.Name);
+                model.Directories = GetDirectories(item, null);
                 model.Created = item.Created;
 
                 model.AllowEdit = Auth.AllowCreateDirectories(item.Name);
@@ -369,14 +384,14 @@ namespace SettingsAPIData
                 throw new SettingsStoreException(Constants.ERROR_APPLICATION_ALREADY_EXISTS);
             }
 
-            if (application.Name.StartsWith(Constants.SYSTEM_RESERVED_PREFIX))
+            if (string.Equals(applicationName, Constants.SYSTEM_APPLICATION_NAME, System.StringComparison.CurrentCultureIgnoreCase))
             {
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_NAME_INVALID);
             }
 
             application = new ApplicationData();
-            var cust_directory = new DirectoryData();
-            var def_directory = new DirectoryData();
+            DirectoryData cust_directory = null;
+            DirectoryData def_directory = null;
 
             using (TransactionScope scope = new TransactionScope())
             {
@@ -435,7 +450,7 @@ namespace SettingsAPIData
                 access.Directory = def_directory;
                 Store.Context.Access.Add(access);
 
-                //Set access right to custom directory. 
+                //Set access right to custom directory.
                 if (cust_directory != null)
                 {
                     access = new DirectoryAccessData();
@@ -449,27 +464,24 @@ namespace SettingsAPIData
 
                 Store.Save();
                 scope.Complete();
-                Auth.Invalidate();
             }
+
+            Auth.Invalidate();
 
             //reload the enities the reflect the master key access created by the trigger.
             if (cust_directory != null)
                 Store.Context.Entry<DirectoryData>(cust_directory).Collection("Access").Load();
 
-            if (cust_directory != null)
+            if (def_directory != null)
                 Store.Context.Entry<DirectoryData>(def_directory).Collection("Access").Load();
+
+            Store.Context.Entry<ApplicationData>(application).Reload();
 
             return GetApplication(applicationName);
         }
 
-        private IEnumerable<ApplicationData> GetApplicationsFromStore(string applicationName)
+        private IEnumerable<ApplicationData> GetApplicationsData(string applicationName)
         {
-            if (string.IsNullOrWhiteSpace(applicationName))
-                applicationName = null;
-
-            if (Auth.CurrentIdentity == null)
-                throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Read, "ApiKey", 0);
-
             var applications = (from app in Store.Context.Applications
                                 where (app.Name == applicationName || applicationName == null) &&
                                 (app.ApiKeys.FirstOrDefault(a => a.Id == Auth.CurrentIdentity.Id) != null
@@ -487,7 +499,7 @@ namespace SettingsAPIData
 
                 if (application != null)
                 {
-                    if (applicationName.StartsWith(Constants.SYSTEM_RESERVED_PREFIX))
+                    if (string.Equals(applicationName, Constants.SYSTEM_APPLICATION_NAME, System.StringComparison.CurrentCultureIgnoreCase))
                     {
                         throw new SettingsStoreException(Constants.ERROR_APPLICATION_CANNOT_DELETED);
                     }
@@ -496,32 +508,28 @@ namespace SettingsAPIData
                     {
                         var directories = Store.Context.Directories.Where(d => d.ApplicationId == application.Id);
 
-                        var settings = Store.Context.Settings.Where(s => s.DirectoryId == application.Id);
-                        Store.Context.Settings.RemoveRange(settings);
-
-                        Store.Context.SaveChanges();
-
                         foreach (var item in directories)
                         {
                             DeleteDirectory(application.Name, item.Name);
                         }
 
-                        var repositories = Store.Context.Versions.Where(s => s.Application.Id == application.Id);
-                        Store.Context.Versions.RemoveRange(repositories);
+                        var versions = Store.Context.Versions.Where(s => s.Application.Id == application.Id);
+                        Store.Context.Versions.RemoveRange(versions);
 
-                        Store.Context.SaveChanges();
+                        Store.Save();
 
                         var keys = Store.Context.ApiKeys.Where(k => k.Application.Id == application.Id);
+
                         Store.Context.ApiKeys.RemoveRange(keys);
                         Store.Context.SaveChanges();
 
                         Store.Context.Applications.Remove(application);
                         Store.Context.SaveChanges();
 
-                        scope.Complete();
-
-                        Auth.Invalidate();
+                        scope.Complete(); 
                     }
+
+                    Auth.Invalidate();
                 }
                 else
                 {
@@ -534,6 +542,7 @@ namespace SettingsAPIData
             }
         }
 
-        #endregion Application 
+        #endregion Application
+
     }
 }

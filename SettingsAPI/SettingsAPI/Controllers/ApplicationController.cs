@@ -1,12 +1,14 @@
 ﻿using SettingsAPIData;
 using SettingsAPIData.Model;
 using System;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 
 namespace SettingsAPI.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/application")]
     public class ApplicationController : BaseApiController
     {
         private IApplicationRepository controller;
@@ -17,7 +19,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/application/")]
+        [Route("")]
         [ResponseType(typeof(ApplicationModel[]))]
         public IHttpActionResult Get()
         {
@@ -32,7 +34,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/application/{applicationName}")]
+        [Route("{applicationName}")]
         [ResponseType(typeof(ApplicationModel))]
         public IHttpActionResult Get(string applicationName)
         {
@@ -47,7 +49,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/application/{applicationName}/directories")]
+        [Route("{applicationName}/directories")]
         [ResponseType(typeof(DirectoryModel[]))]
         public IHttpActionResult GetDirectories(string applicationName)
         {
@@ -62,13 +64,13 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/application/{applicationName}/directories/{directoryName}")]
+        [Route("{applicationName}/directories/{directoryName}")]
         [ResponseType(typeof(DirectoryModel))]
         public IHttpActionResult GetDirectory(string applicationName, string directoryName)
         {
             try
             {
-                return Ok(controller.GetDirectory(applicationName, directoryName));
+                return Ok(controller.GetDirectories(applicationName, directoryName).SingleOrDefault());
             }
             catch (Exception ex)
             {
@@ -77,7 +79,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/application/{applicationName}/versions")]
+        [Route("{applicationName}/versions")]
         [ResponseType(typeof(VersionModel[]))]
         public IHttpActionResult GetVersions(string applicationName)
         {
@@ -92,7 +94,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/application/{applicationName}/versions/{version}")]
+        [Route("{applicationName}/versions/{version}")]
         [ResponseType(typeof(VersionModel))]
         public IHttpActionResult GetVersion(string applicationName, int version)
         {
@@ -107,7 +109,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/application/{applicationName}", Order = 0)]
+        [Route("{applicationName}", Order = 0)]
         [ResponseType(typeof(ApplicationModel))]
         public IHttpActionResult CreateApplication(string applicationName)
         {
@@ -122,7 +124,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/application", Order = 1)]
+        [Route("", Order = 1)]
         [ResponseType(typeof(ApplicationModel))]
         public IHttpActionResult CreateApplication([FromBody]SaveApplicationModel value)
         {
@@ -137,7 +139,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("api/application/{applicationName}")]
+        [Route("{applicationName}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult DeleteApplication(string applicationName)
         {
@@ -153,7 +155,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/application/{applicationName}/directories/{directoryName}")]
+        [Route("{applicationName}/directories/{directoryName}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult CreateDirectory(string applicationName, string directoryName)
         {
@@ -161,7 +163,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/application/{applicationName}/directories")]
+        [Route("{applicationName}/directories")]
         [ResponseType(typeof(void))]
         public IHttpActionResult CreateDirectory(string applicationName, [FromBody] SaveDirectoryModel value)
         {
@@ -177,7 +179,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("api/application/{applicationName}/directories/{directoryName}")]
+        [Route("{applicationName}/directories/{directoryName}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult DeleteDirectory(string applicationName, string directoryName)
         {
@@ -193,7 +195,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/application/{applicationName}/versions/{version}")]
+        [Route("{applicationName}/versions/{version}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult CreateVersion(string applicationName, int version)
         {
@@ -209,7 +211,7 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("api/application/{applicationName}/versions/{version}")]
+        [Route("{applicationName}/versions/{version}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult DeleteVersion(string applicationName, int version)
         {

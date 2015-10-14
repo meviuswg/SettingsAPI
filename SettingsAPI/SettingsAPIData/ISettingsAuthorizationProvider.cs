@@ -26,6 +26,10 @@ namespace SettingsAPIData
 
         bool AllowDeleteVersion(string application);
 
+        bool AllowReadVersions(string application);
+
+        bool AllowReadDirectories(string application);
+
         bool AllowReadDirectory(string application, string directoryName);
 
         bool AllowWriteSetting(string application, string directoryName);
