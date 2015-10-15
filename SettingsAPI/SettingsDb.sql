@@ -126,8 +126,7 @@ GO
 
 
 -- SEED
-DECLARE @masterKey VARCHAR(50) = '=a33a5f531f49480eac31d64d02163bcf'
-DECLARE @sampleKey VARCHAR(50) = '70eb9a6ad2e64647b220e3245024c325'
+DECLARE @masterKey VARCHAR(50) = '=a33a5f531f49480eac31d64d02163bcf' 
 
 SET IDENTITY_INSERT settings_application ON
 
@@ -139,12 +138,7 @@ INSERT INTO settings_application (
 VALUES (
 	- 1
 	,'system'
-	,'System reserved Application for the Settings API and procedures.'
-	)
-	,(
-	1
-	,'SampleApplication'
-	,'Sample application'
+	,'System reserved Application for the Settings API.'
 	)
 
 SET IDENTITY_INSERT settings_application OFF
@@ -159,11 +153,6 @@ VALUES (
 	-1
 	,@masterKey
 	,- 1
-	)
-	,(
-	 1
-	,@sampleKey
-	,1
 	)
 SET IDENTITY_INSERT settings_api_key OFF
 
@@ -187,24 +176,7 @@ VALUES (
 	,'root'
 	,'System reserved directory.'
 	)
-	,(
-	1
-	,1
-	,'root'
-	,'Standard directory for Application specific settings.'
-	)
-	,(
-	2
-	,1
-	,'Company'
-	,'Standard directory for Company specific settings. When used, the object_id of the setting is expected to be the company_id of an existing company.'
-	)
-	,(
-	3
-	,1
-	,'User'
-	,'Standard directory for User specific settings. When used, the object_id of the setting is expected to be the user_id a existing user.'
-	)
+	 
 
 SET IDENTITY_INSERT settings_directory OFF
 
@@ -216,9 +188,6 @@ VALUES (
 	- 1
 	,1
 	)
-	,(
-	1
-	,1
-	); 
+	
 
  
