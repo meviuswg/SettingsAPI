@@ -9,6 +9,11 @@ namespace SettingsAPIData
             WriteLog(message);
         }
 
+        public SettingsStoreException(string message, Exception ex) : base(message, ex)
+        {
+            WriteLog(message);
+        }
+
         private void WriteLog(string message)
         {
             if (Log != null)

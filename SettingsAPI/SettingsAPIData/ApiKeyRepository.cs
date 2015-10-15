@@ -29,7 +29,7 @@ namespace SettingsAPIData
                 catch (Exception ex)
                 {
                     Log.Exception(ex);
-                    throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE);
+                    throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE, ex);
                 }
 
                 try
@@ -39,7 +39,7 @@ namespace SettingsAPIData
                 catch (Exception ex)
                 {
                     Log.Exception(ex);
-                    throw new SettingsStoreException(Constants.ERROR_STORE_EXCEPTION);
+                    throw new SettingsStoreException(Constants.ERROR_STORE_EXCEPTION, ex);
                 }
             }
         }
