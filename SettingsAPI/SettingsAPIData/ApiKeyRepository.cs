@@ -11,28 +11,27 @@ namespace SettingsAPIData
         private SettingsDbContext context;
         private bool _dbOnline;
 
-        public ApiKeyRepository(SettingsDbContext context)
+        public ApiKeyRepository()
         {
-            this.context = context;
         }
 
         private SettingsDbContext Context
         {
             get
             {
-                if (!_dbOnline)
+
+                try
                 {
-                    try
-                    {
-                        var test = context.Applications.Count();
-                        _dbOnline = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Exception(ex);
-                        throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE);
-                    }
+                    context = new SettingsDbContext();
+                    var test = context.Applications.Count();
+                    _dbOnline = true;
                 }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex);
+                    throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE);
+                }
+
                 try
                 {
                     return context;
@@ -80,7 +79,7 @@ namespace SettingsAPIData
 
         private ApiKeyData GetData(string key)
         {
-            ApiKeyData data = Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key); 
+            ApiKeyData data = Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key);
             return data;
         }
 
@@ -94,16 +93,6 @@ namespace SettingsAPIData
                 Context.SaveChanges();
             }
         }
-
-        public void Invalidate(string apiKey)
-        {
-            ApiKeyData key = Context.ApiKeys.SingleOrDefault(k => k.ApiKey == apiKey);
-
-            if (key != null)
-            {
-                context.Entry<ApiKeyData>(key).Reload();
-                context.Entry<ApiKeyData>(key).Collection<DirectoryAccessData>("Access").Query();
-            }
-        }
+         
     }
 }

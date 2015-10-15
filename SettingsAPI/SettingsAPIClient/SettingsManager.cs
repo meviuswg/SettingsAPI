@@ -2,7 +2,6 @@
 using SettingsAPIClient.Provider;
 using SettingsAPIClient.Util;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -19,50 +18,45 @@ namespace SettingsAPIClient
         private ApplicationProvider _applicationProvider;
         private SettingsDirectory _directory;
         private DirectoryProvider _directoryProvider;
+        private Dictionary<string, Setting> _items;
         private SettingsProvider _settingsProvider;
-        private Setting[] _items;
         private string _url;
-
+        private int _currentVersion;
+        private int _currentObjectId;
+        private string _currentApplicationName;
+        private string _currentDirectoryName;
         public SettingsManager(string url, string apiKey)
         {
+            Uri test;
+
+            if(!Uri.TryCreate(url, UriKind.Absolute, out test))
+            {
+                throw new SettingsException("Invalid Uri");
+            }
             this._url = url;
+
+
+            if(string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new SettingsException("Invalid APIKey");
+            }
+
+
             this._apiKey = apiKey;
+
+            _items = new Dictionary<string, Setting>();
+            ExplicitlySave = false;
+            UseCache = true;
         }
 
-        public bool UseCache { get; set; }
-
         public bool ExplicitlySave { get; set; }
+        public bool UseCache { get; set; }
 
         #region Application
 
-        public bool OpenApplication(string applicationName)
+        public SettingsApplication Application
         {
-            try
-            {
-                Task.Run(() => OpenApplicationAsync(applicationName)).Wait();
-                return _application != null;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
-        }
-
-        public async Task<bool> OpenApplicationAsync(string applicationName)
-        {
-            return await OpenDirectoryAsync(applicationName, 1, _DEFAULT_DIR);
-        }
-
-        public bool CreateApplication(string applicationName, string description)
-        {
-            try
-            {
-                return Task.Run(() => CreateApplicationAsync(applicationName, description)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            get { return _application; }
         }
 
         public async Task<bool> CreateApplicationAsync(string applicationName, string description)
@@ -77,16 +71,17 @@ namespace SettingsAPIClient
             return false;
         }
 
-        public bool DeleteApplication(string applicationName)
+        public async Task<bool> CreateApplicationVersionAsync(string applicationName, int version)
         {
-            try
+            _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
+
+            if (await _applicationProvider.CreateVerion(version))
             {
-                return Task.Run(() => DeleteApplicationAsync(applicationName)).Result;
+                ClearCurrentWorkingDirectory();
+                return await OpenApplicationAsync(applicationName, version);
             }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+
+            return false;
         }
 
         public async Task<bool> DeleteApplicationAsync(string applicationName)
@@ -101,8 +96,28 @@ namespace SettingsAPIClient
             return true;
         }
 
-      
+        public async Task<bool> DeleteApplicationVersionAsync(string applicationName, int version)
+        {
+            _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
 
+            if (await _applicationProvider.DeleteVerion(version))
+            {
+                ClearCurrentWorkingDirectory();
+                return await OpenApplicationAsync(applicationName);
+            }
+
+            return false;
+        }
+
+        public async Task<bool> OpenApplicationAsync(string applicationName)
+        {
+            return await OpenApplicationAsync(applicationName, 1);
+        }
+
+        public async Task<bool> OpenApplicationAsync(string applicationName, int version)
+        {
+            return await OpenDirectoryAsync(applicationName, version, _DEFAULT_DIR);
+        }
         private void ClearCurrentWorkingDirectory()
         {
             _applicationProvider = null;
@@ -111,71 +126,13 @@ namespace SettingsAPIClient
             _items = null;
             _application = null;
         }
-
-        public SettingsApplication Application
-        {
-            get { return _application; }
-        }
-        #endregion
+        #endregion Application
 
         #region Direcotory
-        public bool OpenDirectory(string applicationName, string directory)
+
+        public SettingsDirectory Directory
         {
-            return Task.Run(() => OpenDirectoryAsync(applicationName, 1, directory, 0)).Result;
-        }
-
-        public async Task<bool> OpenDirectoryAsync(string applicationName, string directory)
-        {
-            return await OpenDirectoryAsync(applicationName, 1, directory, 0);
-        }
-
-        public async Task<bool> OpenDirectoryAsync(string applicationName, int version, string directory)
-        {
-            return await OpenDirectoryAsync(applicationName, version, directory, 0);
-        }
-
-        public async Task<bool> OpenDirectoryAsync(string applicationName, int version, string directory, int objectId)
-        {
-            if (_application == null || string.Equals(_application.Name, applicationName, StringComparison.CurrentCultureIgnoreCase) == false)
-            {
-                _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
-                _application = await _applicationProvider.Get();
-            }
-
-            if (_application == null)
-                return false;
-
-            _directoryProvider = new DirectoryProvider(_url, _apiKey, applicationName, directory);
-
-            _directory = await _directoryProvider.Get();
-
-            if (_directory != null)
-            {
-                _settingsProvider = new SettingsProvider(_url, _apiKey, applicationName, version, directory, objectId);
-                _items = await _settingsProvider.Get();
-            }
-            else
-            {
-                if (string.Equals(directory, _DEFAULT_DIR))
-                    throw new SettingsException(string.Format("Failed to open application '{0}' version {1}. The target does not exist or you are not authorized to access it", applicationName, version));
-                else
-                    throw new SettingsException(string.Format("Failed to open directory '{0}' of application '{1}' version {2}. The target does not exist or you are not authorized to access it", directory, applicationName, version));
-            }
-
-            return _directory != null;
-        }
-
-
-        public bool CreateDirectory(string applicationName, string directoryName, string description)
-        {
-            try
-            {
-                return Task.Run(() => CreateDirectoryAsync(applicationName, directoryName, description)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            get { return _directory; }
         }
 
         public async Task<bool> CreateDirectoryAsync(string applicationName, string directoryName, string description)
@@ -184,22 +141,10 @@ namespace SettingsAPIClient
 
             if (await _directoryProvider.Create(description))
             {
-               return await OpenDirectoryAsync(applicationName, directoryName);
+                return await OpenDirectoryAsync(applicationName, directoryName);
             }
 
             return false;
-        }
-
-        public bool DeleteDirectory(string applicationName, string directoryName)
-        {
-            try
-            {
-                return Task.Run(() => DeleteDirectoryAsync(applicationName, directoryName)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
         }
 
         public async Task<bool> DeleteDirectoryAsync(string applicationName, string directoryName)
@@ -214,46 +159,80 @@ namespace SettingsAPIClient
             return true;
         }
 
-        public SettingsDirectory Directory
+        public bool OpenDirectory(string applicationName, string directory)
         {
-            get { return _directory; }
+            try
+            {
+                return Task.Run(() => OpenDirectoryAsync(applicationName, 1, directory, 0)).Result;
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.InnerException;
+            }
         }
-        #endregion
+
+        public async Task<bool> OpenDirectoryAsync(string applicationName, string directory)
+        {
+            return await OpenDirectoryAsync(applicationName, 1, directory, 0);
+        }
+
+        public async Task<bool> OpenDirectoryAsync(string applicationName, string directory, int objectId)
+        {
+            return await OpenDirectoryAsync(applicationName, 1, directory, objectId);
+        }
+
+        public async Task<bool> OpenDirectoryAsync(string applicationName, int version, string directory)
+        {
+            return await OpenDirectoryAsync(applicationName, version, directory, 0);
+        }
+
+        public async Task<bool> OpenDirectoryAsync(string applicationName, int version, string directory, int objectId)
+        {
+            if (_application == null || string.Equals(_application.Name, applicationName, StringComparison.CurrentCultureIgnoreCase) == false)
+            {
+                _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
+                _application = await _applicationProvider.Get();
+
+                _currentApplicationName = _application.Name;
+                _currentVersion = version;
+                _currentObjectId = objectId;
+            }
+
+            if (_application == null)
+                return false;
+
+            _directoryProvider = new DirectoryProvider(_url, _apiKey, applicationName, directory);
+
+            _directory = await _directoryProvider.Get();
+            _currentDirectoryName = _directory.Name;
+
+            if (_directory != null)
+            {
+                _settingsProvider = new SettingsProvider(_url, _apiKey, applicationName, version, directory, objectId);
+                return await Reload();
+            }
+            else
+            {
+                if (string.Equals(directory, _DEFAULT_DIR))
+                    throw new SettingsException(string.Format("Failed to open application '{0}' version {1}. The target does not exist or you are not authorized to access it", applicationName, version));
+                else
+                    throw new SettingsException(string.Format("Failed to open directory '{0}' of application '{1}' version {2}. The target does not exist or you are not authorized to access it", directory, applicationName, version));
+            }
+
+            return _directory != null;
+        }
+        #endregion Direcotory
 
         #region Settings
 
         public IEnumerable<Setting> Items
         {
-            get { return _items; }
-        }
-
-        public Setting[] Get()
-        {
-            try
-            {
-                return Task.Run(() => GetAsync()).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            get { return _items.Values.ToArray(); }
         }
 
         public async Task<Setting[]> GetAsync()
         {
             return await _settingsProvider.Get();
-        }
-
-        public Nullable<bool> GetBoolean(string key)
-        {
-            try
-            {
-                return Task.Run(() => GetBooleanAsync(key)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
         }
 
         public async Task<Nullable<bool>> GetBooleanAsync(string key)
@@ -266,18 +245,6 @@ namespace SettingsAPIClient
             return null;
         }
 
-        public byte[] GetByteArray(string key)
-        {
-            try
-            {
-                return Task.Run(() => GetByteArrayAsync(key)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
-        }
-
         public async Task<byte[]> GetByteArrayAsync(string key)
         {
             var s = await GetKeyAsync(key);
@@ -286,18 +253,6 @@ namespace SettingsAPIClient
                 return SerializationHelper.FromBase64String(s.Value);
 
             return null;
-        }
-
-        public Nullable<DateTime> GetDateTime(string key)
-        {
-            try
-            {
-                return Task.Run(() => GetDateTimeAsync(key)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
         }
 
         public async Task<Nullable<DateTime>> GetDateTimeAsync(string key)
@@ -310,18 +265,6 @@ namespace SettingsAPIClient
             return null;
         }
 
-        public Nullable<double> GetDouble(string key)
-        {
-            try
-            {
-                return Task.Run(() => GetDoubleAsync(key)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
-        }
-
         public async Task<Nullable<double>> GetDoubleAsync(string key)
         {
             var s = await GetKeyAsync(key);
@@ -330,18 +273,6 @@ namespace SettingsAPIClient
                 return Convert.ToDouble(s.Value);
 
             return null;
-        }
-
-        public Image GetImage(string key)
-        {
-            try
-            {
-                return Task.Run(() => GetImageAsync(key)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
         }
 
         public async Task<Image> GetImageAsync(string key)
@@ -354,18 +285,6 @@ namespace SettingsAPIClient
             return null;
         }
 
-        public Nullable<int> GetInt(string key)
-        {
-            try
-            {
-                return Task.Run(() => GetIntAsync(key)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
-        }
-
         public async Task<Nullable<int>> GetIntAsync(string key)
         {
             var s = await GetKeyAsync(key);
@@ -374,23 +293,6 @@ namespace SettingsAPIClient
                 return Convert.ToInt32(s.Value);
 
             return null;
-        }
-
-        public Setting GetKey(string key)
-        {
-            try
-            {
-                return GetKeyAsync(key).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
-        }
-
-        public T GetKey<T>(string key)
-        {
-            return JsonConvert.DeserializeObject<T>(GetKey(key).Value);
         }
 
         public async Task<T> GetKeyAsync<T>(string key)
@@ -410,25 +312,33 @@ namespace SettingsAPIClient
                 throw new ArgumentNullException("key");
             }
 
-            var settings = await _settingsProvider.Get(key);
-
-            if (settings != null)
-                return settings.SingleOrDefault();
+            if(UseCache)
+            {
+                if (_items.ContainsKey(key))
+                {
+                    return _items[key];
+                }
+                else
+                {
+                    throw new SettingNotFoundException(key);
+                }
+            }
             else
             {
-                throw new ArgumentOutOfRangeException("key");
-            }
-        }
+                var result = await _settingsProvider.Get(key);
 
-        public string GetString(string key)
-        {
-            try
-            {
-                return Task.Run(() => GetStringAsync(key)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
+                if(result.Count() == 0)
+                { 
+                    throw new SettingNotFoundException(key);
+                }
+                else
+                {
+                    var setting = result.Single();
+
+                    _items[setting.Key] = setting;
+
+                    return setting;
+                }
             }
         }
 
@@ -442,104 +352,200 @@ namespace SettingsAPIClient
             return null;
         }
 
-        public bool Save(string key, string value)
+        public async Task<bool> SaveAsync(string key, bool value)
         {
-            try
-            {
-                return Task.Run(() => SaveAsync(key, value)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            return await SaveAsync(key, value.ToString());
         }
 
-        public bool Save(string key, bool value)
+        public async Task<bool> SaveAsync(string key, DateTime value)
         {
-            try
-            {
-                return Task.Run(() => SaveAsync(key, value.ToString())).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            return await SaveAsync(key, value.ToString());
         }
 
-        public bool Save(string key, DateTime value)
+        public async Task<bool> SaveAsync(string key, decimal value)
         {
-            try
-            {
-                return Task.Run(() => SaveAsync(key, value.ToString())).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            return await SaveAsync(key, value.ToString());
         }
 
-        public bool Save(string key, decimal value)
+        public async Task<bool> SaveAsync(string key, Image value)
         {
-            try
-            {
-                return Task.Run(() => SaveAsync(key, value.ToString())).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            return await SaveAsync(key, SerializationHelper.ImageToString(value));
         }
 
-        public bool Save(string key, Image value)
+        public async Task<bool> SaveAsync(string key, byte[] value)
         {
-            try
-            {
-                return Task.Run(() => SaveAsync(key, SerializationHelper.ImageToString(value))).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
-        }
-
-        public bool Save(string key, byte[] value)
-        {
-            try
-            {
-                return Task.Run(() => SaveAsync(key, SerializationHelper.ToBase64String(value))).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
-        }
-
-        public bool Save(IEnumerable<Setting> settings)
-        {
-            try
-            {
-                return Task.Run(() => SaveAsync(settings)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            return await SaveAsync(key, SerializationHelper.ToBase64String(value));
         }
 
         public async Task<bool> SaveAsync(IEnumerable<Setting> settings)
         {
-            return await _settingsProvider.Save(settings);
+            if(ExplicitlySave)
+            {
+                SetInternalItemsCollection(settings);
+                return true;
+            }
+
+            bool settingsSaved = await _settingsProvider.Save(settings);
+
+            if (settingsSaved)
+            {
+               SetInternalItemsCollection(settings);
+            }
+
+            return settingsSaved;
+        }
+
+        private void SetInternalItemsCollection(IEnumerable<Setting> settings)
+        {
+            foreach (var item in settings)
+            {
+                _items[item.Key] = item;
+            }
         }
 
         public async Task<bool> SaveAsync(Setting setting)
         {
-            return await SaveAsync(new Setting[] { setting });
+           return await SaveAsync(new Setting[] { setting }); 
         }
 
         public async Task<bool> SaveAsync(string key, string value)
         {
             return await SaveAsync(new Setting { Key = key, Value = value });
         }
-        #endregion
+
+        /// <summary>
+        /// Saves all items to the remote store
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> SaveAsync()
+        {
+           return await  _settingsProvider.Save(_items.Values.ToList());
+        } 
+
+        /// <summary>
+        /// Reloads all the settings of the current directory.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> Reload()
+        {
+            var settingsSet = await _settingsProvider.Get();
+
+            _items.Clear();
+
+            SetInternalItemsCollection(settingsSet);
+
+            return true;
+        }
+        #endregion Settings
+
+        /// <summary>
+        /// Current settings object Id
+        /// </summary>
+        public int ObjectID
+        {
+            get
+            {
+                return _currentObjectId;
+            }
+        }
+
+        /// <summary>
+        /// Current application version
+        /// </summary>
+        public int Version
+        {
+            get
+            {
+                return _currentVersion;
+            }
+        }
+
+        /// <summary>
+        /// Current application name
+        /// </summary>
+        public string ApplicationName
+        {
+            get
+            {
+                return _currentApplicationName;
+            }
+        }
+
+        /// <summary>
+        /// Current directory name
+        /// </summary>
+        public string DirectoryName
+        {
+            get
+            {
+                return _currentDirectoryName;
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the current directory allowes settings to be updated for this APIKey.
+        /// </summary>
+        public bool AllowWrite
+        {
+            get
+            {
+                if (_directory != null)
+                {
+                    return _directory.AllowWrite;
+                }
+                else
+                {
+                    throw new SettingsException("No open directory.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the current directory allowes settings to be created for this APIKey.
+        /// </summary>
+        public bool AllowCreate
+        {
+            get
+            {
+                if (_directory != null)
+                {
+                    return _directory.AllowCreate;
+                }
+                else
+                {
+                    throw new SettingsException("No open directory.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the current directory allowes settings to be deleted for this APIKey.
+        /// </summary>
+        public bool AllowDelete
+        {
+            get
+            {
+                if (_directory != null)
+                {
+                    return _directory.AllowCreate;
+                }
+                else
+                {
+                    throw new SettingsException("No open directory.");
+                }
+            }
+        }
+
+        public async Task<bool> ExistsAsync(string key)
+        {
+            if(UseCache)
+            {
+                return _items.ContainsKey(key);
+            }
+            else
+            {
+                return await _settingsProvider.Exists(key);
+            }
+        }
     }
 }

@@ -48,14 +48,15 @@ namespace SettingsAPIData
                         return false;
                 }
 
-                //Force to reload any data of the key.
-                repository.Invalidate(strKey);
+                //Force to reload any data of the key.  
 
-                ApiKeyModel key = repository.GetKey(strKey);
+                ApiKeyModel key = repository.GetKey(strKey); 
 
                 if (key != null && key.Active)
                 {
                     string[] roles = SettingsAuthorizationRoleProvider.ConstructRoles(key);
+
+                    repository.SetUsed(key.Key);
 
                     principal = (IPrincipal)new GenericPrincipal(new ApiIdentity(apiKey.ToString(), key.Id), roles.ToArray());
                     return true;

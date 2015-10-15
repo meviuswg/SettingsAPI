@@ -21,6 +21,16 @@ namespace SettingsAPIClient.Provider
            return await Post<dynamic>(new { Name = applicationName, Description = description }, "application");
         }
 
+        public async Task<bool> CreateVerion(int version)
+        {
+            return await Post(string.Empty, string.Format("/{0}/versions/{1}",LocalPath, version));
+        }
+
+        public async Task<bool> DeleteVerion(int version)
+        {
+            return await Delete(string.Format("/{0}/versions/{1}", LocalPath, version));
+        }
+
         public new async Task<bool> Delete()
         {
             return await Delete(string.Empty);

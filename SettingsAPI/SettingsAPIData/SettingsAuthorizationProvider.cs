@@ -164,7 +164,10 @@ namespace SettingsAPIData
 
         public bool AllowReadDirectories(string application)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(application))
+                return false;
+
+            return User.IsInRole(SecurityRoles.RoleReadDirectories(application)) || IsMasterKey;
         }
 
         public bool AllowReadDirectory(string application, string directoryName)
@@ -198,8 +201,7 @@ namespace SettingsAPIData
 
         public void Invalidate()
         {
-            if (CurrentIdentity != null)
-                repository.Invalidate(CurrentIdentity.Name);
+            
         }
 
         public bool Validate(object apiKey)

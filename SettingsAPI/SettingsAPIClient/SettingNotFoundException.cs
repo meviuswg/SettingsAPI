@@ -13,5 +13,10 @@ namespace SettingsAPIClient
         {
 
         }
+
+        public SettingNotFoundException(string message) : base(null, message)
+        {
+
+        }
     }
 }

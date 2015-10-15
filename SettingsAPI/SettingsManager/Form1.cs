@@ -19,12 +19,7 @@ namespace SettingsManager
 
       
             SettingsAPIClient.SettingsManager provider = new SettingsAPIClient.SettingsManager(endpoint, apiKey);
-
-            var test = provider.Get();
-
-            var image = Image.FromFile(@"C:\Users\wouter\Pictures\Saved Pictures\^15CB1E6B190158D6E857FB3116FAB429919B9B74B8FCE63A47^pimgpsh_thumbnail_win_distr.jpg");
-
-            var result = provider.Save("test", image);
+  
         }
     }
 }

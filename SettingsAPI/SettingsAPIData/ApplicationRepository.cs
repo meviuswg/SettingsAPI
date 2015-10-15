@@ -218,12 +218,7 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(directoryName))
             {
                 throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
-            }
-
-            if (!Auth.AllowCreateDirectory(applicationName, directoryName))
-            {
-                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Create, directoryName, Auth.CurrentIdentity.Id);
-            }
+            } 
 
             var application = GetApplicationsData(applicationName).SingleOrDefault();
 
@@ -232,6 +227,11 @@ namespace SettingsAPIData
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
             }
 
+            if (!Auth.AllowCreateDirectory(applicationName, directoryName))
+            {
+                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Create, directoryName, Auth.CurrentIdentity.Id);
+            } 
+            
             var directory = GetDirectoriesData(application, directoryName).SingleOrDefault();
 
             if (directory != null)
@@ -468,6 +468,8 @@ namespace SettingsAPIData
 
             Auth.Invalidate();
 
+            Store.Context.Entry<ApplicationData>(application).Reload();
+
             //reload the enities the reflect the master key access created by the trigger.
             if (cust_directory != null)
                 Store.Context.Entry<DirectoryData>(cust_directory).Collection("Access").Load();
@@ -475,7 +477,7 @@ namespace SettingsAPIData
             if (def_directory != null)
                 Store.Context.Entry<DirectoryData>(def_directory).Collection("Access").Load();
 
-            Store.Context.Entry<ApplicationData>(application).Reload();
+
 
             return GetApplication(applicationName);
         }

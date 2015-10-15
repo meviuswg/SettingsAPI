@@ -11,15 +11,21 @@ namespace SettingsAPIClient
     {
         public SettingsStoreException(HttpRequestMessage request, string message): base(message)
         {
-            Method = request.Method;
-            RequestUri = request.RequestUri;
+            if (request != null)
+            {
+                Method = request.Method;
+                RequestUri = request.RequestUri;
+            }
         }
 
         public SettingsStoreException(HttpRequestMessage request, Exception ex) : base("Store Exception", ex)
         {
-            Method = request.Method;
-            RequestUri = request.RequestUri;
-        }
+            if (request != null)
+            {
+                Method = request.Method;
+                RequestUri = request.RequestUri;
+            }
+        } 
 
         public HttpMethod Method { get; private set; }
         public Uri RequestUri { get; private set; }

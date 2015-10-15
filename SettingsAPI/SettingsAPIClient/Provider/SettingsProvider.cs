@@ -33,9 +33,22 @@ namespace SettingsAPIClient.Provider
             return await Get<Setting[]>(string.Concat(LocalPath, "/", key));
         }
 
-        public async Task<bool> Delete(string key)
+        public new async Task<bool> Delete(string key)
         {
             return await Post<string>(string.Concat(LocalPath, "/", key));
+        }
+
+        public async Task<bool> Exists(string key)
+        {
+            try
+            {
+                var result = await Get(key);
+                return true;
+            }
+            catch (SettingNotFoundException)
+            {
+                return false;
+            }      
         }
 
         public override string LocalPath { get { return string.Concat("settings", "/", applicationName, "/", version, "/", directory, "/", objectId); } }

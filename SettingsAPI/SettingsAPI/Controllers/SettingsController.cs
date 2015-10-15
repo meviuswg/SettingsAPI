@@ -158,7 +158,7 @@ namespace SettingsAPI.Controllers
             try
             {
                 return Ok(new SettingModel[] { controller.GetSetting(store, key) });
-            }
+            } 
             catch (Exception ex)
             {
                 return Error(ex);

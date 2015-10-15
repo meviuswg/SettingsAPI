@@ -22,7 +22,7 @@ namespace SettingsAPIData
                     roles.Add(SecurityRoles.RoleCreateApplication());
                     roles.Add(SecurityRoles.RoleDeleteApplication(model.ApplicationName));
                 } 
-           
+ 
                 foreach (var item in model.Access)
                 {
                   

@@ -103,22 +103,7 @@ BEGIN
 
 END
 GO
-
-CREATE TRIGGER   [dbo].[trigger_directory_access_delete]
-   ON   [dbo].[settings_directory]
-   AFTER DELETE 
-AS 
-BEGIN
-	 
-	 delete [dbo].[settings_api_directory_access]
-	 select  
-	 *
-	 from [dbo].[settings_api_directory_access] a 
-	 join deleted b on a.directory_id = b.id
-	 
-
-END
-GO
+ 
 
 CREATE TABLE dbo.settings (
 	[object_id] INT

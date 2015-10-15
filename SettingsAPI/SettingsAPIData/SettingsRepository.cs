@@ -89,6 +89,7 @@ namespace SettingsAPIData
                             existingOrNew = CreateDataForStore(store);
                             existingOrNew.SettingKey = item.Key;
                             existingOrNew.SettingValue = item.Value;
+                            existingOrNew.Created = DateTime.Now;
                             Store.Context.Settings.Add(existingOrNew);
                         }
                         else

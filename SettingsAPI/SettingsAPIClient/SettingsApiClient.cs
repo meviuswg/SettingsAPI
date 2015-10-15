@@ -42,7 +42,6 @@ namespace SettingsAPIClient
                 string endpoint = GetEndpoint(localPath);
 
                 responseMessage = await client.DeleteAsync(endpoint);
-
             }
             catch (OperationCanceledException ex)
             {
@@ -83,7 +82,6 @@ namespace SettingsAPIClient
                 string endpoint = GetEndpoint(localPath);
 
                 responseMessage = await client.GetAsync(endpoint, HttpCompletionOption.ResponseContentRead);
-
             }
             catch (OperationCanceledException ex)
             {
@@ -108,7 +106,7 @@ namespace SettingsAPIClient
                 {
                     return await responseMessage.Content.ReadAsAsync<T>();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw new SettingsException("Error reading content", ex);
                 }
@@ -119,7 +117,6 @@ namespace SettingsAPIClient
             }
 
             return default(T);
-
         }
 
         protected virtual async Task<bool> Post<T>(T data)
@@ -129,7 +126,6 @@ namespace SettingsAPIClient
 
         protected virtual async Task<bool> Post<T>(T data, string localPath)
         {
-
             HttpResponseMessage responseMessage = null;
             try
             {
@@ -137,7 +133,6 @@ namespace SettingsAPIClient
                 string endpoint = GetEndpoint(localPath);
 
                 responseMessage = await client.PostAsJsonAsync(endpoint, data);
-
             }
             catch (OperationCanceledException ex)
             {
@@ -163,8 +158,7 @@ namespace SettingsAPIClient
             else
             {
                 return await handleNotOk(responseMessage);
-            } 
-         
+            }
         }
 
         public virtual string GetEndpoint(string replacementPath = "")
@@ -179,7 +173,13 @@ namespace SettingsAPIClient
 
         private HttpClient CreateHttpClient()
         {
-            HttpClient client = new HttpClient();
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                Proxy = new WebProxy("http://localhost:8888", false),
+                UseProxy = true
+            };
+
+            HttpClient client = new HttpClient(handler);
             client.DefaultRequestHeaders.Accept.Clear();
             client.Timeout = TimeSpan.FromSeconds(TIMEOUT);
 
