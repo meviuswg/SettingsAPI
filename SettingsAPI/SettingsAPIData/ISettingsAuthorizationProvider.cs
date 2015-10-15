@@ -32,7 +32,11 @@ namespace SettingsAPIData
 
         bool AllowReadDirectory(string application, string directoryName);
 
-        bool AllowWriteSetting(string application, string directoryName);
+        bool AllowriteSetting(string application, string directoryName);
+         
+        bool AllowReadApiKeys(string applicationName); 
+
+        bool AllowEditApiKeys(string applicationName);
 
         void Invalidate();
 

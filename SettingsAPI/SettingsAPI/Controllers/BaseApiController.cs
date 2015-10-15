@@ -68,27 +68,22 @@ namespace SettingsAPI.Controllers
         {
             Log.Exception(ex);
 
-            string message = Constants.ERROR_INTERNAL_ERROR;
-
             if (ex is SettingsNotFoundException)
             {
-                message = ex.Message;
-                return Content<string>(HttpStatusCode.NotFound, message);
+                return Content<string>(HttpStatusCode.NotFound, ex.Message);
             }
 
             if (ex is SettingsAuthorizationException)
             {
-                message = ex.Message;
-                return Content<string>(HttpStatusCode.Forbidden, message);
+                return Content<string>(HttpStatusCode.Forbidden, ex.Message);
             }
 
             if (ex is SettingsStoreException)
             {
-                message = ex.Message;
-                return Content<string>(HttpStatusCode.InternalServerError, message);
+                return Content<string>(HttpStatusCode.InternalServerError, ex.Message);
             }
 
-            return Content<string>(HttpStatusCode.InternalServerError, message);
+            return Content<string>(HttpStatusCode.InternalServerError, Constants.ERROR_INTERNAL_ERROR);
         }
     }
 }

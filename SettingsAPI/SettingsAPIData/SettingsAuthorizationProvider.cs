@@ -11,9 +11,9 @@ namespace SettingsAPIData
     public class SettingsAuthorizationProvider : ISettingsAuthorizationProvider
     {
         private SettingsAuthenticatonProvider authenticator;
-        private IApiKeyRepository repository;
+        private IValidationRepository repository;
 
-        public SettingsAuthorizationProvider(IApiKeyRepository repository)
+        public SettingsAuthorizationProvider(IValidationRepository repository)
         {
             this.repository = repository;
             this.authenticator = new SettingsAuthenticatonProvider(repository);
@@ -186,7 +186,23 @@ namespace SettingsAPIData
             return User.IsInRole(SecurityRoles.RoleReadVersions(application)) || IsMasterKey;
         }
 
-        public bool AllowWriteSetting(string application, string directoryName)
+        public bool AllowEditApiKeys(string applicationName)
+        {
+            if (string.IsNullOrWhiteSpace(applicationName))
+                return false;
+
+            return User.IsInRole(SecurityRoles.RoleEditApiKey(applicationName)) || IsMasterKey;
+        } 
+
+        public bool AllowReadApiKeys(string applicationName)
+        {
+            if (string.IsNullOrWhiteSpace(applicationName))
+                return false;
+
+            return User.IsInRole(SecurityRoles.RoleReadApiKeys(applicationName)) || IsMasterKey;
+        }
+
+        public bool AllowriteSetting(string application, string directoryName)
         {
             if (string.IsNullOrWhiteSpace(application) || string.IsNullOrWhiteSpace(directoryName))
                 return false;

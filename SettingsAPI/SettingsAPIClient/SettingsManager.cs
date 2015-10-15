@@ -49,7 +49,14 @@ namespace SettingsAPIClient
             UseCache = true;
         }
 
+        /// <summary>
+        /// When True, settings are only saved when Save is explicitly called
+        /// </summary>
         public bool ExplicitlySave { get; set; }
+
+        /// <summary>
+        /// When True, settings are written to the remote store, but read from the internal cache.
+        /// </summary>
         public bool UseCache { get; set; }
 
         #region Application
@@ -78,7 +85,7 @@ namespace SettingsAPIClient
             if (await _applicationProvider.CreateVerion(version))
             {
                 ClearCurrentWorkingDirectory();
-                return await OpenApplicationAsync(applicationName, version);
+                return await OpenApplicationAsync(applicationName);
             }
 
             return false;
@@ -218,8 +225,7 @@ namespace SettingsAPIClient
                 else
                     throw new SettingsException(string.Format("Failed to open directory '{0}' of application '{1}' version {2}. The target does not exist or you are not authorized to access it", directory, applicationName, version));
             }
-
-            return _directory != null;
+ 
         }
         #endregion Direcotory
 
@@ -430,7 +436,7 @@ namespace SettingsAPIClient
         {
             var settingsSet = await _settingsProvider.Get();
 
-            _items.Clear();
+            _items = new Dictionary<string, Setting>();
 
             SetInternalItemsCollection(settingsSet);
 
@@ -439,7 +445,7 @@ namespace SettingsAPIClient
         #endregion Settings
 
         /// <summary>
-        /// Current settings object Id
+        /// Current settings object Id. The default objectId is 0. All settings are read and writting against this objectId.
         /// </summary>
         public int ObjectID
         {

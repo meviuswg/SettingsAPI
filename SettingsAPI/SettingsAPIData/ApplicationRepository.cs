@@ -163,7 +163,7 @@ namespace SettingsAPIData
             return directories;
         }
 
-        private IEnumerable<DirectoryModel> GetDirectories(ApplicationData application, string directoryName)
+        private IEnumerable<DirectoryModel> GetDirectories(ApplicationData application, string directoryName, bool includeSettings = false)
         {
             if (application == null)
             {
@@ -182,12 +182,25 @@ namespace SettingsAPIData
 
                 model.AllowCreate = Auth.AllowCreateSetting(applicationName, item.Name);
                 model.AllowDelete = Auth.AllowDeleteSetting(applicationName, item.Name);
-                model.AllowWrite = Auth.AllowWriteSetting(applicationName, item.Name);
+                model.AllowWrite = Auth.AllowriteSetting(applicationName, item.Name);
 
                 model.Description = item.Description;
                 model.Name = item.Name;
                 model.Items = item.Settings.Count();
 
+                if (includeSettings)
+                {
+                    model.Settings = new List<SettingModel>();
+
+                    foreach (var setting in item.Settings)
+                    {
+                        SettingModel s = new SettingModel();
+                        s.Key = setting.SettingKey;
+                        s.Value = setting.SettingValue;
+
+                        model.Settings.Add(s);
+                    }
+                }
                 directories.Add(model);
             }
 

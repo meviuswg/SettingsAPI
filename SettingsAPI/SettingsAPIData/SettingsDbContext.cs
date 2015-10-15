@@ -26,7 +26,7 @@ namespace SettingsAPIData
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Configurations.Add(new settingMap());
-            modelBuilder.Configurations.Add(new settings_api_directory_accessMap());
+            modelBuilder.Configurations.Add(new settings_directory_accessMap());
             modelBuilder.Configurations.Add(new settings_api_keyMap());
             modelBuilder.Configurations.Add(new settings_applicationMap());
             modelBuilder.Configurations.Add(new settings_directoryMap());

@@ -3,9 +3,9 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace SettingsAPIData.Data.Mapping
 {
-    internal class settings_api_directory_accessMap : EntityTypeConfiguration<DirectoryAccessData>
+    internal class settings_directory_accessMap : EntityTypeConfiguration<DirectoryAccessData>
     {
-        public settings_api_directory_accessMap()
+        public settings_directory_accessMap()
         {
             // Primary Key
             this.HasKey(t => new { t.ApiKeyId, t.DirectoryId });
@@ -18,7 +18,7 @@ namespace SettingsAPIData.Data.Mapping
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
             // Table & Column Mappings
-            this.ToTable("settings_api_directory_access");
+            this.ToTable("settings_directory_access");
             this.Property(t => t.ApiKeyId).HasColumnName("apikey_id");
             this.Property(t => t.DirectoryId).HasColumnName("directory_id");
             this.Property(t => t.AllowWrite).HasColumnName("allow_write");

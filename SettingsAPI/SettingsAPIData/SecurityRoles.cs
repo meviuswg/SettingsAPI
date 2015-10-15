@@ -4,6 +4,26 @@ namespace SettingsAPIData
 {
     internal static class SecurityRoles
     {
+        public static string RoleReadApiKeys()
+        {
+            return string.Format("read.apikey@system");
+        }
+
+        public static string RoleReadApiKeys(string applicationName)
+        {
+            return string.Format("read.apikeys@{0}", applicationName);
+        }
+         
+        public static string RoleEditApiKey(string applicationName)
+        {
+            return string.Format("edit.apikey@{0}", applicationName);
+        }
+
+        public static string RoleDeleteApiKey(string applicationName)
+        {
+            return string.Format("delete.apikey@{0}", applicationName);
+        }
+
         public static string RoleCreateApplication()
         {
             return string.Format("create.application@system");

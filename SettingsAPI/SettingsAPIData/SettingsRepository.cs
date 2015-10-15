@@ -72,7 +72,7 @@ namespace SettingsAPIData
 
                     if (existingOrNew != null)
                     {
-                        if (Auth.AllowWriteSetting(store.ApplicationName, store.DirectoryName))
+                        if (Auth.AllowriteSetting(store.ApplicationName, store.DirectoryName))
                         {
                             existingOrNew.SettingValue = item.Value;
                             existingOrNew.Modified = DateTime.UtcNow;

@@ -54,13 +54,14 @@
     <Compile Include="ApiIdentity.cs" />
     <Compile Include="ApiKey.cs" />
     <Compile Include="ApiKeyRepository.cs" />
+    <Compile Include="IApiKeyRepository.cs" />
+    <Compile Include="ValidationRepository.cs" />
     <Compile Include="ApplicationRepository.cs" />
     <Compile Include="ISettingsAuthorizationProvider.cs" />
-    <Compile Include="Model\ApiAccessModel.cs" />
-    <Compile Include="SecurityUtil.cs" />
+    <Compile Include="SecurityRoles.cs" />
     <Compile Include="SettingsAuthenticatonProvider.cs" />
     <Compile Include="SettingsAuthorizationProvider.cs" />
-    <Compile Include="IApiKeyRepository.cs" />
+    <Compile Include="IValidationRepository.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Model\ApiKeyModel.cs" />
     <Compile Include="Model\SaveApplicationModel.cs" />
@@ -85,7 +86,7 @@
     <Compile Include="SettingsRepository.cs" />
     <Compile Include="SettingsDbContext.cs" />
     <Compile Include="Data\Mapping\settingMap.cs" />
-    <Compile Include="Data\Mapping\settings_api_directory_accessMap.cs" />
+    <Compile Include="Data\Mapping\settings_directory_accessMap.cs" />
     <Compile Include="Data\Mapping\settings_api_keyMap.cs" />
     <Compile Include="Data\Mapping\settings_applicationMap.cs" />
     <Compile Include="Data\Mapping\settings_directoryMap.cs" />

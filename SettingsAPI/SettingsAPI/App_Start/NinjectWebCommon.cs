@@ -71,6 +71,8 @@ namespace SettingsAPI.App_Start
 
             kernel.Bind<IApiKeyRepository>().To<ApiKeyRepository>().InRequestScope();
 
+            kernel.Bind<IValidationRepository>().To<ValidationRepository>().InRequestScope();
+
             kernel.Bind<ISettingsAuthorizationProvider>().To<SettingsAuthorizationProvider>().InRequestScope();
 
             kernel.Bind<ISettingsStore>().To<SettingsStore>().InRequestScope();

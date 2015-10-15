@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SettingsAPIData.Model
 {
@@ -6,15 +7,14 @@ namespace SettingsAPIData.Model
     {
         public ApiKeyModel()
         {
-            Access = new List<ApiAccessModel>();
+            Access = new List<DirectoryAccessModel>();
         }
-
         public int Id { get; set; }
         public string Key { get; set; }
         public bool Active { get; set; }
         public bool AdminKey { get; set; }
         public string ApplicationName { get; internal set; }
-
-        public List<ApiAccessModel> Access;
+        public DateTime? LastUsed { get; internal set; } 
+        public List<DirectoryAccessModel> Access;
     }
 }

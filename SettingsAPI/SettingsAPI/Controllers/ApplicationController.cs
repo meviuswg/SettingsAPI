@@ -18,20 +18,7 @@ namespace SettingsAPI.Controllers
             this.controller = controller;
         }
 
-        [HttpGet]
-        [Route("")]
-        [ResponseType(typeof(ApplicationModel[]))]
-        public IHttpActionResult Get()
-        {
-            try
-            {
-                return Ok(controller.GetApplications());
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }   
-        }
+        #region Application 
 
         [HttpGet]
         [Route("{applicationName}")]
@@ -48,111 +35,9 @@ namespace SettingsAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("{applicationName}/directories")]
-        [ResponseType(typeof(DirectoryModel[]))]
-        public IHttpActionResult GetDirectories(string applicationName)
-        {
-            try
-            {
-                return Ok(controller.GetDirectories(applicationName));
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
+        #endregion Application
 
-        [HttpGet]
-        [Route("{applicationName}/directories/{directoryName}")]
-        [ResponseType(typeof(DirectoryModel))]
-        public IHttpActionResult GetDirectory(string applicationName, string directoryName)
-        {
-            try
-            {
-                return Ok(controller.GetDirectories(applicationName, directoryName).SingleOrDefault());
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
-        [HttpGet]
-        [Route("{applicationName}/versions")]
-        [ResponseType(typeof(VersionModel[]))]
-        public IHttpActionResult GetVersions(string applicationName)
-        {
-            try
-            {
-                return Ok(controller.GetVersions(applicationName));
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
-        [HttpGet]
-        [Route("{applicationName}/versions/{version}")]
-        [ResponseType(typeof(VersionModel))]
-        public IHttpActionResult GetVersion(string applicationName, int version)
-        {
-            try
-            {
-                return Ok(controller.GetVersion(applicationName, version));
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
-        [HttpPost]
-        [Route("{applicationName}", Order = 0)]
-        [ResponseType(typeof(ApplicationModel))]
-        public IHttpActionResult CreateApplication(string applicationName)
-        {
-            try
-            {
-                return CreateApplication(new SaveApplicationModel { Name = applicationName });
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
-        [HttpPost]
-        [Route("", Order = 1)]
-        [ResponseType(typeof(ApplicationModel))]
-        public IHttpActionResult CreateApplication([FromBody]SaveApplicationModel value)
-        {
-            try
-            {
-                return Ok(controller.CreateApplication(value.Name, value.Description, value.DirectoryName, value.DirectoryDescription));
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
-
-        [HttpDelete]
-        [Route("{applicationName}")]
-        [ResponseType(typeof(void))]
-        public IHttpActionResult DeleteApplication(string applicationName)
-        {
-            try
-            {
-                controller.DeleteApplication(applicationName);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return Error(ex);
-            }
-        }
+        #region Directory
 
         [HttpPost]
         [Route("{applicationName}/directories/{directoryName}")]
@@ -194,6 +79,40 @@ namespace SettingsAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("{applicationName}/directories")]
+        [ResponseType(typeof(DirectoryModel[]))]
+        public IHttpActionResult GetDirectories(string applicationName)
+        {
+            try
+            {
+                return Ok(controller.GetDirectories(applicationName));
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        [HttpGet]
+        [Route("{applicationName}/directories/{directoryName}")]
+        [ResponseType(typeof(DirectoryModel))]
+        public IHttpActionResult GetDirectory(string applicationName, string directoryName)
+        {
+            try
+            {
+                return Ok(controller.GetDirectories(applicationName, directoryName).SingleOrDefault());
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        #endregion Directory
+
+        #region Version
+
         [HttpPost]
         [Route("{applicationName}/versions/{version}")]
         [ResponseType(typeof(void))]
@@ -225,5 +144,37 @@ namespace SettingsAPI.Controllers
                 return Error(ex);
             }
         }
+
+        [HttpGet]
+        [Route("{applicationName}/versions/{version}")]
+        [ResponseType(typeof(VersionModel))]
+        public IHttpActionResult GetVersion(string applicationName, int version)
+        {
+            try
+            {
+                return Ok(controller.GetVersion(applicationName, version));
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        [HttpGet]
+        [Route("{applicationName}/versions")]
+        [ResponseType(typeof(VersionModel[]))]
+        public IHttpActionResult GetVersions(string applicationName)
+        {
+            try
+            {
+                return Ok(controller.GetVersions(applicationName));
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        #endregion Version 
     }
 }

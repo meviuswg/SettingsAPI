@@ -11,9 +11,9 @@ namespace SettingsAPIData
 {
     internal class SettingsAuthenticatonProvider
     {
-        private IApiKeyRepository repository;
+        private IValidationRepository repository;
 
-        public SettingsAuthenticatonProvider(IApiKeyRepository repository)
+        public SettingsAuthenticatonProvider(IValidationRepository repository)
         {
             this.repository = repository;
         }

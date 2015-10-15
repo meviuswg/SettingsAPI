@@ -18,7 +18,7 @@ namespace SettingsAPIClient.Provider
 
         public async Task<bool> Create(string description)
         {
-           return await Post<dynamic>(new { Name = applicationName, Description = description }, "application");
+           return await Post<dynamic>(new { Name = applicationName, Description = description }, "admin");
         }
 
         public async Task<bool> CreateVerion(int version)
@@ -33,7 +33,7 @@ namespace SettingsAPIClient.Provider
 
         public new async Task<bool> Delete()
         {
-            return await Delete(string.Empty);
+            return await Delete(string.Format("admin/{0}", applicationName));
         }
 
         public override string LocalPath { get { return string.Concat("application", "/", applicationName); } }

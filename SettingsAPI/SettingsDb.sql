@@ -59,7 +59,7 @@ CREATE TABLE dbo.settings_api_key (
 	)
 GO
 
-CREATE TABLE dbo.settings_api_directory_access (
+CREATE TABLE dbo.settings_directory_access (
 	[apikey_id] INT
 	,directory_id INT
 	,allow_write BIT NOT NULL
@@ -81,7 +81,7 @@ AS
 BEGIN
 	 -- inserts the master api key and application admin keys to allow full access.
 
-	 insert into  [dbo].[settings_api_directory_access](apikey_id,directory_id,allow_create,allow_delete,allow_write)
+	 insert into  [dbo].[settings_directory_access](apikey_id,directory_id,allow_create,allow_delete,allow_write)
 	 select
 	 -1
 	 ,i.id

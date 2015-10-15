@@ -2,9 +2,10 @@
 {
     public class DirectoryAccessModel
     {
-        public int DirectoryId { get; set; }
-        public bool AllowWrite { get; set; }
-        public bool AllowDelete { get; set; }
-        public bool AllowCreate { get; set; }
+        public string Application { get; set; }
+        public string Directory { get; set; }
+        public bool Write { get; set; }
+        public bool Delete { get; set; }
+        public bool Create { get; set; }
     }
 }
