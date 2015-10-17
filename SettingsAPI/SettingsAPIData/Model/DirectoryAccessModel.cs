@@ -2,7 +2,6 @@
 {
     public class DirectoryAccessModel
     {
-        public string Application { get; set; }
         public string Directory { get; set; }
         public bool Write { get; set; }
         public bool Delete { get; set; }

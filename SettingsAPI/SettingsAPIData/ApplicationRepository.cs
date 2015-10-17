@@ -137,21 +137,7 @@ namespace SettingsAPIData
         }
 
         public IEnumerable<DirectoryModel> GetDirectories(string applicationName, string directoryName)
-        {
-            if (!string.IsNullOrWhiteSpace(directoryName))
-            {
-                if (!Auth.AllowReadDirectory(applicationName, directoryName))
-                {
-                    throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Read, applicationName, Auth.CurrentIdentity.Id);
-                }
-            }
-            else
-            {
-                if (!Auth.AllowReadDirectories(applicationName))
-                {
-                    throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Read, applicationName, Auth.CurrentIdentity.Id);
-                }
-            }
+        { 
             var application = GetApplicationsData(applicationName).SingleOrDefault();
             var directories = GetDirectories(application, directoryName);
 
@@ -160,7 +146,24 @@ namespace SettingsAPIData
                 throw new SettingsNotFoundException(directoryName);
             }
 
+            if (!Auth.AllowReadDirectories(applicationName))
+            {
+                throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Read, applicationName, Auth.CurrentIdentity.Id);
+            }
+
+            if (!string.IsNullOrWhiteSpace(directoryName))
+            {
+
+                if (!Auth.AllowReadDirectory(applicationName, directoryName))
+                {
+                    throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Read, applicationName, Auth.CurrentIdentity.Id);
+                }
+            }
+
             return directories;
+
+
+
         }
 
         private IEnumerable<DirectoryModel> GetDirectories(ApplicationData application, string directoryName, bool includeSettings = false)
@@ -231,7 +234,7 @@ namespace SettingsAPIData
             if (string.IsNullOrWhiteSpace(directoryName))
             {
                 throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
-            } 
+            }
 
             var application = GetApplicationsData(applicationName).SingleOrDefault();
 
@@ -243,8 +246,8 @@ namespace SettingsAPIData
             if (!Auth.AllowCreateDirectory(applicationName, directoryName))
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Create, directoryName, Auth.CurrentIdentity.Id);
-            } 
-            
+            }
+
             var directory = GetDirectoriesData(application, directoryName).SingleOrDefault();
 
             if (directory != null)
@@ -541,7 +544,7 @@ namespace SettingsAPIData
                         Store.Context.Applications.Remove(application);
                         Store.Context.SaveChanges();
 
-                        scope.Complete(); 
+                        scope.Complete();
                     }
 
                     Auth.Invalidate();

@@ -10,7 +10,8 @@ namespace SettingsAPIData
     public enum AuthorizationScope
     {
         Application, Directory, Setting,
-        Version
+        Version,
+        ApiKey
     }
 
     public class SettingsAuthorizationException : SettingsStoreException

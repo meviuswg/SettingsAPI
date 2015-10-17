@@ -66,6 +66,11 @@ namespace SettingsAPIClient
             get { return _application; }
         }
 
+        public async Task<SettingsApplication[]> GetApplications()
+        {
+            _applicationProvider = new ApplicationProvider(_url, _apiKey, string.Empty); 
+            return await _applicationProvider.GetAll();
+        }
         public async Task<bool> CreateApplicationAsync(string applicationName, string description)
         {
             _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
@@ -551,6 +556,20 @@ namespace SettingsAPIClient
             else
             {
                 return await _settingsProvider.Exists(key);
+            }
+        }
+
+        public async Task<bool> ExistsDirectoryAsync(string name)
+        {
+            {
+                return await _directoryProvider.Exists(name);
+            }
+        }
+
+        public async Task<bool> ExistsApplicationAsync(string name)
+        {
+            {
+                return await _applicationProvider.Exists(name);
             }
         }
     }

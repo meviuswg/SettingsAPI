@@ -3,8 +3,10 @@ using System.Windows.Forms;
 
 namespace SettingsManager
 {
+
     internal static class Program
     {
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -13,7 +15,7 @@ namespace SettingsManager
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new ApplicationForm());
         }
     }
 }

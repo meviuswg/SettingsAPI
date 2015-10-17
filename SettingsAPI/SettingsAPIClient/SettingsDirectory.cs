@@ -14,5 +14,7 @@ namespace SettingsAPIClient
         public bool AllowCreate { get; set; }
         public bool AllowWrite { get; set; }
         public bool AllowDelete { get; set; }
+
+        public int Items { get; set; }
     }
 }

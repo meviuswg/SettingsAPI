@@ -44,40 +44,9 @@ namespace SettingsAPIData
             }
         }
  
-        public ApiKeyModel GetKey(string apiKey)
-        {
-            var data = GetData(apiKey);
+        
 
-            if (data != null)
-            {
-                var model = new ApiKeyModel
-                {
-                    Id = data.Id,
-                    Active = data.Active,
-                    AdminKey = data.AdminKey, 
-                    Key = data.ApiKey,
-                    ApplicationName = data.Application.Name
-                };
-
-                foreach (var item in data.Access)
-                {
-                    model.Access.Add(new DirectoryAccessModel
-                    {
-                        Application = item.Directory.Application.Name,
-                        Directory = item.Directory.Name,
-                        Create = item.AllowCreate,
-                        Delete = item.AllowDelete,
-                        Write = item.AllowWrite
-                    });
-                }
-
-                return model;
-            }
-
-            return null;
-        }
-
-        private ApiKeyData GetData(string key)
+        public ApiKeyData GetKey(string key)
         {
             ApiKeyData data = Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key);
             return data;
@@ -85,7 +54,7 @@ namespace SettingsAPIData
 
         public void SetUsed(string apiKey)
         {
-            var data = GetData(apiKey);
+            var data = GetKey(apiKey);
 
             if (data != null)
             {

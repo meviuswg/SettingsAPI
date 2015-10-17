@@ -1,4 +1,5 @@
-﻿using SettingsAPIData.Model;
+﻿using SettingsAPIData.Data;
+using SettingsAPIData.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,13 +51,13 @@ namespace SettingsAPIData
 
                 //Force to reload any data of the key.  
 
-                ApiKeyModel key = repository.GetKey(strKey); 
+                ApiKeyData key = repository.GetKey(strKey); 
 
                 if (key != null && key.Active)
                 {
                     string[] roles = SettingsAuthorizationRoleProvider.ConstructRoles(key);
 
-                    repository.SetUsed(key.Key);
+                    repository.SetUsed(key.ApiKey);
 
                     principal = (IPrincipal)new GenericPrincipal(new ApiIdentity(apiKey.ToString(), key.Id), roles.ToArray());
                     return true;

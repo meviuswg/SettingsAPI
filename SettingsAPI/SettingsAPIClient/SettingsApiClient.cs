@@ -14,7 +14,7 @@ namespace SettingsAPIClient
 
         public ApiClient(string url, string apiKey)
         {
-            if (!url.EndsWith("/")) url = url.Substring(0, url.Length - 2);
+            if (url.EndsWith("/")) url = url.Substring(0, url.Length - 1);
 
             this._baseUrl = url;
             this._apiKey = apiKey;

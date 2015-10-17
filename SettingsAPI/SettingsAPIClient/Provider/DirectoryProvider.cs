@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace SettingsAPIClient.Provider
 {
@@ -28,6 +29,19 @@ namespace SettingsAPIClient.Provider
             return await Delete(string.Empty);
         }
 
-        public override string LocalPath { get { return string.Concat("application", "/", applicationName, "/directories/", directory); } } 
+        public override string LocalPath { get { return string.Concat("application", "/", applicationName, "/directories/", directory); } }
+
+        public async Task<bool> Exists(string name)
+        {
+            try
+            {
+                await Get<SettingsDirectory>(string.Concat("application", "/", applicationName, "/directories/", name));
+                return true;
+            }
+            catch (SettingNotFoundException)
+            {
+                return false;
+            }
+        }
     }
 }

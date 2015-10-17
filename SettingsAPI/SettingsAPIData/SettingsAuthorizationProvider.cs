@@ -2,6 +2,7 @@
 using SettingsAPIShared;
 using System.Security.Principal;
 using System;
+using SettingsAPIData.Data;
 
 namespace SettingsAPIData
 {
@@ -210,7 +211,7 @@ namespace SettingsAPIData
             return User.IsInRole(SecurityRoles.RoleWriteSetting(application, directoryName)) || IsMasterKey;
         }
 
-        public string[] GetApiRoles(ApiKeyModel data)
+        public string[] GetApiRoles(ApiKeyData data)
         {
             return SettingsAuthorizationRoleProvider.ConstructRoles(data);
         }

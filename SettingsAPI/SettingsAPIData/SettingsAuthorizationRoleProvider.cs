@@ -1,4 +1,5 @@
-﻿using SettingsAPIData.Model;
+﻿using SettingsAPIData.Data;
+using SettingsAPIData.Model;
 using SettingsAPIShared;
 using System.Collections.Generic;
 
@@ -6,51 +7,52 @@ namespace SettingsAPIData
 {
     internal class SettingsAuthorizationRoleProvider
     {
-        public static string[] ConstructRoles(ApiKeyModel model)
+        public static string[] ConstructRoles(ApiKeyData data)
         {
             List<string> roles = new List<string>();
 
-            if (model != null && model.Active)
+            if (data != null && data.Active)
             {
-                bool allowAdministration = model.AdminKey || model.Id == Constants.SYSTEM_MASTER_KEY_ID;
+                bool allowAdministration = data.AdminKey || data.Id == Constants.SYSTEM_MASTER_KEY_ID;
 
-                roles.Add(SecurityRoles.RoleReadDirectories(model.ApplicationName));
-                roles.Add(SecurityRoles.RoleReadVersions(model.ApplicationName));
+                roles.Add(SecurityRoles.RoleReadDirectories(data.Application.Name));
+                roles.Add(SecurityRoles.RoleReadVersions(data.Application.Name));
 
-                if (model.Id == Constants.SYSTEM_MASTER_KEY_ID)
+                if (data.Id == Constants.SYSTEM_MASTER_KEY_ID)
                 {
                     roles.Add(SecurityRoles.RoleCreateApplication());
-                    roles.Add(SecurityRoles.RoleDeleteApplication(model.ApplicationName));
+                    roles.Add(SecurityRoles.RoleDeleteApplication(data.Application.Name));
                     roles.Add(SecurityRoles.RoleReadApiKeys());
                 } 
  
-                foreach (var item in model.Access)
+                foreach (var item in data.Access)
                 { 
                     if (allowAdministration)
                     {
-                        AddRoles(SecurityRoles.RoleDeleteDirectory(item.Application, item.Directory), roles);
-                        AddRoles(SecurityRoles.RoleCreateDirectory(item.Application), roles);
-                        AddRoles(SecurityRoles.RoleDeleteDirectories(item.Application), roles);
-                        AddRoles(SecurityRoles.RoleCreateVersion(item.Application), roles);
-                        AddRoles(SecurityRoles.RoleDeleteVersion(item.Application), roles);
-                        AddRoles(SecurityRoles.RoleEditApiKey(item.Application), roles);
+                        AddRoles(SecurityRoles.RoleDeleteDirectory(item.Directory.Application.Name, item.Directory.Name), roles);
+                        AddRoles(SecurityRoles.RoleCreateDirectory(item.Directory.Application.Name), roles);
+                        AddRoles(SecurityRoles.RoleDeleteDirectories(item.Directory.Application.Name), roles);
+                        AddRoles(SecurityRoles.RoleCreateVersion(item.Directory.Application.Name), roles);
+                        AddRoles(SecurityRoles.RoleDeleteVersion(item.Directory.Application.Name), roles);
+                        AddRoles(SecurityRoles.RoleEditApiKey(item.Directory.Application.Name), roles);
+                        AddRoles(SecurityRoles.RoleReadApiKeys(item.Directory.Application.Name), roles);
                     }
 
-                    AddRoles(SecurityRoles.RoleReadDirectory(item.Application, item.Directory), roles);
+                    AddRoles(SecurityRoles.RoleReadDirectory(item.Directory.Application.Name, item.Directory.Name), roles);
 
-                    if (item.Create)
+                    if (item.AllowCreate)
                     {
-                        AddRoles(SecurityRoles.RoleCreateSetting(item.Application, item.Directory), roles);
+                        AddRoles(SecurityRoles.RoleCreateSetting(item.Directory.Application.Name, item.Directory.Name), roles);
                     }
 
-                    if (item.Delete)
+                    if (item.AllowDelete)
                     {
-                        AddRoles(SecurityRoles.RoleDeleteSetting(item.Application, item.Directory), roles);
+                        AddRoles(SecurityRoles.RoleDeleteSetting(item.Directory.Application.Name, item.Directory.Name), roles);
                     }
 
-                    if (item.Write)
+                    if (item.AllowWrite)
                     {
-                        AddRoles(SecurityRoles.RoleWriteSetting(item.Application, item.Directory), roles);
+                        AddRoles(SecurityRoles.RoleWriteSetting(item.Directory.Application.Name, item.Directory.Name), roles);
                     }
                 }
             }
