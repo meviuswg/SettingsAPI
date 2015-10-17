@@ -21,7 +21,7 @@ GO
 CREATE TABLE dbo.settings_directory (
 	id INT identity(1, 1)
 	,application_id INT
-	,[name] VARCHAR(20)
+	,[name] VARCHAR(50)
 	,description VARCHAR(150)
 	,created datetime not null  CONSTRAINT def_ssettings_directory_created DEFAULT(getdate()) 
 	,CONSTRAINT pk_settings_directory PRIMARY KEY (id)
@@ -109,8 +109,10 @@ CREATE TABLE dbo.settings (
 	[object_id] INT
 	,[version_id] INT NOT NULL
 	,[directory_id] INT NOT NULL
-	,[setting_key] VARCHAR(50) NOT NULL
+	,[setting_key] VARCHAR(20) NOT NULL
 	,[setting_value] NVARCHAR(max) NULL
+	,[setting_info] NVARCHAR(50) NULL
+	,[setting_type_info] NVARCHAR(255) NULL
 	,[created] DATETIME CONSTRAINT def_settings_created DEFAULT(getdate())
 	,[modified] DATETIME NULL
 	,CONSTRAINT pk_settings PRIMARY KEY (

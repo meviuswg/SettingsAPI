@@ -29,14 +29,14 @@ namespace SettingsAPIClient
         {
             Uri test;
 
-            if(!Uri.TryCreate(url, UriKind.Absolute, out test))
+            if (!Uri.TryCreate(url, UriKind.Absolute, out test))
             {
                 throw new SettingsException("Invalid Uri");
             }
             this._url = url;
 
 
-            if(string.IsNullOrWhiteSpace(apiKey))
+            if (string.IsNullOrWhiteSpace(apiKey))
             {
                 throw new SettingsException("Invalid APIKey");
             }
@@ -68,8 +68,8 @@ namespace SettingsAPIClient
 
         public async Task<SettingsApplication[]> GetApplications()
         {
-            _applicationProvider = new ApplicationProvider(_url, _apiKey, string.Empty); 
-            return await _applicationProvider.GetAll();
+            _applicationProvider = new ApplicationProvider(_url, _apiKey, string.Empty);
+            return await _applicationProvider.GetAll(); 
         }
         public async Task<bool> CreateApplicationAsync(string applicationName, string description)
         {
@@ -110,6 +110,10 @@ namespace SettingsAPIClient
 
         public async Task<bool> DeleteApplicationVersionAsync(string applicationName, int version)
         {
+            if(version == 1)
+            {
+                throw new SettingsException("Cannot delete version 1");
+            }
             _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
 
             if (await _applicationProvider.DeleteVerion(version))
@@ -161,6 +165,11 @@ namespace SettingsAPIClient
 
         public async Task<bool> DeleteDirectoryAsync(string applicationName, string directoryName)
         {
+            if (string.Equals(directoryName, "root", StringComparison.CurrentCultureIgnoreCase) || string.Equals(directoryName, "root", StringComparison.CurrentCultureIgnoreCase))
+            {
+                throw new SettingsException("This directory can not be deleted");
+            }
+
             _directoryProvider = new DirectoryProvider(_url, _apiKey, applicationName, directoryName);
 
             if (await _directoryProvider.Delete())
@@ -230,7 +239,7 @@ namespace SettingsAPIClient
                 else
                     throw new SettingsException(string.Format("Failed to open directory '{0}' of application '{1}' version {2}. The target does not exist or you are not authorized to access it", directory, applicationName, version));
             }
- 
+
         }
         #endregion Direcotory
 
@@ -323,7 +332,7 @@ namespace SettingsAPIClient
                 throw new ArgumentNullException("key");
             }
 
-            if(UseCache)
+            if (UseCache)
             {
                 if (_items.ContainsKey(key))
                 {
@@ -338,8 +347,8 @@ namespace SettingsAPIClient
             {
                 var result = await _settingsProvider.Get(key);
 
-                if(result.Count() == 0)
-                { 
+                if (result.Count() == 0)
+                {
                     throw new SettingNotFoundException(key);
                 }
                 else
@@ -365,32 +374,32 @@ namespace SettingsAPIClient
 
         public async Task<bool> SaveAsync(string key, bool value)
         {
-            return await SaveAsync(key, value.ToString());
+            return await SaveAsync(key, value.ToString(), ValueDataType.Bool);
         }
 
         public async Task<bool> SaveAsync(string key, DateTime value)
         {
-            return await SaveAsync(key, value.ToString());
+            return await SaveAsync(key, value.ToString(), ValueDataType.DateTime);
         }
 
         public async Task<bool> SaveAsync(string key, decimal value)
         {
-            return await SaveAsync(key, value.ToString());
+            return await SaveAsync(key, value.ToString(), ValueDataType.Decimal);
         }
 
         public async Task<bool> SaveAsync(string key, Image value)
         {
-            return await SaveAsync(key, SerializationHelper.ImageToString(value));
+            return await SaveAsync(key, SerializationHelper.ImageToString(value), ValueDataType.Image);
         }
 
         public async Task<bool> SaveAsync(string key, byte[] value)
         {
-            return await SaveAsync(key, SerializationHelper.ToBase64String(value));
+            return await SaveAsync(key, SerializationHelper.ToBase64String(value), ValueDataType.ByteArray);
         }
 
         public async Task<bool> SaveAsync(IEnumerable<Setting> settings)
         {
-            if(ExplicitlySave)
+            if (ExplicitlySave)
             {
                 SetInternalItemsCollection(settings);
                 return true;
@@ -400,7 +409,7 @@ namespace SettingsAPIClient
 
             if (settingsSaved)
             {
-               SetInternalItemsCollection(settings);
+                SetInternalItemsCollection(settings);
             }
 
             return settingsSaved;
@@ -416,12 +425,17 @@ namespace SettingsAPIClient
 
         public async Task<bool> SaveAsync(Setting setting)
         {
-           return await SaveAsync(new Setting[] { setting }); 
+            return await SaveAsync(new Setting[] { setting });
         }
 
         public async Task<bool> SaveAsync(string key, string value)
         {
-            return await SaveAsync(new Setting { Key = key, Value = value });
+            return await SaveAsync(new Setting { Key = key, Value = value, ValueType = ValueDataType.String });
+        }
+
+        public async Task<bool> SaveAsync(string key, string value, ValueDataType dataType)
+        {
+            return await SaveAsync(new Setting { Key = key, Value = value, ValueType = dataType });
         }
 
         /// <summary>
@@ -430,8 +444,8 @@ namespace SettingsAPIClient
         /// <returns></returns>
         public async Task<bool> SaveAsync()
         {
-           return await  _settingsProvider.Save(_items.Values.ToList());
-        } 
+            return await _settingsProvider.Save(_items.Values.ToList());
+        }
 
         /// <summary>
         /// Reloads all the settings of the current directory.
@@ -549,7 +563,7 @@ namespace SettingsAPIClient
 
         public async Task<bool> ExistsAsync(string key)
         {
-            if(UseCache)
+            if (UseCache)
             {
                 return _items.ContainsKey(key);
             }

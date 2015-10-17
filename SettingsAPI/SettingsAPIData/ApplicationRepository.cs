@@ -114,6 +114,12 @@ namespace SettingsAPIData
             {
                 throw new SettingsNotFoundException(Constants.ERROR_VERION_UNKNOWN);
             }
+             
+            if (data.Version == 1)
+            {
+                throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Delete, applicationName, Auth.CurrentIdentity.Id);
+            }
+
 
             using (TransactionScope scope = new TransactionScope())
             {
@@ -200,7 +206,8 @@ namespace SettingsAPIData
                         SettingModel s = new SettingModel();
                         s.Key = setting.SettingKey;
                         s.Value = setting.SettingValue;
-
+                        s.Modified = setting.Modified;
+                        s.Created = setting.Created;
                         model.Settings.Add(s);
                     }
                 }

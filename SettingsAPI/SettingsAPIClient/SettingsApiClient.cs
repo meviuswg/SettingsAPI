@@ -89,11 +89,11 @@ namespace SettingsAPIClient
             }
             catch (TimeoutException ex)
             {
-                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+                throw new SettingsException("The remote store operation did not complete within normal time. Reinitialize and try again.", ex);
             }
             catch (HttpRequestException ex)
-            {
-                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            { 
+                throw new SettingsException("Could not connect to remote store", ex);
             }
             catch (Exception ex)
             {

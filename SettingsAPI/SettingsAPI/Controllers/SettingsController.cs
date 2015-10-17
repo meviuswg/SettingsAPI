@@ -49,26 +49,9 @@ namespace SettingsAPI.Controllers
         [HttpPost]
         [Route("{applicationName}/{directory:alpha}")]
         [ResponseType(typeof(SettingModel[]))]
-        public IHttpActionResult Get(string applicationName, string directory, [FromBody] IEnumerable<SettingModel> value)
+        public IHttpActionResult SaveSettings(string applicationName, string directory, [FromBody] IEnumerable<SettingModel> value)
         {
             return Post(new SettingStore(applicationName, 1, directory), value);
-        }
-
-        [HttpGet]
-        [Route("{applicationName}/{directory:alpha}/{objectId}")]
-        [ResponseType(typeof(SettingModel[]))]
-        public IHttpActionResult Get(string applicationName, string directory, int objectId)
-        {
-            return Get(new SettingStore(applicationName, 1, directory, objectId));
-        }
-
-
-        [HttpPost]
-        [Route("{applicationName}/{directory:alpha}/{objectId}")]
-        [ResponseType(typeof(SettingModel[]))]
-        public IHttpActionResult Get(string applicationName, string directory, int objectId, [FromBody] IEnumerable<SettingModel> value)
-        {
-            return Post(new SettingStore(applicationName, 1, directory, objectId), value);
         }
 
         [HttpGet]
@@ -77,40 +60,32 @@ namespace SettingsAPI.Controllers
         public IHttpActionResult Get(string applicationName, int version, string directory)
         {
             return Get(new SettingStore(applicationName, version, directory));
-        }
+        } 
 
         [HttpGet]
-        [Route("{applicationName}/{version:int=1}/{directory}/{objectId:int=0}")]
-        [ResponseType(typeof(SettingModel[]))]
-        public IHttpActionResult Get(string applicationName, int version, string directory, int objectId)
-        {
-            return Get(new SettingStore(applicationName, version, directory, objectId));
-        }
-
-        [HttpGet]
-        [Route("{applicationName}/{version:int=1}/{directory}/{objectId:int=0}/{key}")]
+        [Route("{applicationName}/{version:int=1}/{directory}/{key}")]
         [ResponseType(typeof(SettingModel))]
-        public IHttpActionResult Get(string applicationName, int version, string directory, int objectId, string key)
+        public IHttpActionResult Get(string applicationName, int version, string directory,  string key)
         {
 
-            return Get(new SettingStore(applicationName, version, directory, objectId), key);
+            return Get(new SettingStore(applicationName, version, directory), key);
         }
 
         [HttpPost]
         [Route("{applicationName}/{version:int=1}/{directory}/{objectId:int=0}/{key}")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult Post(string applicationName, int version, string directory, int objectId, string key, [FromBody]string value)
+        public IHttpActionResult Post(string applicationName, int version, string directory,  string key, [FromBody]string value)
         {
-            var store = new SettingStore(applicationName, version, directory, objectId);
-            return Post(store, new SettingModel { Key = key, Value = value });
+            var store = new SettingStore(applicationName, version, directory);
+            return Post(store, new SettingModel { Key = key, Value = value, ObjectId = 0 });
         }
 
         [HttpPost]
         [Route("{applicationName}/{version:int=1}/{directory}/{objectId:int=0}")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PostCollection(string applicationName, int version, string directory, int objectId, [FromBody]IEnumerable<SettingModel> value)
+        public IHttpActionResult PostCollection(string applicationName, int version, string directory, [FromBody]IEnumerable<SettingModel> value)
         {
-            var store = new SettingStore(applicationName, version, directory, objectId);
+            var store = new SettingStore(applicationName, version, directory);
             return Post(store, value);
         }
 

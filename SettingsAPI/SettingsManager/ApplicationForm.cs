@@ -1,12 +1,11 @@
-﻿using SettingsAPIClient;
+﻿using DevExpress.XtraBars;
+using SettingsAPIClient;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DevExpress.XtraBars;
 
 namespace SettingsManager
 {
@@ -14,83 +13,92 @@ namespace SettingsManager
     {
         private string apiKey;
         private string url;
-        static SettingsAPIClient.SettingsManager settingsManager;
+        private static SettingsAPIClient.SettingsManager settingsManager;
 
         public ApplicationForm()
         {
             InitializeComponent();
 
             url = ConfigurationManager.AppSettings["settingsStoreEndpoint"];
+            apiKey = ConfigurationManager.AppSettings["apiKey"];
 
-            Task.Run(async delegate
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1));
-                await GetApplications();
-            });
+            this.Shown += ApplicationForm_Shown;
         }
 
+        private async void ApplicationForm_Shown(object sender, EventArgs e)
+        {
+            await GetApplications();
+        }
 
         private async Task GetApplications()
         {
-
-            apiKey = "ad99185c881446deae6eda61bf40990a";
-
-            settingsManager = new SettingsAPIClient.SettingsManager(url, apiKey);
-
-            IEnumerable<SettingsApplication> applications = null;
             try
             {
-                applications = await settingsManager.GetApplications();
+                settingsManager = new SettingsAPIClient.SettingsManager(url, apiKey);
+
+                IEnumerable<SettingsApplication> applications = null;
+                try
+                {
+                    applications = await settingsManager.GetApplications();
+                }
+                catch (AggregateException ex)
+                {
+                    MessageBox.Show(ex.InnerException.Message);
+                }
+                gridControl1.DataSource = applications.ToList();
             }
-            catch (AggregateException ex)
+            catch (SettingsException ex)
             {
-                MessageBox.Show(ex.InnerException.Message);
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            gridControl1.DataSource = applications.ToList();
         }
 
         private async void barButtonItem1_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            if (applicationControl != null)
+            try
             {
-                await applicationControl.RefreshButtonClicked();
+                if (applicationControl != null)
+                {
+                    await applicationControl.RefreshButtonClicked();
+                }
+                await GetApplications();
             }
-            await GetApplications();
+            catch (SettingsException ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
 
         private async void gridViewApplications_DoubleClick_1(object sender, EventArgs e)
         {
-            var application = gridViewApplications.GetRow(gridViewApplications.FocusedRowHandle) as SettingsApplication;
-
-            if (application != null)
+            try
             {
-                await settingsManager.OpenApplicationAsync(application.Name);
-                gridControl1.Visible = false;
+                var application = gridViewApplications.GetRow(gridViewApplications.FocusedRowHandle) as SettingsApplication;
 
-                applicationControl = new ApplicationUserControl(settingsManager);
-                applicationControl.Dock = DockStyle.Fill;
-                mainPanel.Controls.Add(applicationControl);
-                barButtonBack.Visibility = BarItemVisibility.Always;
+                if (application != null)
+                {
+                    await settingsManager.OpenApplicationAsync(application.Name);
+                    gridControl1.Visible = false;
 
+                    applicationControl = new ApplicationUserControl(settingsManager);
+                    applicationControl.Dock = DockStyle.Fill;
+                    mainPanel.Controls.Add(applicationControl);
+                    barButtonBack.Visibility = BarItemVisibility.Always;
+
+                    ribbonPageGroupApplicationActions.Visible = true;
+                    barButtonBack.Visibility = BarItemVisibility.Always;
+                }
+            }
+            catch (SettingsException ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        ApplicationUserControl applicationControl;
 
-
-        private void CreateApplication_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CreateDirectory_Click(object sender, EventArgs e)
-        {
-
-        }
+        private ApplicationUserControl applicationControl;
 
         private void buttonBack_ItemClick_1(object sender, ItemClickEventArgs e)
         {
-
             if (applicationControl != null)
             {
                 if (applicationControl.Level == ApplicationControlLevel.Setting)
@@ -100,11 +108,17 @@ namespace SettingsManager
                 else
                 {
                     mainPanel.Controls.Remove(applicationControl);
-                    gridControl1.Visible = true;
-                    applicationControl = null;
+                    ShowStartScreen();
                 }
             }
+        }
 
+        private void ShowStartScreen()
+        {
+            gridControl1.Visible = true;
+            applicationControl = null;
+            ribbonPageGroupApplicationActions.Visible = false;
+            barButtonBack.Visibility = BarItemVisibility.Never;
         }
 
         private async void barButtonAdd_ItemClick(object sender, ItemClickEventArgs e)
@@ -121,18 +135,16 @@ namespace SettingsManager
 
                     if (form.ShowDialog() == DialogResult.OK)
                     {
-
                         if (await settingsManager.CreateApplicationAsync(form.ApplicationName, form.ApplicationDescrption))
                         {
                             await GetApplications();
                         }
                     }
                 }
-
             }
             catch (SettingsException ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -147,7 +159,6 @@ namespace SettingsManager
                 else
                 {
                     var application = gridViewApplications.GetRow(gridViewApplications.FocusedRowHandle) as SettingsApplication;
-
 
                     if (application != null)
                     {
@@ -166,7 +177,57 @@ namespace SettingsManager
             }
             catch (SettingsException ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void barButtonItemChangeKey_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            AskApiKeyForm form = new AskApiKeyForm(apiKey);
+
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                apiKey = form.ApiKey;
+                await GetApplications();
+                ShowStartScreen();
+            }
+        }
+
+        private void barButtonItemAccess_ItemClick(object sender, ItemClickEventArgs e)
+        {
+        }
+
+        private void barButtonItemVersions_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            VersionsForm form = new VersionsForm(applicationControl.Application.Name, settingsManager);
+            form.ShowDialog();
+
+            if (form.Version != null)
+            {
+                applicationControl.CurrentVersion = form.Version;
+            }
+        }
+
+        private async void barButtonItemEdit_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (applicationControl == null)
+            {
+                var application = gridViewApplications.GetRow(gridViewApplications.FocusedRowHandle) as SettingsApplication;
+
+                if (application != null)
+                {
+                    ApplicationEditForm form = new ApplicationEditForm(false, settingsManager);
+
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+
+                    }
+
+                }
+            }
+            else
+            {
+               await applicationControl.EditButtonClicked(); 
             }
         }
     }

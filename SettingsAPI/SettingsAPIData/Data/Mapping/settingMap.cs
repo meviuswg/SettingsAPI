@@ -30,6 +30,8 @@ namespace SettingsAPIData.Data.Mapping
             this.Property(t => t.VersionId).HasColumnName("version_id");
             this.Property(t => t.DirectoryId).HasColumnName("directory_id");
             this.Property(t => t.SettingKey).HasColumnName("setting_key");
+            this.Property(t => t.SettingInfo).HasColumnName("setting_info");
+            this.Property(t => t.SettingInfo).HasColumnName("setting_type_info");
             this.Property(t => t.SettingValue).HasColumnName("setting_value");
             this.Property(t => t.Created).HasColumnName("created");
             this.Property(t => t.Modified).HasColumnName("modified");

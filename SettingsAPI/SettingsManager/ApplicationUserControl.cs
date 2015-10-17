@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SettingsAPIClient;
+using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SettingsAPIClient;
 
 namespace SettingsManager
 {
@@ -15,26 +12,26 @@ namespace SettingsManager
     {
         Directory, Setting
     }
+
     public partial class ApplicationUserControl : UserControl
     {
-        private SettingsApplication application;
-        SettingsAPIClient.SettingsManager settingsManager;
-        BindingList<SettingsDirectory> directoryBinding;
+        public SettingsApplication Application;
+        private SettingsAPIClient.SettingsManager settingsManager;
+        private BindingList<SettingsDirectory> directoryBinding;
 
         public ApplicationUserControl()
         {
-            InitializeComponent(); 
+            InitializeComponent();
         }
-
 
         public ApplicationUserControl(SettingsAPIClient.SettingsManager settingsManager)
         {
             InitializeComponent();
 
-            this.application = settingsManager.Application;
+            this.Application = settingsManager.Application;
             this.settingsManager = settingsManager;
 
-        
+            this.CurrentVersion = settingsManager.Application.Versions.OrderByDescending(v => v.Created).First();
             Task.Run(() => Init()).Wait();
         }
 
@@ -46,30 +43,21 @@ namespace SettingsManager
             gridControlDirectories.Visible = true;
             gridControlDirectories.Dock = DockStyle.Fill;
             gridControlSettings.Dock = DockStyle.Fill;
- 
-            Level = ApplicationControlLevel.Directory;
 
-          
+            Level = ApplicationControlLevel.Directory;
 
             ShowDirectory(null);
 
-            foreach (var item in application.Versions)
-            {
-                radioGroupVersions.Properties.Items.Add(new DevExpress.XtraEditors.Controls.RadioGroupItem(item, string.Format("Version: {0} Created: {1}", item.Version, item.Created)));
-            }
+            labelApplicationNameValue.Text = Application.Name;
+            labelApplicationDescriptionValue.Text = Application.Description;
+            LabelCreatedValue.Text = Application.Created.ToString();
 
-            radioGroupVersions.EditValue = application.Versions.First();
-            radioGroupVersions.Properties.SelectedIndexChanged += Properties_SelectedIndexChanged;
-            labelApplicationNameValue.Text = application.Name;
-            labelApplicationDescriptionValue.Text = application.Description;
-            LabelCreatedValue.Text = application.Created.ToString();
-
-            await SetDirectoryBinding(application.Name);
+            await SetDirectoryBinding(Application.Name);
         }
 
         private async Task SetDirectoryBinding(string applicationName)
         {
-            if(await settingsManager.OpenApplicationAsync(applicationName))
+            if (await settingsManager.OpenApplicationAsync(applicationName))
             {
                 directoryBinding = new BindingList<SettingsDirectory>(settingsManager.Application.Directories);
 
@@ -77,25 +65,20 @@ namespace SettingsManager
                 directoryBinding.ListChanged += DirectoryBinding_ListChanged;
 
                 gridControlDirectories.DataSource = directoryBinding;
-            } 
+            }
         }
 
         private void DirectoryBinding_ListChanged(object sender, ListChangedEventArgs e)
         {
-          
         }
 
         private void DirectoryBinding_AddingNew(object sender, AddingNewEventArgs e)
         {
-           
         }
-
-    
- 
 
         public void BackButtonClicked()
         {
-            if(Level == ApplicationControlLevel.Setting)
+            if (Level == ApplicationControlLevel.Setting)
             {
                 gridControlDirectories.Visible = true;
                 gridControlSettings.Visible = false;
@@ -110,7 +93,7 @@ namespace SettingsManager
         {
             if (Level == ApplicationControlLevel.Directory)
             {
-                await SetDirectoryBinding(application.Name);
+                await SetDirectoryBinding(Application.Name);
             }
             else
             {
@@ -130,40 +113,45 @@ namespace SettingsManager
                     newDir.Name = form.DirectoryName;
                     newDir.Description = form.DirectoryDescription;
 
-                    if (await settingsManager.CreateDirectoryAsync(application.Name, newDir.Name, newDir.Description))
+                    if (await settingsManager.CreateDirectoryAsync(Application.Name, newDir.Name, newDir.Description))
                     {
                         directoryBinding.Add(newDir);
-                    } 
+                    }
                 }
             }
             else
             {
-                gridViewSettings.AddNewRow();
+                SettingEditForm form = new SettingEditForm(null, settingsManager);
+
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    await settingsManager.SaveAsync(form.Setting);
+                }
             }
         }
 
         public async Task DeleteItemButtonClicked()
         {
-            if(Level == ApplicationControlLevel.Directory)
+            if (Level == ApplicationControlLevel.Directory)
             {
                 var directory = gridViewDirectories.GetRow(gridViewDirectories.FocusedRowHandle) as SettingsDirectory;
 
-                if(directory != null)
+                if (directory != null)
                 {
-                    if(string.Equals(directory.Name, "root") || string.Equals(directory.Name, "system"))
+                    if (string.Equals(directory.Name, "root") || string.Equals(directory.Name, "system"))
                     {
                         MessageBox.Show("This directory can not be deleted", "System directory", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
-                    if(MessageBox.Show(string.Format("Are you sure you want to delete directory {0} and all its settings?", directory.Name),"Delete Directory", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) ==  DialogResult.Yes)
+                    if (MessageBox.Show(string.Format("Are you sure you want to delete directory {0} and all its settings?", directory.Name), "Delete Directory", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
-                       await settingsManager.DeleteDirectoryAsync(application.Name, directory.Name);
+                        await settingsManager.DeleteDirectoryAsync(Application.Name, directory.Name);
+                        await RefreshButtonClicked();
                     }
                 }
             }
             else
             {
-
             }
         }
 
@@ -171,7 +159,6 @@ namespace SettingsManager
         {
             if (directory != null)
             {
-                labelDirectoryDescription.Visible = true;
                 labelDirectoryDescriptionValue.Visible = true;
                 labelDirectoryDescriptionValue.Text = directory.Description;
 
@@ -181,7 +168,6 @@ namespace SettingsManager
             }
             else
             {
-                labelDirectoryDescription.Visible = false;
                 labelDirectoryName.Visible = false;
                 labelDirectoryDescriptionValue.Visible = false;
                 labelDirectoryNameValue.Visible = false;
@@ -190,7 +176,6 @@ namespace SettingsManager
 
         private void gridDirectories_DoubleClick(object sender, EventArgs e)
         {
-
         }
 
         private async void gridViewDirectories_DoubleClick(object sender, EventArgs e)
@@ -198,11 +183,23 @@ namespace SettingsManager
             await OpenSettings();
         }
 
-        private int CurrentVersion
+        private SettingsVersion _currentVersion;
+
+        public SettingsVersion CurrentVersion
         {
-            get
+            get { return _currentVersion; }
+            set
             {
-                return ((SettingsVersion)radioGroupVersions.EditValue).Version;
+                if (_currentVersion == null || _currentVersion.Version != value.Version)
+                {
+                    _currentVersion = value;
+                    labelCurrentVersion.Text = string.Format("V{0} Created: {1}", _currentVersion.Version, _currentVersion.Created);
+
+                    if (Level == ApplicationControlLevel.Setting)
+                    {
+                        Task.Run(() => OpenSettings());
+                    }
+                }
             }
         }
 
@@ -218,7 +215,7 @@ namespace SettingsManager
             {
                 ShowDirectory(directory);
 
-                if (await settingsManager.OpenDirectoryAsync(application.Name, CurrentVersion, directory.Name))
+                if (await settingsManager.OpenDirectoryAsync(Application.Name, CurrentVersion.Version, directory.Name))
                 {
                     gridControlDirectories.Visible = false;
                     gridControlSettings.Visible = true;
@@ -233,6 +230,52 @@ namespace SettingsManager
             if (Level == ApplicationControlLevel.Setting)
             {
                 await OpenSettings();
+            }
+        }
+
+        public async Task EditButtonClicked()
+        {
+            if (Level == ApplicationControlLevel.Directory)
+            {
+                DirectoryEditForm form = new DirectoryEditForm(true, settingsManager);
+
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    SettingsDirectory newDir = new SettingsDirectory();
+                    newDir.Name = form.DirectoryName;
+                    newDir.Description = form.DirectoryDescription;
+
+                    if (await settingsManager.CreateDirectoryAsync(Application.Name, newDir.Name, newDir.Description))
+                    {
+                        directoryBinding.Add(newDir);
+                    }
+                }
+            }
+            else
+            {
+                var setting = gridViewSettings.GetRow(gridViewSettings.FocusedRowHandle) as Setting;
+
+                if (setting != null)
+                {
+                    SettingEditForm form = new SettingEditForm(setting, settingsManager);
+
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        await settingsManager.SaveAsync(form.Setting);
+                    }
+                }
+            }
+        }
+
+        private async void gridViewSettings_DoubleClick(object sender, EventArgs e)
+        {
+            try
+            {
+                await EditButtonClicked();
+            }
+            catch (SettingsException ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

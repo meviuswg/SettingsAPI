@@ -9,6 +9,8 @@ namespace SettingsAPIData.Data
         public int VersionId { get; set; }
         public int DirectoryId { get; set; }
         public string SettingKey { get; set; }
+        public string SettingInfo { get; set; }
+        public string SettingTypeInfo { get; set; }
         public string SettingValue { get; set; }
         public Nullable<System.DateTime> Created { get; set; }
         public Nullable<System.DateTime> Modified { get; set; }
@@ -46,7 +48,7 @@ namespace SettingsAPIData.Data
 
         public bool Equals(SettingModel other)
         {
-            return string.Equals(this.SettingKey, other.Key, StringComparison.CurrentCultureIgnoreCase);
+            return string.Equals(this.SettingKey, other.Key, StringComparison.CurrentCultureIgnoreCase) && other.ObjectId == this.ObjecId;
         }
     }
 }

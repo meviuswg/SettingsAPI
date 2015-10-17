@@ -77,6 +77,8 @@ namespace SettingsAPIData
                     {
                         if (Auth.AllowriteSetting(store.ApplicationName, store.DirectoryName))
                         {
+                            existingOrNew.SettingInfo = item.Info;
+                            existingOrNew.SettingTypeInfo = item.TypeInfo;
                             existingOrNew.SettingValue = item.Value;
                             existingOrNew.Modified = DateTime.UtcNow;
                         }
@@ -92,7 +94,10 @@ namespace SettingsAPIData
                             existingOrNew = CreateDataForStore(store);
                             existingOrNew.SettingKey = item.Key;
                             existingOrNew.SettingValue = item.Value;
+                            existingOrNew.SettingInfo = item.Info;
+                            existingOrNew.SettingTypeInfo = item.TypeInfo;
                             existingOrNew.Created = DateTime.Now;
+                            existingOrNew.ObjecId = item.ObjectId;
                             Store.Context.Settings.Add(existingOrNew);
                         }
                         else
@@ -127,7 +132,7 @@ namespace SettingsAPIData
 
             data.DirectoryId = directory.Id;
             data.VersionId = version.Id;
-            data.ObjecId = store.ObjectId ?? 0;
+            data.ObjecId = 0;
 
             return data;
         }
@@ -159,8 +164,7 @@ namespace SettingsAPIData
 
             return Store.Context.Settings.Where(s =>
                  s.VersionId == version.Id
-              && s.DirectoryId == directory.Id
-              && (s.ObjecId == store.ObjectId || store.ObjectId == null));
+              && s.DirectoryId == directory.Id);
         }
     }
 }

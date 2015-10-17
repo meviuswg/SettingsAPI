@@ -11,8 +11,7 @@
         {
             _applicationName = application;
             _directory = directory;
-            _version = 1;
-            _objectId = null;
+            _version = 1;            
         }
 
         public SettingStore(string application, int version, string directory)
@@ -20,20 +19,13 @@
             _applicationName = application;
             _directory = directory;
             _version = version;
-            _objectId = null;
+            
         }
 
-        public SettingStore(string application, int version, string directory, int objectId)
-        {
-            _applicationName = application;
-            _directory = directory;
-            _version = version;
-            _objectId = objectId;
-        }
 
         public string ApplicationName { get { return _applicationName; } }
         public string DirectoryName { get { return _directory; } }
         public int Version { get { return _version; } }
-        public int? ObjectId { get { return _objectId; } }
+
     }
 }

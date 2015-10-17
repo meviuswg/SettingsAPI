@@ -66,6 +66,7 @@
     <Compile Include="SettingsApplication.cs" />
     <Compile Include="SettingsDirectory.cs" />
     <Compile Include="SettingsStoreException.cs" />
+    <Compile Include="ValueDataType.cs" />
     <Compile Include="Util\SerializationHelper.cs" />
     <Compile Include="SettingsException.cs" />
     <Compile Include="Setting.cs" />

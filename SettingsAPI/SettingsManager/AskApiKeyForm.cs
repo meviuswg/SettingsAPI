@@ -12,13 +12,16 @@ namespace SettingsManager
 {
     public partial class AskApiKeyForm : Form
     {
-        public AskApiKeyForm()
+        public AskApiKeyForm(string apiKey)
         {
             InitializeComponent();
+
+            textBox1.Text = apiKey;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SettingsAPIClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -33,7 +34,7 @@ namespace SettingsManager
                 return false;
             }
             else
-            { 
+            {
                 if (await settingsManager.ExistsApplicationAsync(textName.Text))
                 {
                     textName.ErrorText = "Application name already in use.";
@@ -50,10 +51,17 @@ namespace SettingsManager
 
         private async void simpleButtonOk_Click(object sender, EventArgs e)
         {
-            if (await ValidateInputAsync())
+            try
             {
-                DialogResult = DialogResult.OK;
-                this.Close();
+                if (await ValidateInputAsync())
+                {
+                    DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+            }
+            catch (SettingsException ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

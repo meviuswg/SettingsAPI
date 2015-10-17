@@ -42,6 +42,7 @@
             // 
             this.textName.Location = new System.Drawing.Point(96, 13);
             this.textName.Name = "textName";
+            this.textName.Properties.MaxLength = 50;
             this.textName.Size = new System.Drawing.Size(345, 20);
             this.textName.TabIndex = 0;
             // 
@@ -49,6 +50,7 @@
             // 
             this.textDescription.Location = new System.Drawing.Point(96, 48);
             this.textDescription.Name = "textDescription";
+            this.textDescription.Properties.MaxLength = 150;
             this.textDescription.Size = new System.Drawing.Size(345, 20);
             this.textDescription.TabIndex = 1;
             // 
@@ -87,7 +89,7 @@
             this.simpleButtonOk.Text = "Ok";
             this.simpleButtonOk.Click += new System.EventHandler(this.simpleButtonOk_Click);
             // 
-            // DirectoryForm
+            // DirectoryEditForm
             // 
             this.AcceptButton = this.simpleButtonOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -101,7 +103,8 @@
             this.Controls.Add(this.textDescription);
             this.Controls.Add(this.textName);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "DirectoryForm";
+            this.Name = "DirectoryEditForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Directory";
             ((System.ComponentModel.ISupportInitialize)(this.textName.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textDescription.Properties)).EndInit();

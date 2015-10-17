@@ -5,7 +5,7 @@ using System.Web;
 
 namespace SettingsAPIClient.Util
 {
-    internal class SerializationHelper
+    public class SerializationHelper
     {
         public static string ToBase64String(byte[] data)
         {

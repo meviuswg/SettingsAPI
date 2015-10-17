@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ApplicationForm));
             this.gridViewDirectories = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumnDirectoryName = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -43,7 +44,7 @@
             this.gridViewVersions = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumnVersionNumber = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumnVersionCreated = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.settingsApplicationBindingSource = new System.Windows.Forms.BindingSource();
+            this.settingsApplicationBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.bar4 = new DevExpress.XtraBars.Bar();
@@ -54,14 +55,19 @@
             this.barButtonItem3 = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonGroup1 = new DevExpress.XtraBars.BarButtonGroup();
             this.barButtonItemDeleteItem = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonMiniToolbar1 = new DevExpress.XtraBars.Ribbon.RibbonMiniToolbar();
+            this.barButtonItemAccess = new DevExpress.XtraBars.BarButtonItem();
+            this.barButtonItemVersions = new DevExpress.XtraBars.BarButtonItem();
+            this.barButtonItemChangeKey = new DevExpress.XtraBars.BarButtonItem();
+            this.barButtonItemEdit = new DevExpress.XtraBars.BarButtonItem();
+            this.ribbonMiniToolbar1 = new DevExpress.XtraBars.Ribbon.RibbonMiniToolbar(this.components);
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPageGroupApplicationActions = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPageGroupOther = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
-            this.applicationMenu1 = new DevExpress.XtraBars.Ribbon.ApplicationMenu();
+            this.applicationMenu1 = new DevExpress.XtraBars.Ribbon.ApplicationMenu(this.components);
             this.mainPanel = new DevExpress.XtraEditors.PanelControl();
-            this.barButtonGroup2 = new DevExpress.XtraBars.BarButtonGroup();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDirectories)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewApplications)).BeginInit();
@@ -103,10 +109,10 @@
             // gridControl1
             // 
             this.gridControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControl1.Location = new System.Drawing.Point(0, 0);
+            this.gridControl1.Location = new System.Drawing.Point(2, 2);
             this.gridControl1.MainView = this.gridViewApplications;
             this.gridControl1.Name = "gridControl1";
-            this.gridControl1.Size = new System.Drawing.Size(875, 281);
+            this.gridControl1.Size = new System.Drawing.Size(871, 336);
             this.gridControl1.TabIndex = 2;
             this.gridControl1.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewApplications,
@@ -262,15 +268,24 @@
             this.barButtonItem3,
             this.barButtonGroup1,
             this.barButtonItemDeleteItem,
-            this.barButtonGroup2});
+            this.barButtonItemAccess,
+            this.barButtonItemVersions,
+            this.barButtonItemChangeKey,
+            this.barButtonItemEdit});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 8;
+            this.ribbonControl1.MaxItemId = 12;
             this.ribbonControl1.MiniToolbars.Add(this.ribbonMiniToolbar1);
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbonControl1.Size = new System.Drawing.Size(875, 143);
+            this.ribbonControl1.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonControlStyle.OfficeUniversal;
+            this.ribbonControl1.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
+            this.ribbonControl1.ShowCategoryInCaption = false;
+            this.ribbonControl1.ShowQatLocationSelector = false;
+            this.ribbonControl1.ShowToolbarCustomizeItem = false;
+            this.ribbonControl1.Size = new System.Drawing.Size(875, 79);
             this.ribbonControl1.StatusBar = this.ribbonStatusBar1;
+            this.ribbonControl1.Toolbar.ShowCustomizeItem = false;
             // 
             // barButtonBack
             // 
@@ -317,13 +332,55 @@
             this.barButtonItemDeleteItem.Name = "barButtonItemDeleteItem";
             this.barButtonItemDeleteItem.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonDelete_ItemClick);
             // 
+            // barButtonItemAccess
+            // 
+            this.barButtonItemAccess.Caption = "Access";
+            this.barButtonItemAccess.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
+            this.barButtonItemAccess.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemAccess.Glyph")));
+            this.barButtonItemAccess.Id = 8;
+            this.barButtonItemAccess.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemAccess.LargeGlyph")));
+            this.barButtonItemAccess.Name = "barButtonItemAccess";
+            this.barButtonItemAccess.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemAccess_ItemClick);
+            // 
+            // barButtonItemVersions
+            // 
+            this.barButtonItemVersions.Caption = "Versions";
+            this.barButtonItemVersions.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
+            this.barButtonItemVersions.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemVersions.Glyph")));
+            this.barButtonItemVersions.Id = 9;
+            this.barButtonItemVersions.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemVersions.LargeGlyph")));
+            this.barButtonItemVersions.Name = "barButtonItemVersions";
+            this.barButtonItemVersions.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemVersions_ItemClick);
+            // 
+            // barButtonItemChangeKey
+            // 
+            this.barButtonItemChangeKey.Caption = "User";
+            this.barButtonItemChangeKey.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
+            this.barButtonItemChangeKey.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemChangeKey.Glyph")));
+            this.barButtonItemChangeKey.Id = 10;
+            this.barButtonItemChangeKey.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemChangeKey.LargeGlyph")));
+            this.barButtonItemChangeKey.Name = "barButtonItemChangeKey";
+            this.barButtonItemChangeKey.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemChangeKey_ItemClick);
+            // 
+            // barButtonItemEdit
+            // 
+            this.barButtonItemEdit.Caption = "Edit";
+            this.barButtonItemEdit.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
+            this.barButtonItemEdit.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemEdit.Glyph")));
+            this.barButtonItemEdit.Id = 11;
+            this.barButtonItemEdit.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemEdit.LargeGlyph")));
+            this.barButtonItemEdit.Name = "barButtonItemEdit";
+            this.barButtonItemEdit.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemEdit_ItemClick);
+            // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
             this.ribbonPageGroup1,
-            this.ribbonPageGroup2});
+            this.ribbonPageGroup2,
+            this.ribbonPageGroupApplicationActions,
+            this.ribbonPageGroupOther});
             this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "MainMenu";
+            this.ribbonPage1.Text = "Start";
             // 
             // ribbonPageGroup1
             // 
@@ -335,9 +392,24 @@
             // ribbonPageGroup2
             // 
             this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItemNewItem);
+            this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItemEdit);
             this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItemDeleteItem);
             this.ribbonPageGroup2.Name = "ribbonPageGroup2";
             this.ribbonPageGroup2.Text = "Actions";
+            // 
+            // ribbonPageGroupApplicationActions
+            // 
+            this.ribbonPageGroupApplicationActions.ItemLinks.Add(this.barButtonItemAccess);
+            this.ribbonPageGroupApplicationActions.ItemLinks.Add(this.barButtonItemVersions);
+            this.ribbonPageGroupApplicationActions.Name = "ribbonPageGroupApplicationActions";
+            this.ribbonPageGroupApplicationActions.Text = "Application";
+            this.ribbonPageGroupApplicationActions.Visible = false;
+            // 
+            // ribbonPageGroupOther
+            // 
+            this.ribbonPageGroupOther.ItemLinks.Add(this.barButtonItemChangeKey);
+            this.ribbonPageGroupOther.Name = "ribbonPageGroupOther";
+            this.ribbonPageGroupOther.Text = "Other";
             // 
             // ribbonStatusBar1
             // 
@@ -353,22 +425,13 @@
             // 
             // mainPanel
             // 
-            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mainPanel.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            this.mainPanel.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.Flat;
             this.mainPanel.Controls.Add(this.gridControl1);
-            this.mainPanel.Location = new System.Drawing.Point(0, 141);
+            this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainPanel.Location = new System.Drawing.Point(0, 79);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(875, 281);
+            this.mainPanel.Size = new System.Drawing.Size(875, 340);
             this.mainPanel.TabIndex = 7;
-            // 
-            // barButtonGroup2
-            // 
-            this.barButtonGroup2.Caption = "Create Version";
-            this.barButtonGroup2.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
-            this.barButtonGroup2.Id = 7;
-            this.barButtonGroup2.Name = "barButtonGroup2";
             // 
             // ApplicationForm
             // 
@@ -380,6 +443,8 @@
             this.Controls.Add(this.ribbonControl1);
             this.Name = "ApplicationForm";
             this.Ribbon = this.ribbonControl1;
+            this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.StatusBar = this.ribbonStatusBar1;
             this.Text = "Settings Application Manager";
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDirectories)).EndInit();
@@ -430,7 +495,12 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumnSettingsKey;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumnDirectoryDescription;
         private System.Windows.Forms.BindingSource settingsApplicationBindingSource;
-        private DevExpress.XtraBars.BarButtonGroup barButtonGroup2;
+        private DevExpress.XtraBars.BarButtonItem barButtonItemAccess;
+        private DevExpress.XtraBars.BarButtonItem barButtonItemVersions;
+        private DevExpress.XtraBars.BarButtonItem barButtonItemChangeKey;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroupApplicationActions;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroupOther;
+        private DevExpress.XtraBars.BarButtonItem barButtonItemEdit;
     }
 }
 
