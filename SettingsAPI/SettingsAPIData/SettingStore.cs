@@ -5,7 +5,6 @@
         private string _applicationName;
         private string _directory;
         private int _version;
-        private int? _objectId;
 
         public SettingStore(string application, string directory)
         {

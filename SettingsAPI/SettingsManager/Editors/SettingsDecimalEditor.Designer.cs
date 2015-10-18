@@ -37,18 +37,18 @@
             this.textEdit1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textEdit1.Location = new System.Drawing.Point(0, 0);
             this.textEdit1.Name = "textEdit1";
-            this.textEdit1.Properties.Mask.EditMask = "n0";
+            this.textEdit1.Properties.Mask.EditMask = "n";
             this.textEdit1.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.textEdit1.Size = new System.Drawing.Size(150, 20);
             this.textEdit1.TabIndex = 0;
             // 
-            // SettingsIntEditor
+            // SettingsDecimalEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.textEdit1);
-            this.Name = "SettingsIntEditor";
-            this.Size = new System.Drawing.Size(150, 26);
+            this.Name = "SettingsDecimalEditor";
+            this.Size = new System.Drawing.Size(150, 27);
             ((System.ComponentModel.ISupportInitialize)(this.textEdit1.Properties)).EndInit();
             this.ResumeLayout(false);
 

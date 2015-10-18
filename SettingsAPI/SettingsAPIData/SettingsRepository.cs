@@ -19,20 +19,13 @@ namespace SettingsAPIData
             Auth = provider;
         }
 
-        public SettingModel GetSetting(SettingStore store, string settingKey)
+        public SettingModel GetSetting(SettingStore store, string settingKey, int objectId)
         {
             //will authenticate
-            var value = (from s in GetSettingsFromStore(store)
-                         where s.SettingKey == settingKey
-
-                         select new SettingModel
-                         {
-                             Key = s.SettingKey,
-                             Value = s.SettingValue,
-                             ObjectId = s.ObjecId
-
-                             
-                         }).SingleOrDefault();
+            var value = (from setting in GetSettingsFromStore(store)
+                         where setting.SettingKey == settingKey 
+                         &&  setting.ObjecId == objectId
+                         select DataToModel(setting)).SingleOrDefault();
 
             if (value == null)
             {
@@ -41,16 +34,36 @@ namespace SettingsAPIData
 
             return value;
         }
+ 
+
+        private SettingModel DataToModel(SettingData data)
+        {
+            return new SettingModel
+            {
+                TypeInfo = data.SettingTypeInfo,
+                Created = data.Created,
+                Info = data.SettingInfo,
+                ObjectId = data.ObjecId,
+                Modified = data.Modified,
+                Key = data.SettingKey,
+                Value = data.SettingValue
+            };
+
+        }
+
+        public IEnumerable<SettingModel> GetSettings(SettingStore store, int objectId)
+        {
+            //will authenticate
+            return (from setting in GetSettingsFromStore(store)
+                    where setting.ObjecId == objectId
+                    select DataToModel(setting));
+        }
 
         public IEnumerable<SettingModel> GetSettings(SettingStore store)
         {
             //will authenticate
             return (from setting in GetSettingsFromStore(store)
-                    select new SettingModel
-                    {
-                        Key = setting.SettingKey,
-                        Value = setting.SettingValue
-                    });
+                    select DataToModel(setting));
         }
 
         public void SaveSetting(SettingStore store, SettingModel setting)

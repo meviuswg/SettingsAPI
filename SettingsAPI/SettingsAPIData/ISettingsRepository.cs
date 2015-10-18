@@ -6,8 +6,8 @@ namespace SettingsAPIData
     public interface ISettingsRepository
     {
         IEnumerable<SettingModel> GetSettings(SettingStore store);
-
-        SettingModel GetSetting(SettingStore store, string settingKey);
+        IEnumerable<SettingModel> GetSettings(SettingStore store, int objectId); 
+        SettingModel GetSetting(SettingStore store, string settingKey, int objectId); 
 
         void SaveSetting(SettingStore store, SettingModel setting);
 

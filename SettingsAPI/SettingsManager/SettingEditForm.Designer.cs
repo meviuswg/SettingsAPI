@@ -51,9 +51,11 @@
             // 
             this.textKey.Location = new System.Drawing.Point(96, 52);
             this.textKey.Name = "textKey";
+            this.textKey.Properties.Mask.EditMask = "[a-zA-Z]+";
+            this.textKey.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.RegEx;
             this.textKey.Properties.MaxLength = 20;
             this.textKey.Size = new System.Drawing.Size(345, 20);
-            this.textKey.TabIndex = 0;
+            this.textKey.TabIndex = 1;
             // 
             // labelControl1
             // 
@@ -77,7 +79,7 @@
             this.simpleCancel.Location = new System.Drawing.Point(366, 322);
             this.simpleCancel.Name = "simpleCancel";
             this.simpleCancel.Size = new System.Drawing.Size(75, 23);
-            this.simpleCancel.TabIndex = 3;
+            this.simpleCancel.TabIndex = 6;
             this.simpleCancel.Text = "Cancel";
             this.simpleCancel.Click += new System.EventHandler(this.simpleCancel_Click);
             // 
@@ -86,7 +88,7 @@
             this.simpleButtonOk.Location = new System.Drawing.Point(264, 322);
             this.simpleButtonOk.Name = "simpleButtonOk";
             this.simpleButtonOk.Size = new System.Drawing.Size(75, 23);
-            this.simpleButtonOk.TabIndex = 2;
+            this.simpleButtonOk.TabIndex = 5;
             this.simpleButtonOk.Text = "Ok";
             this.simpleButtonOk.Click += new System.EventHandler(this.simpleButtonOk_Click);
             // 
@@ -103,10 +105,10 @@
             this.textObjectId.EditValue = "0";
             this.textObjectId.Location = new System.Drawing.Point(96, 21);
             this.textObjectId.Name = "textObjectId";
-            this.textObjectId.Properties.Mask.EditMask = "n";
+            this.textObjectId.Properties.Mask.EditMask = "d";
             this.textObjectId.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             this.textObjectId.Size = new System.Drawing.Size(100, 20);
-            this.textObjectId.TabIndex = 5;
+            this.textObjectId.TabIndex = 0;
             // 
             // labelControl3
             // 
@@ -120,9 +122,9 @@
             // 
             this.textInfo.Location = new System.Drawing.Point(96, 81);
             this.textInfo.Name = "textInfo";
-            this.textInfo.Properties.MaxLength = 20;
+            this.textInfo.Properties.MaxLength = 150;
             this.textInfo.Size = new System.Drawing.Size(345, 20);
-            this.textInfo.TabIndex = 7;
+            this.textInfo.TabIndex = 2;
             // 
             // comboBoxEdit1
             // 
@@ -142,7 +144,7 @@
             "Image",
             "Custom"});
             this.comboBoxEdit1.Size = new System.Drawing.Size(165, 20);
-            this.comboBoxEdit1.TabIndex = 8;
+            this.comboBoxEdit1.TabIndex = 3;
             // 
             // labelControl4
             // 
@@ -158,7 +160,7 @@
             this.panelEditor.Location = new System.Drawing.Point(96, 150);
             this.panelEditor.Name = "panelEditor";
             this.panelEditor.Size = new System.Drawing.Size(345, 166);
-            this.panelEditor.TabIndex = 10;
+            this.panelEditor.TabIndex = 4;
             // 
             // SettingEditForm
             // 

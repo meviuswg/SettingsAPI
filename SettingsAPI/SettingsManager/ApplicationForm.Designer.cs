@@ -52,13 +52,16 @@
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.barButtonBack = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonItemNewItem = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem3 = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonGroup1 = new DevExpress.XtraBars.BarButtonGroup();
             this.barButtonItemDeleteItem = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonItemAccess = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonItemVersions = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonItemChangeKey = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonItemEdit = new DevExpress.XtraBars.BarButtonItem();
+            this.barButtonItemExitApplication = new DevExpress.XtraBars.BarButtonItem();
+            this.barButtonItemHome = new DevExpress.XtraBars.BarButtonItem();
+            this.barStaticItemPath = new DevExpress.XtraBars.BarStaticItem();
+            this.barEditItemProgress = new DevExpress.XtraBars.BarEditItem();
+            this.repositoryItemMarqueeProgressBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemMarqueeProgressBar();
             this.ribbonMiniToolbar1 = new DevExpress.XtraBars.Ribbon.RibbonMiniToolbar(this.components);
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -75,6 +78,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridViewVersions)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.settingsApplicationBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemMarqueeProgressBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.applicationMenu1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mainPanel)).BeginInit();
             this.mainPanel.SuspendLayout();
@@ -265,19 +269,23 @@
             this.barButtonItem1,
             this.barButtonBack,
             this.barButtonItemNewItem,
-            this.barButtonItem3,
-            this.barButtonGroup1,
             this.barButtonItemDeleteItem,
             this.barButtonItemAccess,
             this.barButtonItemVersions,
             this.barButtonItemChangeKey,
-            this.barButtonItemEdit});
+            this.barButtonItemEdit,
+            this.barButtonItemExitApplication,
+            this.barButtonItemHome,
+            this.barStaticItemPath,
+            this.barEditItemProgress});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 12;
+            this.ribbonControl1.MaxItemId = 17;
             this.ribbonControl1.MiniToolbars.Add(this.ribbonMiniToolbar1);
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
+            this.ribbonControl1.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
+            this.repositoryItemMarqueeProgressBar1});
             this.ribbonControl1.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonControlStyle.OfficeUniversal;
             this.ribbonControl1.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
             this.ribbonControl1.ShowCategoryInCaption = false;
@@ -307,20 +315,6 @@
             this.barButtonItemNewItem.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemNewItem.LargeGlyph")));
             this.barButtonItemNewItem.Name = "barButtonItemNewItem";
             this.barButtonItemNewItem.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonAdd_ItemClick);
-            // 
-            // barButtonItem3
-            // 
-            this.barButtonItem3.Caption = "barButtonItem3";
-            this.barButtonItem3.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
-            this.barButtonItem3.Id = 4;
-            this.barButtonItem3.Name = "barButtonItem3";
-            // 
-            // barButtonGroup1
-            // 
-            this.barButtonGroup1.Caption = "Actions";
-            this.barButtonGroup1.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
-            this.barButtonGroup1.Id = 5;
-            this.barButtonGroup1.Name = "barButtonGroup1";
             // 
             // barButtonItemDeleteItem
             // 
@@ -354,7 +348,7 @@
             // 
             // barButtonItemChangeKey
             // 
-            this.barButtonItemChangeKey.Caption = "User";
+            this.barButtonItemChangeKey.Caption = "Settings";
             this.barButtonItemChangeKey.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
             this.barButtonItemChangeKey.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemChangeKey.Glyph")));
             this.barButtonItemChangeKey.Id = 10;
@@ -372,6 +366,45 @@
             this.barButtonItemEdit.Name = "barButtonItemEdit";
             this.barButtonItemEdit.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemEdit_ItemClick);
             // 
+            // barButtonItemExitApplication
+            // 
+            this.barButtonItemExitApplication.Caption = "Exit";
+            this.barButtonItemExitApplication.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
+            this.barButtonItemExitApplication.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemExitApplication.Glyph")));
+            this.barButtonItemExitApplication.Id = 12;
+            this.barButtonItemExitApplication.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemExitApplication.LargeGlyph")));
+            this.barButtonItemExitApplication.Name = "barButtonItemExitApplication";
+            this.barButtonItemExitApplication.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemExitApplication_ItemClick);
+            // 
+            // barButtonItemHome
+            // 
+            this.barButtonItemHome.Caption = "Home";
+            this.barButtonItemHome.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
+            this.barButtonItemHome.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemHome.Glyph")));
+            this.barButtonItemHome.Id = 13;
+            this.barButtonItemHome.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemHome.LargeGlyph")));
+            this.barButtonItemHome.Name = "barButtonItemHome";
+            this.barButtonItemHome.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemHome_ItemClick);
+            // 
+            // barStaticItemPath
+            // 
+            this.barStaticItemPath.Id = 15;
+            this.barStaticItemPath.Name = "barStaticItemPath";
+            this.barStaticItemPath.TextAlignment = System.Drawing.StringAlignment.Near;
+            // 
+            // barEditItemProgress
+            // 
+            this.barEditItemProgress.Alignment = DevExpress.XtraBars.BarItemLinkAlignment.Right;
+            this.barEditItemProgress.Caption = "Loading...";
+            this.barEditItemProgress.Edit = this.repositoryItemMarqueeProgressBar1;
+            this.barEditItemProgress.Id = 16;
+            this.barEditItemProgress.Name = "barEditItemProgress";
+            this.barEditItemProgress.Width = 100;
+            // 
+            // repositoryItemMarqueeProgressBar1
+            // 
+            this.repositoryItemMarqueeProgressBar1.Name = "repositoryItemMarqueeProgressBar1";
+            // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
@@ -384,7 +417,9 @@
             // 
             // ribbonPageGroup1
             // 
+            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItemExitApplication);
             this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItem1);
+            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItemHome);
             this.ribbonPageGroup1.ItemLinks.Add(this.barButtonBack);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "MainMenu";
@@ -413,6 +448,8 @@
             // 
             // ribbonStatusBar1
             // 
+            this.ribbonStatusBar1.ItemLinks.Add(this.barStaticItemPath);
+            this.ribbonStatusBar1.ItemLinks.Add(this.barEditItemProgress);
             this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 419);
             this.ribbonStatusBar1.Name = "ribbonStatusBar1";
             this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
@@ -454,6 +491,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridViewVersions)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.settingsApplicationBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemMarqueeProgressBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.applicationMenu1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mainPanel)).EndInit();
             this.mainPanel.ResumeLayout(false);
@@ -476,8 +514,6 @@
         private DevExpress.XtraBars.Ribbon.ApplicationMenu applicationMenu1;
         private DevExpress.XtraBars.BarButtonItem barButtonBack;
         private DevExpress.XtraBars.BarButtonItem barButtonItemNewItem;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem3;
-        private DevExpress.XtraBars.BarButtonGroup barButtonGroup1;
         private DevExpress.XtraBars.BarButtonItem barButtonItemDeleteItem;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewVersions;
@@ -501,6 +537,11 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroupApplicationActions;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroupOther;
         private DevExpress.XtraBars.BarButtonItem barButtonItemEdit;
+        private DevExpress.XtraBars.BarButtonItem barButtonItemExitApplication;
+        private DevExpress.XtraBars.BarButtonItem barButtonItemHome;
+        private DevExpress.XtraBars.BarStaticItem barStaticItemPath;
+        private DevExpress.XtraBars.BarEditItem barEditItemProgress;
+        private DevExpress.XtraEditors.Repository.RepositoryItemMarqueeProgressBar repositoryItemMarqueeProgressBar1;
     }
 }
 

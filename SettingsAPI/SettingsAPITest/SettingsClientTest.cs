@@ -175,13 +175,13 @@ namespace SettingsAPITest
         {
             await SaveSettingAsync();
 
-            Assert.IsTrue(await settingsManager.ExistsAsync("Sample1"));
-            Assert.IsFalse(await settingsManager.ExistsAsync("Sample2"));
+            Assert.IsTrue(await settingsManager.ExistsAsync(0,"Sample1"));
+            Assert.IsFalse(await settingsManager.ExistsAsync(0,"Sample2"));
 
             settingsManager.UseCache = false;
 
-            Assert.IsTrue(await settingsManager.ExistsAsync("Sample1")); 
-            Assert.IsFalse(await settingsManager.ExistsAsync("Sample2"));
+            Assert.IsTrue(await settingsManager.ExistsAsync(0, "Sample1")); 
+            Assert.IsFalse(await settingsManager.ExistsAsync(0, "Sample2"));
 
         }
 

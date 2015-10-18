@@ -7,16 +7,15 @@ namespace SettingsAPIClient.Provider
     {
         private string applicationName;
         private string directory;
-        private int objectId;
         private int version;
 
-        public SettingsProvider(string url, string apiKey, string applicationName, int version, string directory, int objectId) : base(url, apiKey)
+        public SettingsProvider(string url, string apiKey, string applicationName, int version, string directory) : base(url, apiKey)
         {
             this.applicationName = applicationName;
             this.version = version;
-            this.directory = directory;
-            this.objectId = objectId;
+            this.directory = directory; 
         }
+
 
         public async Task<bool> Save(IEnumerable<Setting> settings)
         {
@@ -28,21 +27,21 @@ namespace SettingsAPIClient.Provider
             return await Get<Setting[]>();
         }
 
-        public async Task<Setting[]> Get(string key)
+        public async Task<Setting[]> Get(int objectId, string key)
         {
-            return await Get<Setting[]>(string.Concat(LocalPath, "/", key));
+            return await Get<Setting[]>(string.Concat(LocalPath, "/", objectId, "/", key));
         }
 
-        public new async Task<bool> Delete(string key)
+        public async Task<bool> Delete(int objectId, string key)
         {
-            return await Post<string>(string.Concat(LocalPath, "/", key));
+            return await Post<string>(string.Concat(LocalPath, "/", objectId, "/", key));
         }
 
-        public async Task<bool> Exists(string key)
+        public async Task<bool> Exists(int objectId, string key)
         {
             try
             {
-                var result = await Get(key);
+                var result = await Get(objectId,key);
                 return true;
             }
             catch (SettingNotFoundException)
@@ -51,6 +50,6 @@ namespace SettingsAPIClient.Provider
             }      
         }
 
-        public override string LocalPath { get { return string.Concat("settings", "/", applicationName, "/", version, "/", directory, "/", objectId); } }
+        public override string LocalPath { get { return string.Concat("settings", "/", applicationName, "/", version, "/", directory); } }
     }
 }

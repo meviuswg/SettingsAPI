@@ -229,7 +229,7 @@ namespace SettingsAPIClient
 
             if (_directory != null)
             {
-                _settingsProvider = new SettingsProvider(_url, _apiKey, applicationName, version, directory, objectId);
+                _settingsProvider = new SettingsProvider(_url, _apiKey, applicationName, version, directory);
                 return await Reload();
             }
             else
@@ -327,6 +327,8 @@ namespace SettingsAPIClient
 
         public async Task<Setting> GetKeyAsync(string key)
         {
+            string id = string.Format("{0}{1}", ObjectID, key);
+
             if (string.IsNullOrWhiteSpace(key))
             {
                 throw new ArgumentNullException("key");
@@ -334,9 +336,9 @@ namespace SettingsAPIClient
 
             if (UseCache)
             {
-                if (_items.ContainsKey(key))
+                if (_items.ContainsKey(id))
                 {
-                    return _items[key];
+                    return _items[id];
                 }
                 else
                 {
@@ -345,7 +347,7 @@ namespace SettingsAPIClient
             }
             else
             {
-                var result = await _settingsProvider.Get(key);
+                var result = await _settingsProvider.Get(ObjectID, key);
 
                 if (result.Count() == 0)
                 {
@@ -355,7 +357,7 @@ namespace SettingsAPIClient
                 {
                     var setting = result.Single();
 
-                    _items[setting.Key] = setting;
+                    _items[setting.Id] = setting;
 
                     return setting;
                 }
@@ -419,7 +421,7 @@ namespace SettingsAPIClient
         {
             foreach (var item in settings)
             {
-                _items[item.Key] = item;
+                _items[item.Id] = item;
             }
         }
 
@@ -561,15 +563,17 @@ namespace SettingsAPIClient
             }
         }
 
-        public async Task<bool> ExistsAsync(string key)
+        public string Url { get { return _settingsProvider.GetEndpoint(); } }
+
+        public async Task<bool> ExistsAsync(int ObjectId, string key)
         {
             if (UseCache)
             {
-                return _items.ContainsKey(key);
+                return _items.ContainsKey(string.Format("{0}{1}", ObjectId, key).ToLower());
             }
             else
             {
-                return await _settingsProvider.Exists(key);
+                return await _settingsProvider.Exists(ObjectID, key);
             }
         }
 

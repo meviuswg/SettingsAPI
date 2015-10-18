@@ -42,19 +42,18 @@ namespace SettingsManager
             this.LabelCreatedValue = new DevExpress.XtraEditors.LabelControl();
             this.labelApplicationDescriptionValue = new DevExpress.XtraEditors.LabelControl();
             this.labelApplicationNameValue = new DevExpress.XtraEditors.LabelControl();
-            this.labelDirectoryName = new DevExpress.XtraEditors.LabelControl();
-            this.labelDirectoryNameValue = new DevExpress.XtraEditors.LabelControl();
             this.mainPanel = new DevExpress.XtraEditors.PanelControl();
             this.gridControlSettings = new DevExpress.XtraGrid.GridControl();
             this.gridViewSettings = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumnSettingObjectId = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumnSettingKey = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumnSettingValue = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumnValueType = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumnSettingInfo = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumnSettingCreated = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.gridColumnSettingModified = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridView2 = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridView3 = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.labelDirectoryDescriptionValue = new DevExpress.XtraEditors.LabelControl();
-            this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
-            this.labelCurrentVersion = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewVersions)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlDirectories)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDirectories)).BeginInit();
@@ -136,7 +135,7 @@ namespace SettingsManager
             // labelDescription
             // 
             this.labelDescription.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelDescription.Location = new System.Drawing.Point(3, 49);
+            this.labelDescription.Location = new System.Drawing.Point(3, 27);
             this.labelDescription.Name = "labelDescription";
             this.labelDescription.Size = new System.Drawing.Size(68, 16);
             this.labelDescription.TabIndex = 6;
@@ -145,7 +144,7 @@ namespace SettingsManager
             // labelCreated
             // 
             this.labelCreated.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelCreated.Location = new System.Drawing.Point(21, 27);
+            this.labelCreated.Location = new System.Drawing.Point(263, 5);
             this.labelCreated.Name = "labelCreated";
             this.labelCreated.Size = new System.Drawing.Size(50, 16);
             this.labelCreated.TabIndex = 7;
@@ -154,7 +153,7 @@ namespace SettingsManager
             // LabelCreatedValue
             // 
             this.LabelCreatedValue.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelCreatedValue.Location = new System.Drawing.Point(77, 27);
+            this.LabelCreatedValue.Location = new System.Drawing.Point(319, 5);
             this.LabelCreatedValue.Name = "LabelCreatedValue";
             this.LabelCreatedValue.Size = new System.Drawing.Size(12, 16);
             this.LabelCreatedValue.TabIndex = 7;
@@ -163,7 +162,7 @@ namespace SettingsManager
             // labelApplicationDescriptionValue
             // 
             this.labelApplicationDescriptionValue.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelApplicationDescriptionValue.Location = new System.Drawing.Point(77, 49);
+            this.labelApplicationDescriptionValue.Location = new System.Drawing.Point(77, 27);
             this.labelApplicationDescriptionValue.Name = "labelApplicationDescriptionValue";
             this.labelApplicationDescriptionValue.Size = new System.Drawing.Size(12, 16);
             this.labelApplicationDescriptionValue.TabIndex = 8;
@@ -178,26 +177,6 @@ namespace SettingsManager
             this.labelApplicationNameValue.TabIndex = 8;
             this.labelApplicationNameValue.Text = "...";
             // 
-            // labelDirectoryName
-            // 
-            this.labelDirectoryName.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelDirectoryName.Location = new System.Drawing.Point(328, 27);
-            this.labelDirectoryName.Name = "labelDirectoryName";
-            this.labelDirectoryName.Size = new System.Drawing.Size(56, 16);
-            this.labelDirectoryName.TabIndex = 4;
-            this.labelDirectoryName.Text = "Directory:";
-            this.labelDirectoryName.Visible = false;
-            // 
-            // labelDirectoryNameValue
-            // 
-            this.labelDirectoryNameValue.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelDirectoryNameValue.Location = new System.Drawing.Point(390, 27);
-            this.labelDirectoryNameValue.Name = "labelDirectoryNameValue";
-            this.labelDirectoryNameValue.Size = new System.Drawing.Size(12, 16);
-            this.labelDirectoryNameValue.TabIndex = 8;
-            this.labelDirectoryNameValue.Text = "...";
-            this.labelDirectoryNameValue.Visible = false;
-            // 
             // mainPanel
             // 
             this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -206,9 +185,9 @@ namespace SettingsManager
             this.mainPanel.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.mainPanel.Controls.Add(this.gridControlSettings);
             this.mainPanel.Controls.Add(this.gridControlDirectories);
-            this.mainPanel.Location = new System.Drawing.Point(0, 71);
+            this.mainPanel.Location = new System.Drawing.Point(0, 49);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(821, 451);
+            this.mainPanel.Size = new System.Drawing.Size(821, 473);
             this.mainPanel.TabIndex = 10;
             // 
             // gridControlSettings
@@ -228,7 +207,11 @@ namespace SettingsManager
             this.gridViewSettings.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.gridColumnSettingObjectId,
             this.gridColumnSettingKey,
-            this.gridColumnSettingValue});
+            this.gridColumnSettingValue,
+            this.gridColumnValueType,
+            this.gridColumnSettingInfo,
+            this.gridColumnSettingCreated,
+            this.gridColumnSettingModified});
             this.gridViewSettings.GridControl = this.gridControlSettings;
             this.gridViewSettings.Name = "gridViewSettings";
             this.gridViewSettings.OptionsBehavior.Editable = false;
@@ -243,7 +226,7 @@ namespace SettingsManager
             this.gridColumnSettingObjectId.Name = "gridColumnSettingObjectId";
             this.gridColumnSettingObjectId.Visible = true;
             this.gridColumnSettingObjectId.VisibleIndex = 0;
-            this.gridColumnSettingObjectId.Width = 79;
+            this.gridColumnSettingObjectId.Width = 131;
             // 
             // gridColumnSettingKey
             // 
@@ -252,7 +235,7 @@ namespace SettingsManager
             this.gridColumnSettingKey.Name = "gridColumnSettingKey";
             this.gridColumnSettingKey.Visible = true;
             this.gridColumnSettingKey.VisibleIndex = 1;
-            this.gridColumnSettingKey.Width = 153;
+            this.gridColumnSettingKey.Width = 96;
             // 
             // gridColumnSettingValue
             // 
@@ -261,7 +244,43 @@ namespace SettingsManager
             this.gridColumnSettingValue.Name = "gridColumnSettingValue";
             this.gridColumnSettingValue.Visible = true;
             this.gridColumnSettingValue.VisibleIndex = 2;
-            this.gridColumnSettingValue.Width = 568;
+            this.gridColumnSettingValue.Width = 130;
+            // 
+            // gridColumnValueType
+            // 
+            this.gridColumnValueType.Caption = "Type";
+            this.gridColumnValueType.FieldName = "ValueType";
+            this.gridColumnValueType.Name = "gridColumnValueType";
+            this.gridColumnValueType.Visible = true;
+            this.gridColumnValueType.VisibleIndex = 5;
+            this.gridColumnValueType.Width = 95;
+            // 
+            // gridColumnSettingInfo
+            // 
+            this.gridColumnSettingInfo.Caption = "Info";
+            this.gridColumnSettingInfo.FieldName = "Info";
+            this.gridColumnSettingInfo.Name = "gridColumnSettingInfo";
+            this.gridColumnSettingInfo.Visible = true;
+            this.gridColumnSettingInfo.VisibleIndex = 6;
+            this.gridColumnSettingInfo.Width = 104;
+            // 
+            // gridColumnSettingCreated
+            // 
+            this.gridColumnSettingCreated.Caption = "Created";
+            this.gridColumnSettingCreated.FieldName = "Created";
+            this.gridColumnSettingCreated.Name = "gridColumnSettingCreated";
+            this.gridColumnSettingCreated.Visible = true;
+            this.gridColumnSettingCreated.VisibleIndex = 3;
+            this.gridColumnSettingCreated.Width = 131;
+            // 
+            // gridColumnSettingModified
+            // 
+            this.gridColumnSettingModified.Caption = "Modified";
+            this.gridColumnSettingModified.FieldName = "Modified";
+            this.gridColumnSettingModified.Name = "gridColumnSettingModified";
+            this.gridColumnSettingModified.Visible = true;
+            this.gridColumnSettingModified.VisibleIndex = 4;
+            this.gridColumnSettingModified.Width = 95;
             // 
             // gridView2
             // 
@@ -273,49 +292,16 @@ namespace SettingsManager
             this.gridView3.GridControl = this.gridControlSettings;
             this.gridView3.Name = "gridView3";
             // 
-            // labelDirectoryDescriptionValue
-            // 
-            this.labelDirectoryDescriptionValue.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelDirectoryDescriptionValue.Location = new System.Drawing.Point(390, 49);
-            this.labelDirectoryDescriptionValue.Name = "labelDirectoryDescriptionValue";
-            this.labelDirectoryDescriptionValue.Size = new System.Drawing.Size(12, 16);
-            this.labelDirectoryDescriptionValue.TabIndex = 8;
-            this.labelDirectoryDescriptionValue.Text = "...";
-            this.labelDirectoryDescriptionValue.Visible = false;
-            // 
-            // labelControl1
-            // 
-            this.labelControl1.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelControl1.Location = new System.Drawing.Point(336, 3);
-            this.labelControl1.Name = "labelControl1";
-            this.labelControl1.Size = new System.Drawing.Size(48, 16);
-            this.labelControl1.TabIndex = 11;
-            this.labelControl1.Text = "Version:";
-            // 
-            // labelCurrentVersion
-            // 
-            this.labelCurrentVersion.Appearance.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelCurrentVersion.Location = new System.Drawing.Point(390, 3);
-            this.labelCurrentVersion.Name = "labelCurrentVersion";
-            this.labelCurrentVersion.Size = new System.Drawing.Size(12, 16);
-            this.labelCurrentVersion.TabIndex = 12;
-            this.labelCurrentVersion.Text = "...";
-            // 
             // ApplicationUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.labelCurrentVersion);
-            this.Controls.Add(this.labelControl1);
             this.Controls.Add(this.mainPanel);
-            this.Controls.Add(this.labelDirectoryDescriptionValue);
-            this.Controls.Add(this.labelDirectoryNameValue);
             this.Controls.Add(this.labelApplicationNameValue);
             this.Controls.Add(this.labelApplicationDescriptionValue);
             this.Controls.Add(this.LabelCreatedValue);
             this.Controls.Add(this.labelCreated);
             this.Controls.Add(this.labelDescription);
-            this.Controls.Add(this.labelDirectoryName);
             this.Controls.Add(this.labelApplicationName);
             this.Name = "ApplicationUserControl";
             this.Size = new System.Drawing.Size(821, 525);
@@ -350,8 +336,6 @@ namespace SettingsManager
         private DevExpress.XtraEditors.LabelControl labelApplicationNameValue;
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewVersions;
         private DevExpress.XtraGrid.Views.Grid.GridView gridView1;
-        private DevExpress.XtraEditors.LabelControl labelDirectoryName;
-        private DevExpress.XtraEditors.LabelControl labelDirectoryNameValue;
         private DevExpress.XtraEditors.PanelControl mainPanel;
         private DevExpress.XtraGrid.GridControl gridControlSettings;
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewSettings;
@@ -360,8 +344,9 @@ namespace SettingsManager
         private DevExpress.XtraGrid.Columns.GridColumn gridColumnSettingValue;
         private DevExpress.XtraGrid.Views.Grid.GridView gridView2;
         private DevExpress.XtraGrid.Views.Grid.GridView gridView3;
-        private DevExpress.XtraEditors.LabelControl labelDirectoryDescriptionValue;
-        private DevExpress.XtraEditors.LabelControl labelControl1;
-        private DevExpress.XtraEditors.LabelControl labelCurrentVersion;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumnValueType;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumnSettingInfo;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumnSettingCreated;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumnSettingModified;
     }
 }

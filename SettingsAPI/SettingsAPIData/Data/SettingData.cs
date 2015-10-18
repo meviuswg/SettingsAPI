@@ -48,7 +48,8 @@ namespace SettingsAPIData.Data
 
         public bool Equals(SettingModel other)
         {
-            return string.Equals(this.SettingKey, other.Key, StringComparison.CurrentCultureIgnoreCase) && other.ObjectId == this.ObjecId;
+            return string.Equals(this.SettingKey, other.Key, StringComparison.CurrentCultureIgnoreCase)
+                && other.ObjectId == this.ObjecId;
         }
     }
 }

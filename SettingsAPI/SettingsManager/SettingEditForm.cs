@@ -31,6 +31,7 @@ namespace SettingsManager
 
                 SetEditor(setting.ValueType);
                 textKey.Text = setting.Key;
+                textInfo.Text = setting.Info;
                 textObjectId.EditValue = setting.ObjectId;
                 Editor.Value = setting.Value;
             } 
@@ -59,7 +60,7 @@ namespace SettingsManager
                     return false;
                 }
 
-                if (setting == null && await settingsManager.ExistsAsync(textKey.Text))
+                if (setting == null && await settingsManager.ExistsAsync(int.Parse(textObjectId.Text), textKey.Text))
                 {
                     textKey.ErrorText = "A Setting Key with this name already in exist";
                     return false;
@@ -76,7 +77,8 @@ namespace SettingsManager
                 }
 
                 setting.Value = Editor.Value;
-                setting.ValueType = Editor.ValueType; 
+                setting.ValueType = Editor.ValueType;
+                setting.Info = textInfo.Text;
                 setting.ObjectId = int.Parse(textObjectId.Text);
                 setting.Key = textKey.Text.Trim();
 
@@ -121,7 +123,8 @@ namespace SettingsManager
             switch (dataType)
             {
                 case ValueDataType.Int:
-
+                    Editor = new SettingsIntEditor();
+                    break;
                 case ValueDataType.String:
                     Editor = new SettingsTextEditor();
                     break;
@@ -147,6 +150,7 @@ namespace SettingsManager
                     Editor = new SettingsImageEditor();
                     break;
                 default:
+                    Editor = new SettingsCustomEditor();
                     break;
             }
 

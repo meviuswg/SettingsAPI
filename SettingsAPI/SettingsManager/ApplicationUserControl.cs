@@ -1,4 +1,5 @@
-﻿using SettingsAPIClient;
+﻿using DevExpress.XtraBars;
+using SettingsAPIClient;
 using System;
 using System.ComponentModel;
 using System.Data;
@@ -31,14 +32,15 @@ namespace SettingsManager
             this.Application = settingsManager.Application;
             this.settingsManager = settingsManager;
 
-            this.CurrentVersion = settingsManager.Application.Versions.OrderByDescending(v => v.Created).First();
-            Task.Run(() => Init()).Wait();
         }
 
         public ApplicationControlLevel Level { get; set; }
 
-        private async Task Init()
+        public async Task Init()
         {
+
+            this.CurrentVersion = settingsManager.Application.Versions.OrderByDescending(v => v.Created).First();
+
             gridControlSettings.Visible = false;
             gridControlDirectories.Visible = true;
             gridControlDirectories.Dock = DockStyle.Fill;
@@ -57,24 +59,22 @@ namespace SettingsManager
 
         private async Task SetDirectoryBinding(string applicationName)
         {
-            if (await settingsManager.OpenApplicationAsync(applicationName))
+            try
             {
-                directoryBinding = new BindingList<SettingsDirectory>(settingsManager.Application.Directories);
+                OnShowProgress();
 
-                directoryBinding.AddingNew += DirectoryBinding_AddingNew;
-                directoryBinding.ListChanged += DirectoryBinding_ListChanged;
-
-                gridControlDirectories.DataSource = directoryBinding;
+                if (await settingsManager.OpenApplicationAsync(applicationName))
+                {
+                    directoryBinding = new BindingList<SettingsDirectory>(settingsManager.Application.Directories);
+                    gridControlDirectories.DataSource = directoryBinding;
+                }
+            }
+            finally
+            {
+                OnHideProgress();
             }
         }
 
-        private void DirectoryBinding_ListChanged(object sender, ListChangedEventArgs e)
-        {
-        }
-
-        private void DirectoryBinding_AddingNew(object sender, AddingNewEventArgs e)
-        {
-        }
 
         public void BackButtonClicked()
         {
@@ -109,13 +109,22 @@ namespace SettingsManager
 
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    SettingsDirectory newDir = new SettingsDirectory();
-                    newDir.Name = form.DirectoryName;
-                    newDir.Description = form.DirectoryDescription;
-
-                    if (await settingsManager.CreateDirectoryAsync(Application.Name, newDir.Name, newDir.Description))
+                    try
                     {
-                        directoryBinding.Add(newDir);
+                        OnShowProgress();
+
+                        SettingsDirectory newDir = new SettingsDirectory();
+                        newDir.Name = form.DirectoryName;
+                        newDir.Description = form.DirectoryDescription;
+
+                        if (await settingsManager.CreateDirectoryAsync(Application.Name, newDir.Name, newDir.Description))
+                        {
+                            directoryBinding.Add(newDir);
+                        }
+                    }
+                    finally
+                    {
+                        OnHideProgress();
                     }
                 }
             }
@@ -125,7 +134,17 @@ namespace SettingsManager
 
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    await settingsManager.SaveAsync(form.Setting);
+                    try
+                    {
+                        OnShowProgress();
+
+                        await settingsManager.SaveAsync(form.Setting);
+                        await OpenSettings();
+                    }
+                    finally
+                    {
+                        OnHideProgress();
+                    }
                 }
             }
         }
@@ -145,8 +164,17 @@ namespace SettingsManager
                     }
                     if (MessageBox.Show(string.Format("Are you sure you want to delete directory {0} and all its settings?", directory.Name), "Delete Directory", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
-                        await settingsManager.DeleteDirectoryAsync(Application.Name, directory.Name);
-                        await RefreshButtonClicked();
+                        try
+                        {
+                            OnShowProgress();
+
+                            await settingsManager.DeleteDirectoryAsync(Application.Name, directory.Name);
+                            await RefreshButtonClicked();
+                        }
+                        finally
+                        {
+                            OnHideProgress();
+                        }
                     }
                 }
             }
@@ -158,24 +186,9 @@ namespace SettingsManager
         private void ShowDirectory(SettingsDirectory directory)
         {
             if (directory != null)
-            {
-                labelDirectoryDescriptionValue.Visible = true;
-                labelDirectoryDescriptionValue.Text = directory.Description;
-
-                labelDirectoryName.Visible = true;
-                labelDirectoryNameValue.Visible = true;
-                labelDirectoryNameValue.Text = directory.Name;
-            }
-            else
-            {
-                labelDirectoryName.Visible = false;
-                labelDirectoryDescriptionValue.Visible = false;
-                labelDirectoryNameValue.Visible = false;
-            }
-        }
-
-        private void gridDirectories_DoubleClick(object sender, EventArgs e)
-        {
+            { 
+                PathText = string.Format(string.Format("/{0}/{1}/{2}/", Application.Name, CurrentVersion.Version, directory.Name)); 
+            }  
         }
 
         private async void gridViewDirectories_DoubleClick(object sender, EventArgs e)
@@ -192,14 +205,28 @@ namespace SettingsManager
             {
                 if (_currentVersion == null || _currentVersion.Version != value.Version)
                 {
-                    _currentVersion = value;
-                    labelCurrentVersion.Text = string.Format("V{0} Created: {1}", _currentVersion.Version, _currentVersion.Created);
-
-                    if (Level == ApplicationControlLevel.Setting)
-                    {
-                        Task.Run(() => OpenSettings());
-                    }
+                    PathText = string.Format(string.Format("/{0}/{1}/", Application.Name, value.Version));
+                    _currentVersion = value; 
                 }
+            }
+        }
+
+        public event EventHandler ShowProgress;
+        public EventHandler HideProgress;
+
+        private void OnShowProgress()
+        {
+            if (ShowProgress != null)
+            {
+                ShowProgress(this, EventArgs.Empty);
+            }
+        }
+
+        private void OnHideProgress()
+        {
+            if (HideProgress != null)
+            {
+                HideProgress(this, EventArgs.Empty);
             }
         }
 
@@ -211,25 +238,26 @@ namespace SettingsManager
 
             Level = ApplicationControlLevel.Setting;
 
-            if (directory != null)
+            try
             {
-                ShowDirectory(directory);
+                OnShowProgress();
 
-                if (await settingsManager.OpenDirectoryAsync(Application.Name, CurrentVersion.Version, directory.Name))
+                if (directory != null)
                 {
-                    gridControlDirectories.Visible = false;
-                    gridControlSettings.Visible = true;
+                    ShowDirectory(directory);
 
-                    gridControlSettings.DataSource = settingsManager.Items;
+                    if (await settingsManager.OpenDirectoryAsync(Application.Name, CurrentVersion.Version, directory.Name))
+                    {
+                        gridControlDirectories.Visible = false;
+                        gridControlSettings.Visible = true;
+
+                        gridControlSettings.DataSource = settingsManager.Items;
+                    }
                 }
             }
-        }
-
-        private async void Properties_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (Level == ApplicationControlLevel.Setting)
+            finally
             {
-                await OpenSettings();
+                OnHideProgress();
             }
         }
 
@@ -241,13 +269,22 @@ namespace SettingsManager
 
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    SettingsDirectory newDir = new SettingsDirectory();
-                    newDir.Name = form.DirectoryName;
-                    newDir.Description = form.DirectoryDescription;
-
-                    if (await settingsManager.CreateDirectoryAsync(Application.Name, newDir.Name, newDir.Description))
+                    try
                     {
-                        directoryBinding.Add(newDir);
+                        OnShowProgress();
+
+                        SettingsDirectory newDir = new SettingsDirectory();
+                        newDir.Name = form.DirectoryName;
+                        newDir.Description = form.DirectoryDescription;
+
+                        if (await settingsManager.CreateDirectoryAsync(Application.Name, newDir.Name, newDir.Description))
+                        {
+                            directoryBinding.Add(newDir);
+                        }
+                    }
+                    finally
+                    {
+                        OnHideProgress();
                     }
                 }
             }
@@ -261,10 +298,28 @@ namespace SettingsManager
 
                     if (form.ShowDialog() == DialogResult.OK)
                     {
-                        await settingsManager.SaveAsync(form.Setting);
+                        try
+                        {
+                            OnShowProgress();
+
+                            await settingsManager.SaveAsync(form.Setting);
+                            await OpenSettings();
+                        }
+                        finally
+                        {
+                            OnHideProgress();
+                        }
                     }
                 }
             }
+        }
+
+        public BarItem Path { get; set; }
+
+        public string PathText
+        {
+            get { return Path.Caption; }
+            set { Path.Caption = string.Format("Path: {0}", value); }
         }
 
         private async void gridViewSettings_DoubleClick(object sender, EventArgs e)
