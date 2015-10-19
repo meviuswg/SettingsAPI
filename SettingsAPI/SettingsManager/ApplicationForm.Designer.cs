@@ -44,7 +44,6 @@
             this.gridViewVersions = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumnVersionNumber = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumnVersionCreated = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.settingsApplicationBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.bar4 = new DevExpress.XtraBars.Bar();
@@ -76,7 +75,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridViewApplications)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewSettings)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewVersions)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.settingsApplicationBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemMarqueeProgressBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.applicationMenu1)).BeginInit();
@@ -116,7 +114,7 @@
             this.gridControl1.Location = new System.Drawing.Point(2, 2);
             this.gridControl1.MainView = this.gridViewApplications;
             this.gridControl1.Name = "gridControl1";
-            this.gridControl1.Size = new System.Drawing.Size(871, 336);
+            this.gridControl1.Size = new System.Drawing.Size(498, 522);
             this.gridControl1.TabIndex = 2;
             this.gridControl1.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewApplications,
@@ -223,10 +221,6 @@
             this.gridColumnVersionCreated.Visible = true;
             this.gridColumnVersionCreated.VisibleIndex = 0;
             // 
-            // settingsApplicationBindingSource
-            // 
-            this.settingsApplicationBindingSource.DataSource = typeof(SettingsAPIClient.SettingsApplication);
-            // 
             // barButtonItem1
             // 
             this.barButtonItem1.Caption = "Refresh";
@@ -291,7 +285,7 @@
             this.ribbonControl1.ShowCategoryInCaption = false;
             this.ribbonControl1.ShowQatLocationSelector = false;
             this.ribbonControl1.ShowToolbarCustomizeItem = false;
-            this.ribbonControl1.Size = new System.Drawing.Size(875, 79);
+            this.ribbonControl1.Size = new System.Drawing.Size(502, 79);
             this.ribbonControl1.StatusBar = this.ribbonStatusBar1;
             this.ribbonControl1.Toolbar.ShowCustomizeItem = false;
             // 
@@ -450,10 +444,10 @@
             // 
             this.ribbonStatusBar1.ItemLinks.Add(this.barStaticItemPath);
             this.ribbonStatusBar1.ItemLinks.Add(this.barEditItemProgress);
-            this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 419);
+            this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 605);
             this.ribbonStatusBar1.Name = "ribbonStatusBar1";
             this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
-            this.ribbonStatusBar1.Size = new System.Drawing.Size(875, 31);
+            this.ribbonStatusBar1.Size = new System.Drawing.Size(502, 31);
             // 
             // applicationMenu1
             // 
@@ -467,18 +461,19 @@
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 79);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(875, 340);
+            this.mainPanel.Size = new System.Drawing.Size(502, 526);
             this.mainPanel.TabIndex = 7;
             // 
-            // ApplicationForm
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(875, 450);
+            this.ClientSize = new System.Drawing.Size(502, 636);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.ribbonStatusBar1);
             this.Controls.Add(this.ribbonControl1);
-            this.Name = "ApplicationForm";
+            this.MinimumSize = new System.Drawing.Size(504, 311);
+            this.Name = "MainForm";
             this.Ribbon = this.ribbonControl1;
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -489,7 +484,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridViewApplications)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewSettings)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewVersions)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.settingsApplicationBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemMarqueeProgressBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.applicationMenu1)).EndInit();
@@ -530,7 +524,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn gridColumnSettingsValue;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumnSettingsKey;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumnDirectoryDescription;
-        private System.Windows.Forms.BindingSource settingsApplicationBindingSource;
         private DevExpress.XtraBars.BarButtonItem barButtonItemAccess;
         private DevExpress.XtraBars.BarButtonItem barButtonItemVersions;
         private DevExpress.XtraBars.BarButtonItem barButtonItemChangeKey;
