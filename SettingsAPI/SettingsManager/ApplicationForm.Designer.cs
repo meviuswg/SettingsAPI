@@ -1,6 +1,6 @@
 ﻿namespace SettingsManager
 {
-    partial class ApplicationForm
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ApplicationForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.gridViewDirectories = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridColumnDirectoryName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumnDirectoryDescription = new DevExpress.XtraGrid.Columns.GridColumn();

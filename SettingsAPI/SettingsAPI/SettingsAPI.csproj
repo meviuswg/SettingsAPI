@@ -243,9 +243,9 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SettingsAPIData\SettingsAPIData.csproj">
+    <ProjectReference Include="..\SettingsAPIRepository\SettingsAPIRepository.csproj">
       <Project>{188cbafb-6b00-455e-91c0-f4428b470a31}</Project>
-      <Name>SettingsAPIData</Name>
+      <Name>SettingsAPIRepository</Name>
     </ProjectReference>
     <ProjectReference Include="..\SettingsAPIShared\SettingsAPIShared.csproj">
       <Project>{aa7f7e44-d64a-46a5-8e95-745c97ff53f7}</Project>

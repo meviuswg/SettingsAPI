@@ -1,5 +1,5 @@
-﻿using SettingsAPIData;
-using SettingsAPIData.Model;
+﻿using SettingsAPIRepository;
+using SettingsAPIRepository.Model;
 using SettingsAPIShared;
 using System;
 using System.Linq;

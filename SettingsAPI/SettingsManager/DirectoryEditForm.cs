@@ -40,7 +40,12 @@ namespace SettingsManager
             }
             else
             {
-                if (_directory == null && await settingsManager.DirectoryExists(textName.Text))
+                if (_directory == null)
+                {
+                    _directory = new SettingsDirectory();
+                } 
+
+                if (!string.Equals(_directory.Name, textName.Text, StringComparison.CurrentCultureIgnoreCase) && await settingsManager.DirectoryExists(textName.Text))
                 {
                     textName.ErrorText = "Directory name already in use";
                     return false;
@@ -57,14 +62,9 @@ namespace SettingsManager
             try
             {
                 if (await ValidateInputAsync())
-                {
-                    if (_directory == null)
-                    {
-                        _directory = new SettingsDirectory();
-                    }
-
-                    _directory.Name = textName.Text;
-                    _directory.Description = textDescription.Text;
+                { 
+                    _directory.Name = textName.Text.Trim().Replace("  "," ");
+                    _directory.Description = textDescription.Text.Replace("  ", " ");
 
                     DialogResult = DialogResult.OK;
                     this.Close();

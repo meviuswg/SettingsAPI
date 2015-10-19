@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SettingsAPIClient;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SettingsAPIData.Util;
+using SettingsAPIRepository.Util;
 
 namespace SettingsAPITest
 {
@@ -225,17 +225,24 @@ namespace SettingsAPITest
         public void RexexTest()
         { 
             Assert.IsTrue(NameValidator.ValidateName("simple"));
-            Assert.IsFalse(NameValidator.ValidateName("simple_"));
-            Assert.IsFalse(NameValidator.ValidateName("simple "));
-            Assert.IsFalse(NameValidator.ValidateName(" simple "));
-            Assert.IsFalse(NameValidator.ValidateName(" simple"));
-            Assert.IsFalse(NameValidator.ValidateName("sim ple"));
-            Assert.IsFalse(NameValidator.ValidateName("sim_ple"));
-            Assert.IsFalse(NameValidator.ValidateName("sim-ple"));
+            Assert.IsTrue(NameValidator.ValidateName("simple's"));
+            Assert.IsTrue(NameValidator.ValidateName("simple-s"));
+            Assert.IsTrue(NameValidator.ValidateName("simpl_-s"));
+            Assert.IsTrue(NameValidator.ValidateName("simpl_-s"));
+            Assert.IsTrue(NameValidator.ValidateName("simple as is"));
+            Assert.IsTrue(NameValidator.ValidateName("simple as is"));
+            Assert.IsTrue(NameValidator.ValidateName("it's simple"));
+            Assert.IsTrue(NameValidator.ValidateName("simple "));
+            Assert.IsTrue(NameValidator.ValidateName("simple"));
+            Assert.IsTrue(NameValidator.ValidateName("sim ple"));
+            Assert.IsTrue(NameValidator.ValidateName("sim_ple"));
+            Assert.IsTrue(NameValidator.ValidateName("sim-ple"));
             Assert.IsFalse(NameValidator.ValidateName("sim.ple"));
             Assert.IsFalse(NameValidator.ValidateName("sim$ple"));
+            Assert.IsFalse(NameValidator.ValidateName("simple!"));
             Assert.IsFalse(NameValidator.ValidateName(""));
             Assert.IsFalse(NameValidator.ValidateName("."));
+            Assert.IsFalse(NameValidator.ValidateName("a"));
             Assert.IsFalse(NameValidator.ValidateName("a"));
         }
 

@@ -1,4 +1,4 @@
-﻿using SettingsAPIData;
+﻿using SettingsAPIRepository;
 using System.Web;
 
 namespace SettingsAPI.App_Start

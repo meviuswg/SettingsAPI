@@ -39,19 +39,19 @@ namespace SettingsManager
             }
             else
             {
-                if (application == null && await settingsManager.ApplicationExists(textName.Text))
+                if (application == null)
+                {
+                    application = new SettingsApplication();
+                }
+
+                if (!string.Equals(application.Name, textName.Text, StringComparison.CurrentCultureIgnoreCase) && await settingsManager.ApplicationExists(textName.Text))
                 {
                     textName.ErrorText = "Application name already in use.";
                     return false;
-                }
+                } 
 
-                if (application == null)
-                {
-                    application = new SettingsApplication(); 
-                }
-
-                application.Name = textName.Text;
-                application.Description = textDescription.Text;
+                application.Name = textName.Text.Trim().Replace("  ", " ");
+                application.Description = textDescription.Text.Trim().Replace("  ", " ");
 
                 return true;
             }

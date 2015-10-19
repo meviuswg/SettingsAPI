@@ -1,5 +1,5 @@
 ﻿using Ninject;
-using SettingsAPIData;
+using SettingsAPIRepository;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;

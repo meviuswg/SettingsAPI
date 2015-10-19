@@ -74,9 +74,9 @@
       <Project>{54e44b32-bbba-4cf1-8f55-2142304a5e91}</Project>
       <Name>SettingsAPIClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SettingsAPIData\SettingsAPIData.csproj">
+    <ProjectReference Include="..\SettingsAPIRepository\SettingsAPIRepository.csproj">
       <Project>{188cbafb-6b00-455e-91c0-f4428b470a31}</Project>
-      <Name>SettingsAPIData</Name>
+      <Name>SettingsAPIRepository</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

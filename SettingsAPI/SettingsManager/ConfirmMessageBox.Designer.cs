@@ -65,7 +65,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::SettingsManager.Properties.Resources.Warning_64;
-            this.pictureBox1.Location = new System.Drawing.Point(13, 12);
+            this.pictureBox1.Location = new System.Drawing.Point(14, 11);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(52, 54);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -100,7 +100,7 @@
             // labelText
             // 
             this.labelText.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelText.Location = new System.Drawing.Point(86, 29);
+            this.labelText.Location = new System.Drawing.Point(79, 28);
             this.labelText.Name = "labelText";
             this.labelText.Size = new System.Drawing.Size(324, 37);
             this.labelText.TabIndex = 2;

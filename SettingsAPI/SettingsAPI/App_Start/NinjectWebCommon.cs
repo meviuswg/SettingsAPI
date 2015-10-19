@@ -6,7 +6,7 @@ namespace SettingsAPI.App_Start
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
     using Ninject;
     using Ninject.Web.Common;
-    using SettingsAPIData;
+    using SettingsAPIRepository;
     using System;
     using System.Web;
     using System.Web.Http;

@@ -1,4 +1,4 @@
-﻿using SettingsAPIData;
+﻿using SettingsAPIRepository;
 using System;
 using System.Diagnostics;
 using System.Web.Http;
@@ -28,7 +28,7 @@ namespace SettingsAPI
         private void SetupDebug()
         {
             Log.Logger = (ex) => Debug.WriteLine(ex);
-            SettingsAPIData.SettingsStoreException.Log = (m) => Log.Message(m);
+            SettingsAPIRepository.SettingsStoreException.Log = (m) => Log.Message(m);
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)
