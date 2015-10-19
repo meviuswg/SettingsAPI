@@ -14,28 +14,33 @@ namespace SettingsManager
     public partial class DirectoryEditForm : Form
     {
         SettingsAPIClient.SettingsManager settingsManager;
+        private SettingsDirectory _directory;
 
-        public DirectoryEditForm(bool creatingNew, SettingsAPIClient.SettingsManager settingsManager)
+        public DirectoryEditForm(SettingsDirectory directory, SettingsAPIClient.SettingsManager settingsManager)
         {
             InitializeComponent();
-            CreateNew = creatingNew;
+            this._directory = directory;
             this.settingsManager = settingsManager;
 
-        }
+            if(_directory != null)
+            {
+                textName.Text = _directory.Name;
+                textDescription.Text = _directory.Description;
+            }
 
-        public bool CreateNew { get; set; }
+        }
+         
 
         private async Task<bool> ValidateInputAsync()
-        {
-
+        { 
             if (string.IsNullOrWhiteSpace(textName.Text))
             {
                 textName.ErrorText = "Enter a Name";
                 return false;
             }
             else
-            { 
-                if (await settingsManager.ExistsDirectoryAsync(textName.Text))
+            {
+                if (_directory == null && await settingsManager.DirectoryExists(textName.Text))
                 {
                     textName.ErrorText = "Directory name already in use";
                     return false;
@@ -45,9 +50,7 @@ namespace SettingsManager
             }
         }
 
-        public string DirectoryName { get { return textName.Text; } }
-
-        public string DirectoryDescription { get { return textDescription.Text; } }
+        public SettingsDirectory Directory{ get { return _directory; } }
 
         private async void simpleButtonOk_Click(object sender, EventArgs e)
         {
@@ -55,6 +58,14 @@ namespace SettingsManager
             {
                 if (await ValidateInputAsync())
                 {
+                    if (_directory == null)
+                    {
+                        _directory = new SettingsDirectory();
+                    }
+
+                    _directory.Name = textName.Text;
+                    _directory.Description = textDescription.Text;
+
                     DialogResult = DialogResult.OK;
                     this.Close();
                 }
@@ -62,8 +73,7 @@ namespace SettingsManager
             catch (SettingsException ex)
             {
                 MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-         
+            }         
         }
 
         private void simpleCancel_Click(object sender, EventArgs e)

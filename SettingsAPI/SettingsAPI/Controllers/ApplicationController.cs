@@ -63,6 +63,22 @@ namespace SettingsAPI.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("{applicationName}/directories/{directoryName}")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult UpdateDirectory(string applicationName, string directoryName, [FromBody] SaveDirectoryModel value)
+        {
+            try
+            {
+                controller.UpdateDirectory(applicationName, directoryName, value.Name, value.Description);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
         [HttpDelete]
         [Route("{applicationName}/directories/{directoryName}")]
         [ResponseType(typeof(void))]

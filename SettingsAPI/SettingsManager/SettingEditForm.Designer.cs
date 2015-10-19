@@ -37,13 +37,12 @@
             this.textObjectId = new DevExpress.XtraEditors.TextEdit();
             this.labelControl3 = new DevExpress.XtraEditors.LabelControl();
             this.textInfo = new DevExpress.XtraEditors.TextEdit();
-            this.comboBoxEdit1 = new DevExpress.XtraEditors.ComboBoxEdit();
             this.labelControl4 = new DevExpress.XtraEditors.LabelControl();
             this.panelEditor = new DevExpress.XtraEditors.PanelControl();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.textKey.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textObjectId.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textInfo.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.comboBoxEdit1.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelEditor)).BeginInit();
             this.SuspendLayout();
             // 
@@ -126,26 +125,6 @@
             this.textInfo.Size = new System.Drawing.Size(345, 20);
             this.textInfo.TabIndex = 2;
             // 
-            // comboBoxEdit1
-            // 
-            this.comboBoxEdit1.Location = new System.Drawing.Point(96, 115);
-            this.comboBoxEdit1.Name = "comboBoxEdit1";
-            this.comboBoxEdit1.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.comboBoxEdit1.Properties.Items.AddRange(new object[] {
-            "String",
-            "Int",
-            "Decimal",
-            "ByteArray",
-            "DateTime",
-            "Bool",
-            "Json",
-            "Xml",
-            "Image",
-            "Custom"});
-            this.comboBoxEdit1.Size = new System.Drawing.Size(165, 20);
-            this.comboBoxEdit1.TabIndex = 3;
-            // 
             // labelControl4
             // 
             this.labelControl4.Location = new System.Drawing.Point(23, 150);
@@ -162,6 +141,25 @@
             this.panelEditor.Size = new System.Drawing.Size(345, 166);
             this.panelEditor.TabIndex = 4;
             // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "String",
+            "Int",
+            "Decimal",
+            "ByteArray",
+            "DateTime",
+            "Bool",
+            "Json",
+            "Xml",
+            "Image",
+            "Custom"});
+            this.comboBox1.Location = new System.Drawing.Point(96, 115);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(165, 21);
+            this.comboBox1.TabIndex = 10;
+            // 
             // SettingEditForm
             // 
             this.AcceptButton = this.simpleButtonOk;
@@ -169,9 +167,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.simpleCancel;
             this.ClientSize = new System.Drawing.Size(458, 357);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.panelEditor);
             this.Controls.Add(this.labelControl4);
-            this.Controls.Add(this.comboBoxEdit1);
             this.Controls.Add(this.textInfo);
             this.Controls.Add(this.labelControl3);
             this.Controls.Add(this.textObjectId);
@@ -188,7 +186,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.textKey.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textObjectId.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textInfo.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.comboBoxEdit1.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelEditor)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -206,8 +203,8 @@
         private DevExpress.XtraEditors.TextEdit textObjectId;
         private DevExpress.XtraEditors.LabelControl labelControl3;
         private DevExpress.XtraEditors.TextEdit textInfo;
-        private DevExpress.XtraEditors.ComboBoxEdit comboBoxEdit1;
         private DevExpress.XtraEditors.LabelControl labelControl4;
         private DevExpress.XtraEditors.PanelControl panelEditor;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SettingsAPIClient;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SettingsAPIData.Util;
 
 namespace SettingsAPITest
 {
@@ -26,7 +27,7 @@ namespace SettingsAPITest
             await settingsManager.CreateApplicationAsync(applicationName, description);
             Assert.AreEqual(settingsManager.Application.Name, applicationName);
             Assert.AreEqual(settingsManager.Application.Description, description);
-            Assert.AreEqual(settingsManager.Directory.Name, "root");
+            Assert.AreEqual(settingsManager.CurrentDirectory.Name, "root");
 
             currentApplicationName = settingsManager.Application.Name;
 
@@ -71,10 +72,10 @@ namespace SettingsAPITest
                 string directoryDescription = RandomString();
                 await settingsManager.CreateDirectoryAsync(currentApplicationName, directoryName, directoryDescription);
 
-                Assert.AreEqual(directoryName, settingsManager.Directory.Name);
-                Assert.AreEqual(directoryDescription, settingsManager.Directory.Description);
+                Assert.AreEqual(directoryName, settingsManager.CurrentDirectory.Name);
+                Assert.AreEqual(directoryDescription, settingsManager.CurrentDirectory.Description);
 
-                currentDirectoryName = settingsManager.Directory.Name;
+                currentDirectoryName = settingsManager.CurrentDirectory.Name;
 
             }
             catch (SettingsException ex)
@@ -156,18 +157,18 @@ namespace SettingsAPITest
         {
             await CreateApplicationMasterAsync();
 
-            var items = settingsManager.Items;
+            var items = settingsManager.CurrentDirectory.Items;
 
             Assert.IsTrue(items.Count() == 0);
             string settingKey = "Sample1";
             string settingValue = RandomString();
 
-            bool IsSaved = await settingsManager.SaveAsync(settingKey, settingValue);
+            bool IsSaved = await settingsManager.CurrentDirectory.SaveAsync(settingKey, settingValue);
 
-            var savedValues = await settingsManager.GetStringAsync(settingKey);
+            var savedValues = await settingsManager.CurrentDirectory.GetStringAsync(settingKey);
 
             Assert.AreEqual(settingValue, savedValues);
-            Assert.IsTrue(settingsManager.Items.Count() == 1);
+            Assert.IsTrue(settingsManager.CurrentDirectory.Items.Count() == 1);
         }
 
         [TestMethod]
@@ -175,13 +176,13 @@ namespace SettingsAPITest
         {
             await SaveSettingAsync();
 
-            Assert.IsTrue(await settingsManager.ExistsAsync(0,"Sample1"));
-            Assert.IsFalse(await settingsManager.ExistsAsync(0,"Sample2"));
+            Assert.IsTrue(await settingsManager.CurrentDirectory.Exists(0,"Sample1"));
+            Assert.IsFalse(await settingsManager.CurrentDirectory.Exists(0,"Sample2"));
 
-            settingsManager.UseCache = false;
+            settingsManager.CurrentDirectory.UseCache = true;
 
-            Assert.IsTrue(await settingsManager.ExistsAsync(0, "Sample1")); 
-            Assert.IsFalse(await settingsManager.ExistsAsync(0, "Sample2"));
+            Assert.IsTrue(await settingsManager.CurrentDirectory.Exists(0, "Sample1")); 
+            Assert.IsFalse(await settingsManager.CurrentDirectory.Exists(0, "Sample2"));
 
         }
 
@@ -218,6 +219,24 @@ namespace SettingsAPITest
             catch (SettingsException)
             { 
             } 
+        }
+
+        [TestMethod]
+        public void RexexTest()
+        { 
+            Assert.IsTrue(NameValidator.ValidateName("simple"));
+            Assert.IsFalse(NameValidator.ValidateName("simple_"));
+            Assert.IsFalse(NameValidator.ValidateName("simple "));
+            Assert.IsFalse(NameValidator.ValidateName(" simple "));
+            Assert.IsFalse(NameValidator.ValidateName(" simple"));
+            Assert.IsFalse(NameValidator.ValidateName("sim ple"));
+            Assert.IsFalse(NameValidator.ValidateName("sim_ple"));
+            Assert.IsFalse(NameValidator.ValidateName("sim-ple"));
+            Assert.IsFalse(NameValidator.ValidateName("sim.ple"));
+            Assert.IsFalse(NameValidator.ValidateName("sim$ple"));
+            Assert.IsFalse(NameValidator.ValidateName(""));
+            Assert.IsFalse(NameValidator.ValidateName("."));
+            Assert.IsFalse(NameValidator.ValidateName("a"));
         }
 
         private static string RandomString()

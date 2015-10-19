@@ -109,7 +109,7 @@ CREATE TABLE dbo.settings (
 	[object_id] INT
 	,[version_id] INT NOT NULL
 	,[directory_id] INT NOT NULL
-	,[setting_key] VARCHAR(20) NOT NULL
+	,[setting_key] VARCHAR(50) NOT NULL
 	,[setting_value] NVARCHAR(max) NULL
 	,[setting_info] NVARCHAR(150) NULL
 	,[setting_type_info] NVARCHAR(255) NULL

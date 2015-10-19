@@ -9,6 +9,8 @@ namespace SettingsAPIData
 
         ApplicationModel CreateApplication(string applicationName, string applicationDescription);
 
+        void UpdateApplication(string applicationName, string newApplicationName, string newApplicationDescription);
+
         ApplicationModel CreateApplication(string applicationName, string applicationDescription, string directoryName, string directoryDescription);
 
         IEnumerable<ApplicationModel> GetApplications();
@@ -22,6 +24,8 @@ namespace SettingsAPIData
         void CreateDirectory(string applicationName, string directoryName, string description);
 
         void DeleteDirectory(string applicationName, string directoryName);
+
+        void UpdateDirectory(string applicationName, string directoryName, string newDirectoryName, string newDescription);
 
         VersionModel GetVersion(string applicationName, int version);
 

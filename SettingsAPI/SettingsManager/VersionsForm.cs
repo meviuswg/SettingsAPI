@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using SettingsAPIClient;
+using System;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SettingsAPIClient;
 
 namespace SettingsManager
 {
@@ -16,6 +12,7 @@ namespace SettingsManager
         private SettingsAPIClient.SettingsManager settingsManager;
         private string applicationName;
         private int highVersion;
+
         public VersionsForm(string applicationName, SettingsAPIClient.SettingsManager settingsManager)
         {
             InitializeComponent();
@@ -30,7 +27,7 @@ namespace SettingsManager
         {
             SettingsVersion version = gridViewVersions.GetRow(gridViewVersions.FocusedRowHandle) as SettingsVersion;
 
-            if(version != null)
+            if (version != null)
             {
                 Version = version;
                 this.Close();
@@ -51,8 +48,6 @@ namespace SettingsManager
                 await settingsManager.CreateApplicationVersionAsync(applicationName, highVersion + 1);
                 await LoadApplication();
                 Version = settingsManager.Application.Versions.OrderByDescending(v => v.Created).First();
-
-
             }
             catch (SettingsException ex)
             {
@@ -64,7 +59,6 @@ namespace SettingsManager
         {
             try
             {
-
             }
             catch (SettingsException ex)
             {
@@ -102,13 +96,12 @@ namespace SettingsManager
         }
 
         private async Task LoadApplication()
-        { 
+        {
             await settingsManager.OpenApplicationAsync(applicationName);
 
             highVersion = settingsManager.Application.Versions.Max(v => v.Version);
 
             gridControlVersions.DataSource = settingsManager.Application.Versions;
-
         }
     }
 }

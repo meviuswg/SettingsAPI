@@ -14,20 +14,24 @@ namespace SettingsManager
     public partial class ApplicationEditForm : Form
     {
         SettingsAPIClient.SettingsManager settingsManager;
+        private SettingsApplication application;
 
-        public ApplicationEditForm(bool creatingNew, SettingsAPIClient.SettingsManager settingsManager)
+        public ApplicationEditForm(SettingsApplication application, SettingsAPIClient.SettingsManager settingsManager)
         {
             InitializeComponent();
-            CreateNew = creatingNew;
             this.settingsManager = settingsManager;
+            this.application = application; 
 
+            if(application != null)
+            {
+                textName.Text = application.Name;
+                textDescription.Text = application.Description;
+            }
         }
-
-        public bool CreateNew { get; set; }
+         
 
         private async Task<bool> ValidateInputAsync()
         {
-
             if (string.IsNullOrWhiteSpace(textName.Text))
             {
                 textName.ErrorText = "Enter a Name";
@@ -35,19 +39,25 @@ namespace SettingsManager
             }
             else
             {
-                if (await settingsManager.ExistsApplicationAsync(textName.Text))
+                if (application == null && await settingsManager.ApplicationExists(textName.Text))
                 {
                     textName.ErrorText = "Application name already in use.";
                     return false;
                 }
 
+                if (application == null)
+                {
+                    application = new SettingsApplication(); 
+                }
+
+                application.Name = textName.Text;
+                application.Description = textDescription.Text;
+
                 return true;
             }
         }
 
-        public string ApplicationName { get { return textName.Text; } }
-
-        public string ApplicationDescrption { get { return textDescription.Text; } }
+        public SettingsApplication Application { get { return application; } }
 
         private async void simpleButtonOk_Click(object sender, EventArgs e)
         {

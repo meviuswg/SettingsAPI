@@ -56,6 +56,7 @@
     <Compile Include="ApiKeyRepository.cs" />
     <Compile Include="IApiKeyRepository.cs" />
     <Compile Include="Model\SaveApiKeyModel.cs" />
+    <Compile Include="Util\NameValidator.cs" />
     <Compile Include="ValidationRepository.cs" />
     <Compile Include="ApplicationRepository.cs" />
     <Compile Include="ISettingsAuthorizationProvider.cs" />

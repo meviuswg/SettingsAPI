@@ -8,7 +8,7 @@ namespace SettingsAPIClient
 {
     public abstract class ApiClient
     {
-        protected const int TIMEOUT = 5;
+        protected const int TIMEOUT = 10;
         protected string _apiKey;
         protected string _baseUrl;
 
@@ -133,6 +133,48 @@ namespace SettingsAPIClient
                 string endpoint = GetEndpoint(localPath);
 
                 responseMessage = await client.PostAsJsonAsync(endpoint, data);
+            }
+            catch (OperationCanceledException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (TimeoutException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new SettingsException(ex.Message, ex);
+            }
+
+            if (responseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return await handleNotOk(responseMessage);
+            }
+        }
+
+        protected virtual async Task<bool> Put<T>(T data)
+        {
+            return await Post<T>(data, string.Empty);
+        }
+
+        protected virtual async Task<bool> Put<T>(T data, string localPath)
+        {
+            HttpResponseMessage responseMessage = null;
+            try
+            {
+                HttpClient client = CreateHttpClient();
+                string endpoint = GetEndpoint(localPath);
+
+                responseMessage = await client.PutAsJsonAsync(endpoint, data);
             }
             catch (OperationCanceledException ex)
             {

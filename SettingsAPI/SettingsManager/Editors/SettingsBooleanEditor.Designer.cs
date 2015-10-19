@@ -34,10 +34,10 @@
             // 
             // checkEdit1
             // 
-            this.checkEdit1.Location = new System.Drawing.Point(4, 4);
+            this.checkEdit1.Location = new System.Drawing.Point(2, -3);
             this.checkEdit1.Name = "checkEdit1";
             this.checkEdit1.Properties.Caption = "";
-            this.checkEdit1.Size = new System.Drawing.Size(75, 19);
+            this.checkEdit1.Size = new System.Drawing.Size(16, 19);
             this.checkEdit1.TabIndex = 0;
             // 
             // SettingsBooleanEditor
@@ -46,7 +46,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.checkEdit1);
             this.Name = "SettingsBooleanEditor";
-            this.Size = new System.Drawing.Size(150, 26);
+            this.Size = new System.Drawing.Size(18, 18);
             ((System.ComponentModel.ISupportInitialize)(this.checkEdit1.Properties)).EndInit();
             this.ResumeLayout(false);
 

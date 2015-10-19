@@ -58,6 +58,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WorkingDirectoryObject.cs" />
+    <Compile Include="Provider\AdminProvider.cs" />
     <Compile Include="SettingsApiClient.cs" />
     <Compile Include="Provider\ApplicationProvider.cs" />
     <Compile Include="Provider\SettingsProvider.cs" />
@@ -72,7 +74,6 @@
     <Compile Include="Setting.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider\DirectoryProvider.cs" />
     <Compile Include="SettingsVersion.cs" />
   </ItemGroup>
   <ItemGroup>

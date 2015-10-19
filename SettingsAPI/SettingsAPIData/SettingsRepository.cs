@@ -1,5 +1,6 @@
 ﻿using SettingsAPIData.Data;
 using SettingsAPIData.Model;
+using SettingsAPIData.Util;
 using SettingsAPIShared;
 using System;
 using System.Collections.Generic;
@@ -104,6 +105,10 @@ namespace SettingsAPIData
                     {
                         if (Auth.AllowCreateSetting(store.ApplicationName, store.DirectoryName))
                         {
+                            if(!NameValidator.ValidateName(item.Key))
+                            {
+                                throw new SettingsStoreException(Constants.ERROR_SETTING_INVALID_KEY);
+                            }
                             existingOrNew = CreateDataForStore(store);
                             existingOrNew.SettingKey = item.Key;
                             existingOrNew.SettingValue = item.Value;

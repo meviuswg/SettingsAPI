@@ -16,15 +16,14 @@ namespace SettingsAPIClient
         private string _apiKey;
         private SettingsApplication _application;
         private ApplicationProvider _applicationProvider;
-        private SettingsDirectory _directory;
-        private DirectoryProvider _directoryProvider;
-        private Dictionary<string, Setting> _items;
-        private SettingsProvider _settingsProvider;
+        private AdminProvider _adminProvider;
+        private WorkingDirectoryObject _workingDirectory;
         private string _url;
         private int _currentVersion;
         private int _currentObjectId;
         private string _currentApplicationName;
-        private string _currentDirectoryName;
+ 
+
         public SettingsManager(string url, string apiKey)
         {
             Uri test;
@@ -43,21 +42,7 @@ namespace SettingsAPIClient
 
 
             this._apiKey = apiKey;
-
-            _items = new Dictionary<string, Setting>();
-            ExplicitlySave = false;
-            UseCache = true;
         }
-
-        /// <summary>
-        /// When True, settings are only saved when Save is explicitly called
-        /// </summary>
-        public bool ExplicitlySave { get; set; }
-
-        /// <summary>
-        /// When True, settings are written to the remote store, but read from the internal cache.
-        /// </summary>
-        public bool UseCache { get; set; }
 
         #region Application
 
@@ -68,16 +53,17 @@ namespace SettingsAPIClient
 
         public async Task<SettingsApplication[]> GetApplications()
         {
-            _applicationProvider = new ApplicationProvider(_url, _apiKey, string.Empty);
-            return await _applicationProvider.GetAll(); 
+            _adminProvider = new AdminProvider(_url, _apiKey);
+            return await _adminProvider.Applications();
         }
+
         public async Task<bool> CreateApplicationAsync(string applicationName, string description)
         {
-            _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
+            var adminProvider = new AdminProvider(_url, _apiKey);
 
-            if (await _applicationProvider.Create(description))
+            if (await adminProvider.CreateApplication(applicationName, description))
             {
-                return await OpenApplicationAsync(applicationName);
+                return true;
             }
 
             return false;
@@ -85,12 +71,23 @@ namespace SettingsAPIClient
 
         public async Task<bool> CreateApplicationVersionAsync(string applicationName, int version)
         {
-            _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
+            var applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
 
-            if (await _applicationProvider.CreateVerion(version))
+            if (await applicationProvider.CreateVerion(version))
             {
-                ClearCurrentWorkingDirectory();
-                return await OpenApplicationAsync(applicationName);
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> UpdateApplicationAsync(string applicationName, string newApplicationName, string description)
+        {
+            var adminProvider = new AdminProvider(_url, _apiKey);
+
+            if (await adminProvider.UpdateApplication(applicationName, newApplicationName, description))
+            {
+                return true;
             }
 
             return false;
@@ -98,11 +95,11 @@ namespace SettingsAPIClient
 
         public async Task<bool> DeleteApplicationAsync(string applicationName)
         {
-            _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
+            var adminProvider = new AdminProvider(_url, _apiKey);
 
-            if (await _applicationProvider.Delete())
+            if (await adminProvider.DeleteApplication(applicationName))
             {
-                ClearCurrentWorkingDirectory();
+                return true;
             }
 
             return true;
@@ -110,15 +107,15 @@ namespace SettingsAPIClient
 
         public async Task<bool> DeleteApplicationVersionAsync(string applicationName, int version)
         {
-            if(version == 1)
+            if (version == 1)
             {
                 throw new SettingsException("Cannot delete version 1");
             }
-            _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
+            var applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
 
-            if (await _applicationProvider.DeleteVerion(version))
+            if (await applicationProvider.DeleteVerion(version))
             {
-                ClearCurrentWorkingDirectory();
+                ResetCurrentWorkingDirectory();
                 return await OpenApplicationAsync(applicationName);
             }
 
@@ -134,30 +131,43 @@ namespace SettingsAPIClient
         {
             return await OpenDirectoryAsync(applicationName, version, _DEFAULT_DIR);
         }
-        private void ClearCurrentWorkingDirectory()
+
+        public async Task<bool> ApplicationExists(string name)
         {
-            _applicationProvider = null;
-            _directoryProvider = null;
-            _directory = null;
-            _items = null;
-            _application = null;
+            {
+                return await _adminProvider.ApplicationExists(name);
+            }
         }
+
+        public async Task<bool> VersionExists(int version)
+        {
+            return await _applicationProvider.VerionExists(version);
+        }
+
+
         #endregion Application
 
-        #region Direcotory
-
-        public SettingsDirectory Directory
-        {
-            get { return _directory; }
-        }
+        #region Direcotory 
 
         public async Task<bool> CreateDirectoryAsync(string applicationName, string directoryName, string description)
         {
-            _directoryProvider = new DirectoryProvider(_url, _apiKey, applicationName, directoryName);
+            var applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
 
-            if (await _directoryProvider.Create(description))
+            if (await applicationProvider.CreateDirectory(directoryName, description))
             {
-                return await OpenDirectoryAsync(applicationName, directoryName);
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> UpdateDirectoryAsync(string applicationName, string directoryName, string newDirectoryName, string description)
+        {
+            var applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
+
+            if (await applicationProvider.UpdateDirectory(directoryName, newDirectoryName, description))
+            {
+                return true;
             }
 
             return false;
@@ -170,26 +180,14 @@ namespace SettingsAPIClient
                 throw new SettingsException("This directory can not be deleted");
             }
 
-            _directoryProvider = new DirectoryProvider(_url, _apiKey, applicationName, directoryName);
+            var applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
 
-            if (await _directoryProvider.Delete())
+            if (await applicationProvider.DeleteDirectory(directoryName))
             {
-                ClearCurrentWorkingDirectory();
+                ResetCurrentWorkingDirectory();
             }
 
             return true;
-        }
-
-        public bool OpenDirectory(string applicationName, string directory)
-        {
-            try
-            {
-                return Task.Run(() => OpenDirectoryAsync(applicationName, 1, directory, 0)).Result;
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
         }
 
         public async Task<bool> OpenDirectoryAsync(string applicationName, string directory)
@@ -207,8 +205,10 @@ namespace SettingsAPIClient
             return await OpenDirectoryAsync(applicationName, version, directory, 0);
         }
 
-        public async Task<bool> OpenDirectoryAsync(string applicationName, int version, string directory, int objectId)
+        public async Task<bool> OpenDirectoryAsync(string applicationName, int version, string directoryName, int objectId)
         {
+            ResetCurrentWorkingDirectory();
+
             if (_application == null || string.Equals(_application.Name, applicationName, StringComparison.CurrentCultureIgnoreCase) == false)
             {
                 _applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
@@ -222,259 +222,34 @@ namespace SettingsAPIClient
             if (_application == null)
                 return false;
 
-            _directoryProvider = new DirectoryProvider(_url, _apiKey, applicationName, directory);
 
-            _directory = await _directoryProvider.Get();
-            _currentDirectoryName = _directory.Name;
+            var directory = _application.Directories.SingleOrDefault(d => string.Equals(d.Name, directoryName));
 
-            if (_directory != null)
+            if (directory == null)
             {
-                _settingsProvider = new SettingsProvider(_url, _apiKey, applicationName, version, directory);
-                return await Reload();
-            }
-            else
-            {
-                if (string.Equals(directory, _DEFAULT_DIR))
-                    throw new SettingsException(string.Format("Failed to open application '{0}' version {1}. The target does not exist or you are not authorized to access it", applicationName, version));
-                else
-                    throw new SettingsException(string.Format("Failed to open directory '{0}' of application '{1}' version {2}. The target does not exist or you are not authorized to access it", directory, applicationName, version));
+                throw new SettingNotFoundException(directoryName);
             }
 
-        }
-        #endregion Direcotory
+            _workingDirectory = new WorkingDirectoryObject(directory, applicationName, version, _url, _apiKey);
 
-        #region Settings
+            _workingDirectory.UseCache = true;
+            _workingDirectory.ExplicitlySave = false;
+            _workingDirectory.ObjectID = objectId;
 
-        public IEnumerable<Setting> Items
-        {
-            get { return _items.Values.ToArray(); }
-        }
+            return await _workingDirectory.Reload();
 
-        public async Task<Setting[]> GetAsync()
-        {
-            return await _settingsProvider.Get();
         }
 
-        public async Task<Nullable<bool>> GetBooleanAsync(string key)
+        public WorkingDirectoryObject CurrentDirectory { get { return _workingDirectory; } }
+
+        public async Task<bool> DirectoryExists(string name)
         {
-            var s = await GetKeyAsync(key);
-
-            if (s != null && s.Value != null)
-                return Convert.ToBoolean(s.Value);
-
-            return null;
-        }
-
-        public async Task<byte[]> GetByteArrayAsync(string key)
-        {
-            var s = await GetKeyAsync(key);
-
-            if (s != null && s.Value != null)
-                return SerializationHelper.FromBase64String(s.Value);
-
-            return null;
-        }
-
-        public async Task<Nullable<DateTime>> GetDateTimeAsync(string key)
-        {
-            var s = await GetKeyAsync(key);
-
-            if (s != null && s.Value != null)
-                return Convert.ToDateTime(s.Value);
-
-            return null;
-        }
-
-        public async Task<Nullable<double>> GetDoubleAsync(string key)
-        {
-            var s = await GetKeyAsync(key);
-
-            if (s != null && s.Value != null)
-                return Convert.ToDouble(s.Value);
-
-            return null;
-        }
-
-        public async Task<Image> GetImageAsync(string key)
-        {
-            var s = await GetKeyAsync(key);
-
-            if (s != null && s.Value != null)
-                return SerializationHelper.ToImage(s.Value);
-
-            return null;
-        }
-
-        public async Task<Nullable<int>> GetIntAsync(string key)
-        {
-            var s = await GetKeyAsync(key);
-
-            if (s != null && s.Value != null)
-                return Convert.ToInt32(s.Value);
-
-            return null;
-        }
-
-        public async Task<T> GetKeyAsync<T>(string key)
-        {
-            var s = await GetKeyAsync(key);
-
-            if (s != null && s.Value != null)
-                return JsonConvert.DeserializeObject<T>(s.Value);
-
-            return default(T);
-        }
-
-        public async Task<Setting> GetKeyAsync(string key)
-        {
-            string id = string.Format("{0}{1}", ObjectID, key);
-
-            if (string.IsNullOrWhiteSpace(key))
             {
-                throw new ArgumentNullException("key");
-            }
-
-            if (UseCache)
-            {
-                if (_items.ContainsKey(id))
-                {
-                    return _items[id];
-                }
-                else
-                {
-                    throw new SettingNotFoundException(key);
-                }
-            }
-            else
-            {
-                var result = await _settingsProvider.Get(ObjectID, key);
-
-                if (result.Count() == 0)
-                {
-                    throw new SettingNotFoundException(key);
-                }
-                else
-                {
-                    var setting = result.Single();
-
-                    _items[setting.Id] = setting;
-
-                    return setting;
-                }
+                return await _applicationProvider.DirectoryExists(name);
             }
         }
 
-        public async Task<string> GetStringAsync(string key)
-        {
-            var s = await GetKeyAsync(key);
-
-            if (s != null && s.Value != null)
-                return Convert.ToString(s.Value);
-
-            return null;
-        }
-
-        public async Task<bool> SaveAsync(string key, bool value)
-        {
-            return await SaveAsync(key, value.ToString(), ValueDataType.Bool);
-        }
-
-        public async Task<bool> SaveAsync(string key, DateTime value)
-        {
-            return await SaveAsync(key, value.ToString(), ValueDataType.DateTime);
-        }
-
-        public async Task<bool> SaveAsync(string key, decimal value)
-        {
-            return await SaveAsync(key, value.ToString(), ValueDataType.Decimal);
-        }
-
-        public async Task<bool> SaveAsync(string key, Image value)
-        {
-            return await SaveAsync(key, SerializationHelper.ImageToString(value), ValueDataType.Image);
-        }
-
-        public async Task<bool> SaveAsync(string key, byte[] value)
-        {
-            return await SaveAsync(key, SerializationHelper.ToBase64String(value), ValueDataType.ByteArray);
-        }
-
-        public async Task<bool> SaveAsync(IEnumerable<Setting> settings)
-        {
-            if (ExplicitlySave)
-            {
-                SetInternalItemsCollection(settings);
-                return true;
-            }
-
-            bool settingsSaved = await _settingsProvider.Save(settings);
-
-            if (settingsSaved)
-            {
-                SetInternalItemsCollection(settings);
-            }
-
-            return settingsSaved;
-        }
-
-        private void SetInternalItemsCollection(IEnumerable<Setting> settings)
-        {
-            foreach (var item in settings)
-            {
-                _items[item.Id] = item;
-            }
-        }
-
-        public async Task<bool> SaveAsync(Setting setting)
-        {
-            return await SaveAsync(new Setting[] { setting });
-        }
-
-        public async Task<bool> SaveAsync(string key, string value)
-        {
-            return await SaveAsync(new Setting { Key = key, Value = value, ValueType = ValueDataType.String });
-        }
-
-        public async Task<bool> SaveAsync(string key, string value, ValueDataType dataType)
-        {
-            return await SaveAsync(new Setting { Key = key, Value = value, ValueType = dataType });
-        }
-
-        /// <summary>
-        /// Saves all items to the remote store
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> SaveAsync()
-        {
-            return await _settingsProvider.Save(_items.Values.ToList());
-        }
-
-        /// <summary>
-        /// Reloads all the settings of the current directory.
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> Reload()
-        {
-            var settingsSet = await _settingsProvider.Get();
-
-            _items = new Dictionary<string, Setting>();
-
-            SetInternalItemsCollection(settingsSet);
-
-            return true;
-        }
-        #endregion Settings
-
-        /// <summary>
-        /// Current settings object Id. The default objectId is 0. All settings are read and writting against this objectId.
-        /// </summary>
-        public int ObjectID
-        {
-            get
-            {
-                return _currentObjectId;
-            }
-        }
+        #endregion Direcotory 
 
         /// <summary>
         /// Current application version
@@ -500,95 +275,15 @@ namespace SettingsAPIClient
 
         /// <summary>
         /// Current directory name
-        /// </summary>
-        public string DirectoryName
+        /// </summary> 
+
+        private void ResetCurrentWorkingDirectory()
         {
-            get
-            {
-                return _currentDirectoryName;
-            }
+            _applicationProvider = null; 
+            _workingDirectory = null;
+            _application = null;
         }
 
-        /// <summary>
-        /// Returns true if the current directory allowes settings to be updated for this APIKey.
-        /// </summary>
-        public bool AllowWrite
-        {
-            get
-            {
-                if (_directory != null)
-                {
-                    return _directory.AllowWrite;
-                }
-                else
-                {
-                    throw new SettingsException("No open directory.");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns true if the current directory allowes settings to be created for this APIKey.
-        /// </summary>
-        public bool AllowCreate
-        {
-            get
-            {
-                if (_directory != null)
-                {
-                    return _directory.AllowCreate;
-                }
-                else
-                {
-                    throw new SettingsException("No open directory.");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns true if the current directory allowes settings to be deleted for this APIKey.
-        /// </summary>
-        public bool AllowDelete
-        {
-            get
-            {
-                if (_directory != null)
-                {
-                    return _directory.AllowCreate;
-                }
-                else
-                {
-                    throw new SettingsException("No open directory.");
-                }
-            }
-        }
-
-        public string Url { get { return _settingsProvider.GetEndpoint(); } }
-
-        public async Task<bool> ExistsAsync(int ObjectId, string key)
-        {
-            if (UseCache)
-            {
-                return _items.ContainsKey(string.Format("{0}{1}", ObjectId, key).ToLower());
-            }
-            else
-            {
-                return await _settingsProvider.Exists(ObjectID, key);
-            }
-        }
-
-        public async Task<bool> ExistsDirectoryAsync(string name)
-        {
-            {
-                return await _directoryProvider.Exists(name);
-            }
-        }
-
-        public async Task<bool> ExistsApplicationAsync(string name)
-        {
-            {
-                return await _applicationProvider.Exists(name);
-            }
-        }
+     
     }
 }

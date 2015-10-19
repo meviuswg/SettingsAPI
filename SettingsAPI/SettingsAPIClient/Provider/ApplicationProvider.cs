@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace SettingsAPIClient.Provider
 {
@@ -11,24 +12,20 @@ namespace SettingsAPIClient.Provider
             this.applicationName = applicationName;
         }
 
+        #region Applications
+
         public async Task<SettingsApplication> Get()
         {
             return await Get<SettingsApplication>();
-        }
+        } 
 
-        public async Task<SettingsApplication[]> GetAll()
-        {
-            return await Get<SettingsApplication[]>("admin");
-        }
+        #endregion
 
-        public async Task<bool> Create(string description)
-        {
-           return await Post<dynamic>(new { Name = applicationName, Description = description }, "admin");
-        }
+        #region Versions
 
         public async Task<bool> CreateVerion(int version)
         {
-            return await Post(string.Empty, string.Format("/{0}/versions/{1}",LocalPath, version));
+            return await Post(string.Empty, string.Format("/{0}/versions/{1}", LocalPath, version));
         }
 
         public async Task<bool> DeleteVerion(int version)
@@ -36,25 +33,74 @@ namespace SettingsAPIClient.Provider
             return await Delete(string.Format("/{0}/versions/{1}", LocalPath, version));
         }
 
-        public new async Task<bool> Delete()
+        public async Task<SettingsVersion> GetVerion(int version)
         {
-            return await Delete(string.Format("admin/{0}", applicationName));
+            return await Get<SettingsVersion>(string.Format("/{0}/versions/{1}", LocalPath, version));
         }
 
-        public async Task<bool> Exists(string name)
+        public async Task<bool> VerionExists(int version)
         {
             try
             {
-                await Get<SettingsApplication>(string.Concat("application", "/", name));
+                await GetVerion(version);
+                return false;
+            }
+            catch (SettingNotFoundException ex)
+            {
+                return false;
+            }
+        }
+
+
+        #endregion
+
+        #region Directories
+
+        public async Task<SettingsDirectory> GetDirectory(string name)
+        {
+            return await Get<SettingsDirectory>(string.Format("/{0}/directories/{1}", LocalPath, name));
+        }
+
+        public async Task<bool> CreateDirectory(string name)
+        {
+            return await Post(string.Empty, string.Format("/{0}/directories/{1}", LocalPath, name));
+        }
+
+       
+
+        public async Task<bool> CreateDirectory(string name, string description)
+        {
+            return await Post<SettingsDirectory>(new SettingsDirectory { Name = name, Description = description }, string.Format("/{0}/directories/{1}", LocalPath, name));
+        }
+
+        public async Task<bool> UpdateDirectory(string directoryName, string newDirectoryName, string description)
+        {
+            return await Put(new SettingsDirectory { Name = newDirectoryName, Description = description }, string.Format("/{0}/directories/{1}", LocalPath, directoryName));
+        }
+
+        public async Task<bool> DeleteDirectory(string name)
+        {
+            return await Delete(string.Format("/{0}/directories/{1}", LocalPath, name));
+        }
+
+        public async Task<bool> DirectoryExists(string name)
+        {
+            try
+            {
+                await GetDirectory(name);
                 return true;
             }
             catch (SettingNotFoundException)
             {
                 return false;
             }
-          
+
         }
 
+        #endregion
+
         public override string LocalPath { get { return string.Concat("application", "/", applicationName); } }
+
+     
     }
 }

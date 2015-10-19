@@ -11,9 +11,9 @@ using SettingsAPIClient;
 
 namespace SettingsManager.Editors
 {
-    public partial class SettingsTextEditor : UserControl, ISettingValueEditor
+    public partial class SettingsStringEditor : UserControl, ISettingValueEditor
     {
-        public SettingsTextEditor()
+        public SettingsStringEditor()
         {
             InitializeComponent();
         }

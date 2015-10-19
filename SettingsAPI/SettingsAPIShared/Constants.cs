@@ -22,6 +22,7 @@
         public static readonly string ERROR_DIRECTORY_NAME_INVALID = "Directory name not valid";
 
         public static readonly string ERROR_SETTING_NO_KEY = "Key name not provided";
+        public static readonly string ERROR_SETTING_INVALID_KEY = "Key name not valid";
         public static readonly string ERROR_SETTING_UNKNOWN = "Key does not exist";
         public static readonly string ERROR_SETTING_KEY_ALREADY_EXISTS = "Application already exists";
 
@@ -33,6 +34,6 @@
         public static readonly string ERROR_VERION_UNKNOWN = "Version does not exist";
         public static readonly string ERROR_ACCESS_DENIED = "Access denied";
         public static readonly string ERROR_STORE_UNAVAILABLE = "Settings store unavailable";
-        public static readonly string ERROR_STORE_EXCEPTION = "Internal store exception"; 
+        public static readonly string ERROR_STORE_EXCEPTION = "Internal store exception";
     }
 }

@@ -42,6 +42,8 @@
             // 
             this.textName.Location = new System.Drawing.Point(96, 13);
             this.textName.Name = "textName";
+            this.textName.Properties.Mask.EditMask = "[a-zA-Z0-9]+";
+            this.textName.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.RegEx;
             this.textName.Properties.MaxLength = 50;
             this.textName.Size = new System.Drawing.Size(345, 20);
             this.textName.TabIndex = 0;

@@ -36,6 +36,21 @@ namespace SettingsAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("{applicationName}")]
+        [ResponseType(typeof(ApplicationModel))]
+        public IHttpActionResult GetApplication(string applicationName)
+        {
+            try
+            {
+                return Ok(controller.GetApplication(applicationName));
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
         [HttpPost]
         [Route("{applicationName}")]
         [ResponseType(typeof(ApplicationModel))]
@@ -44,6 +59,22 @@ namespace SettingsAPI.Controllers
             try
             {
                 return CreateApplication(new SaveApplicationModel { Name = applicationName });
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        [HttpPut]
+        [Route("{applicationName}")]
+        [ResponseType(typeof(ApplicationModel))]
+        public IHttpActionResult UpdateApplication(string applicationName, [FromBody]SaveApplicationModel value)
+        {
+            try
+            {
+                controller.UpdateApplication(applicationName, value.Name, value.Description);
+                return Ok();
             }
             catch (Exception ex)
             {

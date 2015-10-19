@@ -75,6 +75,12 @@
     <Compile Include="ApplicationEditForm.Designer.cs">
       <DependentUpon>ApplicationEditForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConfirmMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfirmMessageBox.Designer.cs">
+      <DependentUpon>ConfirmMessageBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editors\ISettingValueEditor.cs" />
     <Compile Include="Editors\SettingsDecimalEditor.cs">
       <SubType>UserControl</SubType>
@@ -130,11 +136,11 @@
     <Compile Include="Editors\SettingsBooleanEditor.Designer.cs">
       <DependentUpon>SettingsBooleanEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Editors\SettingsTextEditor.cs">
+    <Compile Include="Editors\SettingsStringEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Editors\SettingsTextEditor.Designer.cs">
-      <DependentUpon>SettingsTextEditor.cs</DependentUpon>
+    <Compile Include="Editors\SettingsStringEditor.Designer.cs">
+      <DependentUpon>SettingsStringEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="SettingEditForm.cs">
       <SubType>Form</SubType>
@@ -180,6 +186,9 @@
     <EmbeddedResource Include="ApplicationEditForm.resx">
       <DependentUpon>ApplicationEditForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ConfirmMessageBox.resx">
+      <DependentUpon>ConfirmMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Editors\SettingsDecimalEditor.resx">
       <DependentUpon>SettingsDecimalEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -207,8 +216,8 @@
     <EmbeddedResource Include="Editors\SettingsBooleanEditor.resx">
       <DependentUpon>SettingsBooleanEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Editors\SettingsTextEditor.resx">
-      <DependentUpon>SettingsTextEditor.cs</DependentUpon>
+    <EmbeddedResource Include="Editors\SettingsStringEditor.resx">
+      <DependentUpon>SettingsStringEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SettingEditForm.resx">
       <DependentUpon>SettingEditForm.cs</DependentUpon>
@@ -234,6 +243,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="VersionsForm.resx">
       <DependentUpon>VersionsForm.cs</DependentUpon>
@@ -260,6 +270,12 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Warning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Warning_64.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

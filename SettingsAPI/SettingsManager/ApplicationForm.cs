@@ -60,11 +60,13 @@ namespace SettingsManager
                 }
                 else
                 {
-                    ApplicationEditForm form = new ApplicationEditForm(true, settingsManager);
+                    SettingsApplication newApplication = new SettingsApplication();
+
+                    ApplicationEditForm form = new ApplicationEditForm(newApplication, settingsManager);
 
                     if (form.ShowDialog() == DialogResult.OK)
                     {
-                        if (await settingsManager.CreateApplicationAsync(form.ApplicationName, form.ApplicationDescrption))
+                        if (await settingsManager.CreateApplicationAsync(newApplication.Name, newApplication.Description))
                         {
                             await GetApplications();
                         }
@@ -96,7 +98,7 @@ namespace SettingsManager
                             MessageBox.Show("This application can not be deleted", "System directory", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             return;
                         }
-                        if (MessageBox.Show(string.Format("Are you sure you want to delete application {0} and all its settings?", application.Name), "Delete Application", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        if (ConfirmMessageBox.Show(string.Format("Are you sure you want to delete application {0} and all its settings?", application.Name)) == DialogResult.OK)
                         {
                             await settingsManager.DeleteApplicationAsync(application.Name);
                             await GetApplications();
@@ -110,7 +112,7 @@ namespace SettingsManager
             }
         }
 
-        private async void barButtonItem1_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        private async void barButtonItemRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             try
             {
@@ -150,10 +152,18 @@ namespace SettingsManager
 
                 if (application != null)
                 {
-                    ApplicationEditForm form = new ApplicationEditForm(false, settingsManager);
+                    SettingsApplication editApplication = new SettingsApplication();
+                    editApplication.Name = application.Name;
+                    editApplication.Description = application.Description;
+                    ApplicationEditForm form = new ApplicationEditForm(editApplication, settingsManager);
 
                     if (form.ShowDialog() == DialogResult.OK)
                     {
+                        if(await settingsManager.UpdateApplicationAsync(application.Name, editApplication.Name, editApplication.Description))
+                        {
+                            application.Name = editApplication.Name;
+                            application.Description = editApplication.Description;
+                        }
                     }
                 }
             }
@@ -218,6 +228,19 @@ namespace SettingsManager
         {
             try
             {
+                if(string.IsNullOrWhiteSpace(apiKey))
+                {
+                    AskApiKeyForm form = new AskApiKeyForm(apiKey);
+                    form.ShowDialog();
+
+                    if (string.IsNullOrWhiteSpace(form.ApiKey))
+                    {
+                        MessageBox.Show("No API Key. Application will exit.");
+                        this.Close();
+                    }
+
+                    apiKey = form.ApiKey;
+                }
                 settingsManager = new SettingsAPIClient.SettingsManager(url, apiKey);
 
                 IEnumerable<SettingsApplication> applications = null;

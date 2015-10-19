@@ -34,9 +34,10 @@
             // 
             // memoEdit1
             // 
-            this.memoEdit1.Location = new System.Drawing.Point(0, -1);
+            this.memoEdit1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.memoEdit1.Location = new System.Drawing.Point(0, 0);
             this.memoEdit1.Name = "memoEdit1";
-            this.memoEdit1.Size = new System.Drawing.Size(274, 64);
+            this.memoEdit1.Size = new System.Drawing.Size(274, 120);
             this.memoEdit1.TabIndex = 0;
             // 
             // SettingsCustomEditor
@@ -45,7 +46,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.memoEdit1);
             this.Name = "SettingsCustomEditor";
-            this.Size = new System.Drawing.Size(274, 65);
+            this.Size = new System.Drawing.Size(274, 120);
             ((System.ComponentModel.ISupportInitialize)(this.memoEdit1.Properties)).EndInit();
             this.ResumeLayout(false);
 
