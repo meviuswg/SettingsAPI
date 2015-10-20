@@ -250,5 +250,16 @@ namespace SettingsAPITest
         {
             return Guid.NewGuid().ToString().Replace("-", "").Substring(0, 8);
         }
+
+
+        [TestMethod]
+        public async Task MyTestMethod()
+        {
+            settingsManager = new SettingsManager(_url, _masterKey);
+
+            await settingsManager.OpenDirectoryAsync("DeskPlan", "C726");
+
+
+        }
     }
 }

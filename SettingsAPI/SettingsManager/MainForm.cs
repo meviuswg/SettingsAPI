@@ -292,6 +292,7 @@ namespace SettingsManager
 
                     ribbonPageGroupApplicationActions.Visible = true;
                     barButtonBack.Visibility = BarItemVisibility.Always;
+                    barButtonItemCopy.Visibility = BarItemVisibility.Always;
                 }
             }
             catch (SettingsException ex)
@@ -307,7 +308,22 @@ namespace SettingsManager
             ribbonPageGroupApplicationActions.Visible = false;
             barButtonBack.Visibility = BarItemVisibility.Never;
             barStaticItemPath.Caption = string.Format("Path: {0}", url);
+            barButtonItemCopy.Visibility = BarItemVisibility.Never;
 
         }
+
+        private async void barButtonItemCopy_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            try
+            {
+                await applicationControl.CopyButtonClicked();
+
+            }
+            catch (SettingsException ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
     }
 }

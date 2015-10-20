@@ -320,8 +320,7 @@ namespace SettingsManager
 
         }
 
-       
-
+   
         #endregion
 
         private DevExpress.XtraGrid.GridControl gridControlDirectories;

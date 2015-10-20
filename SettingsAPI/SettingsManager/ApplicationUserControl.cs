@@ -144,6 +144,106 @@ namespace SettingsManager
             }
         }
 
+        public async Task CopyButtonClicked()
+        {
+            if (Level == ApplicationControlLevel.Directory)
+            {
+                var directory = gridViewDirectories.GetRow(gridViewDirectories.FocusedRowHandle) as SettingsDirectory;
+
+                if (directory == null)
+                    return;
+
+                SettingsDirectory ediDirectory = new SettingsDirectory { Name = directory.Name, Description = directory.Description };
+
+                DirectoryEditForm form = new DirectoryEditForm(ediDirectory, settingsManager);
+
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        OnShowProgress();
+
+                        if (await settingsManager.CopyDirectoryAsync(Application.Name, directory.Name, ediDirectory.Name, CurrentVersion.Version))
+                        {
+                            directory.Name = ediDirectory.Name;
+                            directory.Description = ediDirectory.Description;
+
+                            //TODO: Copy description
+                            await settingsManager.UpdateDirectoryAsync(Application.Name, directory.Name, directory.Name, ediDirectory.Description);
+
+                            await RefreshButtonClicked();
+                        }
+                    }
+                    finally
+                    {
+                        OnHideProgress();
+                    }
+                }
+
+            }
+            if(Level == ApplicationControlLevel.Directory)
+            {
+               await EditButtonClicked();
+            }
+        } 
+
+        public async Task EditButtonClicked()
+        {
+            if (Level == ApplicationControlLevel.Directory)
+            {
+                var directory = gridViewDirectories.GetRow(gridViewDirectories.FocusedRowHandle) as SettingsDirectory;
+
+                if (directory == null)
+                    return;
+
+                SettingsDirectory ediDirectory = new SettingsDirectory { Name = directory.Name, Description = directory.Description };
+
+                DirectoryEditForm form = new DirectoryEditForm(ediDirectory, settingsManager);
+
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        OnShowProgress();
+                        if (await settingsManager.UpdateDirectoryAsync(Application.Name, directory.Name, ediDirectory.Name, ediDirectory.Description))
+                        {
+                            directory.Name = ediDirectory.Name;
+                            directory.Description = ediDirectory.Description;
+                            await RefreshButtonClicked();
+                        }
+                    }
+                    finally
+                    {
+                        OnHideProgress();
+                    }
+                }
+            }
+            else
+            {
+                var setting = gridViewSettings.GetRow(gridViewSettings.FocusedRowHandle) as Setting;
+
+                if (setting != null)
+                {
+                    SettingEditForm form = new SettingEditForm(setting, settingsManager);
+
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        try
+                        {
+                            OnShowProgress();
+
+                            await settingsManager.CurrentDirectory.SaveAsync(form.Setting);
+                            await RefreshButtonClicked();
+                        }
+                        finally
+                        {
+                            OnHideProgress();
+                        }
+                    }
+                }
+            }
+        }
+
         public async Task DeleteItemButtonClicked()
         {
             if (Level == ApplicationControlLevel.Directory)
@@ -207,7 +307,14 @@ namespace SettingsManager
 
         private async void gridViewDirectories_DoubleClick(object sender, EventArgs e)
         {
-            await OpenSettings();
+            try
+            {
+                await OpenSettings();
+            }
+            catch (SettingsException ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private SettingsVersion _currentVersion;
@@ -275,63 +382,7 @@ namespace SettingsManager
                 OnHideProgress();
             }
         }
-
-        public async Task EditButtonClicked()
-        {
-            if (Level == ApplicationControlLevel.Directory)
-            {
-                var directory = gridViewDirectories.GetRow(gridViewDirectories.FocusedRowHandle) as SettingsDirectory;
-
-                if (directory == null)
-                    return;
-
-                SettingsDirectory ediDirectory = new SettingsDirectory { Name = directory.Name, Description = directory.Description };
-
-                DirectoryEditForm form = new DirectoryEditForm(ediDirectory, settingsManager);
-
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    try
-                    {
-                        OnShowProgress();
-                        if (await settingsManager.UpdateDirectoryAsync(Application.Name, directory.Name, ediDirectory.Name, ediDirectory.Description))
-                        {
-                            directory.Name = ediDirectory.Name;
-                            directory.Description = ediDirectory.Description;
-                        }
-                    }
-                    finally
-                    {
-                        OnHideProgress();
-                    }
-                }
-            }
-            else
-            {
-                var setting = gridViewSettings.GetRow(gridViewSettings.FocusedRowHandle) as Setting;
-
-                if (setting != null)
-                {
-                    SettingEditForm form = new SettingEditForm(setting, settingsManager);
-
-                    if (form.ShowDialog() == DialogResult.OK)
-                    {
-                        try
-                        {
-                            OnShowProgress();
-
-                            await settingsManager.CurrentDirectory.SaveAsync(form.Setting);
-                            await OpenSettings();
-                        }
-                        finally
-                        {
-                            OnHideProgress();
-                        }
-                    }
-                }
-            }
-        }
-
+         
         public BarItem Path { get; set; }
 
         public string PathText

@@ -375,9 +375,9 @@ namespace SettingsAPIRepository
                 throw new SettingsNotFoundException(Constants.ERROR_DIRECTORY_UNKOWN);
             }
 
-            var newNameDirectory = Store.Context.Directories.FirstOrDefault(app => app.Name == directoryName);
+            var newNameDirectory = Store.Context.Directories.FirstOrDefault(dir => dir.ApplicationId == application.Id && dir.Name == newDirectoryName);
 
-            if (newNameDirectory != null && !string.Equals(newDirectoryName, newNameDirectory.Name, StringComparison.CurrentCultureIgnoreCase))
+            if (newNameDirectory != null)
             {
                 throw new SettingsDuplicateException(Constants.ERROR_DIRECTORY_ALREADY_EXISTS);
             }
@@ -662,42 +662,39 @@ namespace SettingsAPIRepository
             return GetApplications(null);
         }
 
-        public void UpdateApplication(string applicationName, string newApplicationName, string newApplicationDescription)
+        public void CopyApplication(string applicationName, string newApplicationName, string newApplicationDescription)
+        {
+            CopyApplication(applicationName, newApplicationName, newApplicationDescription, 0);
+        }
+
+        private void CopyApplication(string applicationName, string newApplicationName, string newApplicationDescription, int version)
         {
             if (!Auth.AllowCreateApplication(applicationName))
             {
-                throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Write, applicationName, Auth.CurrentIdentity.Id);
+                throw new SettingsAuthorizationException(AuthorizationScope.Application, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
             }
 
-            if (string.IsNullOrWhiteSpace(newApplicationName))
+            if (string.IsNullOrWhiteSpace(applicationName))
             {
                 throw new SettingsStoreException(Constants.ERROR_APPLICATION_NO_NAME);
             }
 
-            if (!NameValidator.ValidateName(newApplicationName))
-            {
-                throw new SettingsStoreException(Constants.ERROR_APPLICATION_NAME_INVALID);
-            }
-
-            var application = Store.Context.Applications.FirstOrDefault(app => app.Name == applicationName);
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
 
             if (application == null)
             {
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
             }
 
-            var newNameApplication = Store.Context.Applications.FirstOrDefault(app => app.Name == newApplicationName);
+            CreateApplication(newApplicationName, newApplicationDescription);
 
-            if (newNameApplication != null && !string.Equals(newApplicationName, newNameApplication.Name, StringComparison.CurrentCultureIgnoreCase))
+            var newApplication = GetApplicationsData(newApplicationName).Single();
+
+            foreach (var item in application.Directories)
             {
-                throw new SettingsDuplicateException(Constants.ERROR_APPLICATION_ALREADY_EXISTS);
+                newApplication.Directories.Add(item);
             }
 
-            application.Name = newApplicationName.Trim();
-            if (newApplicationDescription != null)
-                application.Description = newApplicationDescription.Trim();
-
-            Store.Save();
         }
 
         private IEnumerable<ApplicationModel> GetApplications(string applicationName = null)

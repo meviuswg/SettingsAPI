@@ -70,6 +70,7 @@
             this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
             this.applicationMenu1 = new DevExpress.XtraBars.Ribbon.ApplicationMenu(this.components);
             this.mainPanel = new DevExpress.XtraEditors.PanelControl();
+            this.barButtonItemCopy = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDirectories)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewApplications)).BeginInit();
@@ -114,7 +115,7 @@
             this.gridControl1.Location = new System.Drawing.Point(2, 2);
             this.gridControl1.MainView = this.gridViewApplications;
             this.gridControl1.Name = "gridControl1";
-            this.gridControl1.Size = new System.Drawing.Size(498, 522);
+            this.gridControl1.Size = new System.Drawing.Size(642, 522);
             this.gridControl1.TabIndex = 2;
             this.gridControl1.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewApplications,
@@ -271,9 +272,10 @@
             this.barButtonItemExitApplication,
             this.barButtonItemHome,
             this.barStaticItemPath,
-            this.barEditItemProgress});
+            this.barEditItemProgress,
+            this.barButtonItemCopy});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 17;
+            this.ribbonControl1.MaxItemId = 18;
             this.ribbonControl1.MiniToolbars.Add(this.ribbonMiniToolbar1);
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
@@ -285,7 +287,7 @@
             this.ribbonControl1.ShowCategoryInCaption = false;
             this.ribbonControl1.ShowQatLocationSelector = false;
             this.ribbonControl1.ShowToolbarCustomizeItem = false;
-            this.ribbonControl1.Size = new System.Drawing.Size(502, 79);
+            this.ribbonControl1.Size = new System.Drawing.Size(646, 79);
             this.ribbonControl1.StatusBar = this.ribbonStatusBar1;
             this.ribbonControl1.Toolbar.ShowCustomizeItem = false;
             // 
@@ -423,6 +425,7 @@
             this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItemNewItem);
             this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItemEdit);
             this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItemDeleteItem);
+            this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItemCopy);
             this.ribbonPageGroup2.Name = "ribbonPageGroup2";
             this.ribbonPageGroup2.Text = "Actions";
             // 
@@ -447,7 +450,7 @@
             this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 605);
             this.ribbonStatusBar1.Name = "ribbonStatusBar1";
             this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
-            this.ribbonStatusBar1.Size = new System.Drawing.Size(502, 31);
+            this.ribbonStatusBar1.Size = new System.Drawing.Size(646, 31);
             // 
             // applicationMenu1
             // 
@@ -461,14 +464,24 @@
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 79);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(502, 526);
+            this.mainPanel.Size = new System.Drawing.Size(646, 526);
             this.mainPanel.TabIndex = 7;
+            // 
+            // barButtonItemCopy
+            // 
+            this.barButtonItemCopy.Caption = "Copy";
+            this.barButtonItemCopy.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
+            this.barButtonItemCopy.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemCopy.Glyph")));
+            this.barButtonItemCopy.Id = 17;
+            this.barButtonItemCopy.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemCopy.LargeGlyph")));
+            this.barButtonItemCopy.Name = "barButtonItemCopy";
+            this.barButtonItemCopy.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemCopy_ItemClick);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(502, 636);
+            this.ClientSize = new System.Drawing.Size(646, 636);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.ribbonStatusBar1);
             this.Controls.Add(this.ribbonControl1);
@@ -535,6 +548,7 @@
         private DevExpress.XtraBars.BarStaticItem barStaticItemPath;
         private DevExpress.XtraBars.BarEditItem barEditItemProgress;
         private DevExpress.XtraEditors.Repository.RepositoryItemMarqueeProgressBar repositoryItemMarqueeProgressBar1;
+        private DevExpress.XtraBars.BarButtonItem barButtonItemCopy;
     }
 }
 

@@ -17,7 +17,7 @@ namespace SettingsAPIClient.Provider
         public async Task<SettingsApplication> Get()
         {
             return await Get<SettingsApplication>();
-        } 
+        }
 
         #endregion
 
@@ -66,7 +66,15 @@ namespace SettingsAPIClient.Provider
             return await Post(string.Empty, string.Format("/{0}/directories/{1}", LocalPath, name));
         }
 
-       
+        public async Task<bool> CopyDirectory(string fromName, string toName)
+        {
+            return await CopyDirectory(fromName, toName, 1);
+        }
+
+        public async Task<bool> CopyDirectory(string fromName, string toName, int version)
+        {
+            return await Post(string.Empty, string.Format("/{0}/directories/copy/{1}/{2}/{3}", LocalPath, fromName, version, toName));
+        }
 
         public async Task<bool> CreateDirectory(string name, string description)
         {
@@ -101,6 +109,6 @@ namespace SettingsAPIClient.Provider
 
         public override string LocalPath { get { return string.Concat("application", "/", applicationName); } }
 
-     
+
     }
 }

@@ -130,8 +130,7 @@ namespace SettingsAPIClient
             try
             {
                 HttpClient client = CreateHttpClient();
-                string endpoint = GetEndpoint(localPath);
-
+                string endpoint = GetEndpoint(localPath); 
                 responseMessage = await client.PostAsJsonAsync(endpoint, data);
             }
             catch (OperationCanceledException ex)

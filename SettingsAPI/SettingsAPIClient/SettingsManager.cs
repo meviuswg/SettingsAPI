@@ -1,9 +1,5 @@
-﻿using Newtonsoft.Json;
-using SettingsAPIClient.Provider;
-using SettingsAPIClient.Util;
+﻿using SettingsAPIClient.Provider;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,7 +18,6 @@ namespace SettingsAPIClient
         private int _currentVersion;
         private int _currentObjectId;
         private string _currentApplicationName;
- 
 
         public SettingsManager(string url, string apiKey)
         {
@@ -34,12 +29,10 @@ namespace SettingsAPIClient
             }
             this._url = url;
 
-
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 throw new SettingsException("Invalid APIKey");
             }
-
 
             this._apiKey = apiKey;
         }
@@ -144,10 +137,9 @@ namespace SettingsAPIClient
             return await _applicationProvider.VerionExists(version);
         }
 
-
         #endregion Application
 
-        #region Direcotory 
+        #region Direcotory
 
         public async Task<bool> CreateDirectoryAsync(string applicationName, string directoryName, string description)
         {
@@ -166,6 +158,23 @@ namespace SettingsAPIClient
             var applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
 
             if (await applicationProvider.UpdateDirectory(directoryName, newDirectoryName, description))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> CopyDirectoryAsync(string applicationName, string directoryName, string newDirectoryName)
+        {
+            return await CopyDirectoryAsync(applicationName, directoryName, newDirectoryName, 1);
+        }
+
+        public async Task<bool> CopyDirectoryAsync(string applicationName, string directoryName, string newDirectoryName, int version)
+        {
+            var applicationProvider = new ApplicationProvider(_url, _apiKey, applicationName);
+
+            if (await applicationProvider.CopyDirectory(directoryName, newDirectoryName, version))
             {
                 return true;
             }
@@ -222,7 +231,6 @@ namespace SettingsAPIClient
             if (_application == null)
                 return false;
 
-
             var directory = _application.Directories.SingleOrDefault(d => string.Equals(d.Name, directoryName));
 
             if (directory == null)
@@ -237,7 +245,6 @@ namespace SettingsAPIClient
             _workingDirectory.ObjectID = objectId;
 
             return await _workingDirectory.Reload();
-
         }
 
         public WorkingDirectoryObject CurrentDirectory { get { return _workingDirectory; } }
@@ -249,7 +256,9 @@ namespace SettingsAPIClient
             }
         }
 
-        #endregion Direcotory 
+        #endregion Direcotory
+
+
 
         /// <summary>
         /// Current application version
@@ -275,15 +284,13 @@ namespace SettingsAPIClient
 
         /// <summary>
         /// Current directory name
-        /// </summary> 
+        /// </summary>
 
         private void ResetCurrentWorkingDirectory()
         {
-            _applicationProvider = null; 
+            _applicationProvider = null;
             _workingDirectory = null;
             _application = null;
         }
-
-     
     }
 }
