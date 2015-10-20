@@ -142,6 +142,11 @@
     <Compile Include="Editors\SettingsStringEditor.Designer.cs">
       <DependentUpon>SettingsStringEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SettingEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -237,14 +242,9 @@
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="VersionsForm.resx">
       <DependentUpon>VersionsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -270,9 +270,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Warning.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Warning_64.png" />

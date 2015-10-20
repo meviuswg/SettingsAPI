@@ -54,14 +54,16 @@ namespace SettingsAPIRepository
 
         public void SetUsed(string apiKey)
         {
-            var data = GetKey(apiKey);
+            using (var context = new SettingsDbContext())
+            { 
+                var data = context.ApiKeys.SingleOrDefault(a => a.ApiKey == apiKey);
 
-            if (data != null)
-            {
-                data.LastUsed = DateTime.UtcNow;
-                Context.SaveChanges();
+                if (data != null)
+                {
+                    data.LastUsed = DateTime.UtcNow;
+                    context.SaveChanges();
+                }
             }
-        }
-         
+        } 
     }
 }

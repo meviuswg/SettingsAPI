@@ -185,6 +185,90 @@ namespace SettingsAPIRepository
             Auth.Invalidate();
         }
 
+        public void CopyDirectory(string applicationName, string copyFrom, string toName, int toVersion)
+        {
+            if (string.IsNullOrWhiteSpace(copyFrom))
+            {
+                throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
+            }
+
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
+
+            if (application == null)
+            {
+                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
+            }
+
+            var fromDirectory = GetDirectoriesData(application, copyFrom).SingleOrDefault();
+
+            if (fromDirectory == null)
+            {
+                throw new SettingsNotFoundException(copyFrom);
+            }
+
+            var versionData = GetVersionData(application);
+
+            var version = versionData.FirstOrDefault(v => v.Version == toVersion);
+
+            if (version == null)
+            {
+                throw new SettingsNotFoundException(toVersion.ToString());
+            }
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                //Create new directory
+                CreateDirectory(application.Name, toName, fromDirectory.Description);
+
+                var newDirectory = GetDirectoriesData(application, toName).First();
+
+                foreach (var item in fromDirectory.Access)
+                {
+                    //Check if the key allready is added on creation.
+                    if (fromDirectory.Access.Where(a => a.ApiKeyId == item.ApiKeyId).SingleOrDefault() != null)
+                        continue;
+
+                    newDirectory.Access.Add(new DirectoryAccessData
+                    {
+                        DirectoryId = newDirectory.Id,
+                        AllowCreate = item.AllowCreate,
+                        AllowWrite = item.AllowWrite,
+                        ApiKeyId = item.ApiKeyId,
+                        AllowDelete = item.AllowDelete
+                    });
+                }
+
+                Store.Save();
+
+                //Get and copy the settings.
+                var settings = Store.Context.Settings.Where(s =>
+                s.VersionId == version.Id
+                && s.DirectoryId == fromDirectory.Id);
+
+                var settingStore = Store.Context.Settings;
+
+                foreach (var item in settings)
+                {
+                    settingStore.Add(new SettingData
+                    {
+                        Created = item.Created,
+                        Modified = DateTime.Now,
+                        DirectoryId = newDirectory.Id,
+                        VersionId = version.Id,
+                        ObjecId = item.ObjecId,
+                        SettingKey = item.SettingKey,
+                        SettingValue = item.SettingValue,
+                        SettingTypeInfo = item.SettingTypeInfo,
+                        SettingInfo = item.SettingInfo
+                    });
+                }
+
+                Store.Save();
+
+                scope.Complete();
+            }
+        }
+
         public void DeleteDirectory(string applicationName, string directoryName)
         {
             var application = GetApplicationsData(applicationName).SingleOrDefault();

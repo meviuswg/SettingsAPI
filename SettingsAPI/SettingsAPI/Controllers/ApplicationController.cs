@@ -40,6 +40,23 @@ namespace SettingsAPI.Controllers
         #region Directory
 
         [HttpPost]
+        [Route("{applicationName}/directories/copy/{copyFrom}/{version}/{toName}")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult CopyDirectory(string applicationName, string copyFrom, int version, string toName)
+        {
+            try
+            {
+                controller.CopyDirectory(applicationName, copyFrom, toName, version);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+
+        [HttpPost]
         [Route("{applicationName}/directories/{directoryName}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult CreateDirectory(string applicationName, string directoryName)
@@ -61,7 +78,7 @@ namespace SettingsAPI.Controllers
             {
                 return Error(ex);
             }
-        }
+        } 
 
         [HttpPut]
         [Route("{applicationName}/directories/{directoryName}")]

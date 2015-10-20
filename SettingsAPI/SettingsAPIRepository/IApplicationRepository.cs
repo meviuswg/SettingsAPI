@@ -23,6 +23,8 @@ namespace SettingsAPIRepository
 
         void CreateDirectory(string applicationName, string directoryName, string description);
 
+        void CopyDirectory(string applicationName, string copyFrom,  string toName, int version);
+
         void DeleteDirectory(string applicationName, string directoryName);
 
         void UpdateDirectory(string applicationName, string directoryName, string newDirectoryName, string newDescription);
