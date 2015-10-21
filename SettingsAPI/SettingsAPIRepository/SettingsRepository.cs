@@ -24,7 +24,7 @@ namespace SettingsAPIRepository
         {
             //will authenticate
             var value = (from setting in GetSettingsFromStore(store)
-                         where setting.SettingKey == settingKey 
+                         where (setting.SettingKey == settingKey)
                          &&  setting.ObjecId == objectId
                          select DataToModel(setting)).SingleOrDefault();
 

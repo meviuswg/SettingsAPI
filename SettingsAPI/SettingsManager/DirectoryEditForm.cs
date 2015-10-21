@@ -15,12 +15,14 @@ namespace SettingsManager
     {
         SettingsAPIClient.SettingsManager settingsManager;
         private SettingsDirectory _directory;
+        private string _applicationName;
 
-        public DirectoryEditForm(SettingsDirectory directory, SettingsAPIClient.SettingsManager settingsManager)
+        public DirectoryEditForm(SettingsDirectory directory, string applicationName)
         {
             InitializeComponent();
             this._directory = directory;
-            this.settingsManager = settingsManager;
+            this._applicationName = applicationName;
+            this.settingsManager = new SettingsAPIClient.SettingsManager(ConfigurationManager.Current.Url, ConfigurationManager.Current.ApiKey);
 
             if(_directory != null)
             {
@@ -45,7 +47,8 @@ namespace SettingsManager
                     _directory = new SettingsDirectory();
                 } 
 
-                if (!string.Equals(_directory.Name, textName.Text, StringComparison.CurrentCultureIgnoreCase) && await settingsManager.DirectoryExists(textName.Text))
+                if (!string.Equals(_directory.Name, textName.Text, StringComparison.CurrentCultureIgnoreCase) && 
+                    await settingsManager.DirectoryExists(_applicationName, textName.Text))
                 {
                     textName.ErrorText = "Directory name already in use";
                     return false;

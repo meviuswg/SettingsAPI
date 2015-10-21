@@ -48,25 +48,25 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpGet]
-        [Route("{applicationName}/{version}/{directory}/{objectId:int=0}")]
-        [ResponseType(typeof(SettingModel))]
+        [Route("{applicationName}/{version}/{directory}/{objectId}")]
+        [ResponseType(typeof(SettingModel[]))]
         public IHttpActionResult Get(string applicationName, int version, string directory, int objectId)
         {
 
-            return Get(new SettingStore(applicationName, version, directory), null, objectId);
+            return GetSetttings(new SettingStore(applicationName, version, directory), objectId);
         }
 
         [HttpGet]
-        [Route("{applicationName}/{version}/{directory}/{objectId:int=0}/{key}")]
+        [Route("{applicationName}/{version}/{directory}/{objectId}/{key}")]
         [ResponseType(typeof(SettingModel))]
         public IHttpActionResult Get(string applicationName, int version, string directory, int objectId,  string key)
         {
 
-            return Get(new SettingStore(applicationName, version, directory), key, objectId);
+            return GetSettting(new SettingStore(applicationName, version, directory), key, objectId);
         }
 
         [HttpPost]
-        [Route("{applicationName}/{version}/{directory}/{objectId:int=0}/{key}")]
+        [Route("{applicationName}/{version}/{directory}/{objectId}/{key}")]
         [ResponseType(typeof(void))]
         public IHttpActionResult Post(string applicationName, int version, string directory, int objectId, string key, [FromBody]string value)
         {
@@ -120,15 +120,28 @@ namespace SettingsAPI.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         public IHttpActionResult Get(SettingStore store, string key)
         {
-            return Get(store, key, 0);
+            return GetSettting(store, key, 0);
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IHttpActionResult Get(SettingStore store, string key, int objectId)
+        public IHttpActionResult GetSettting(SettingStore store, string key, int objectId)
         {
             try
             {
-                return Ok(new SettingModel[] { controller.GetSetting(store, key, objectId) });
+                return Ok(controller.GetSetting(store, key, objectId));
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IHttpActionResult GetSetttings(SettingStore store,int objectId)
+        {
+            try
+            {
+                return Ok(controller.GetSettings(store, objectId));
             }
             catch (Exception ex)
             {

@@ -2,7 +2,6 @@
 using SettingsAPIClient;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,16 +11,11 @@ namespace SettingsManager
     public partial class MainForm : DevExpress.XtraBars.Ribbon.RibbonForm
     {
         private static SettingsAPIClient.SettingsManager settingsManager;
-        private string apiKey;
         private ApplicationUserControl applicationControl;
-        private string url;
 
         public MainForm()
         {
             InitializeComponent();
-
-            url = ConfigurationManager.AppSettings["settingsStoreEndpoint"];
-            apiKey = ConfigurationManager.AppSettings["apiKey"]; 
             ShowProgress();
             this.Shown += ApplicationForm_Shown;
             ShowStartScreen();
@@ -34,8 +28,6 @@ namespace SettingsManager
             this.KeyDown += ApplicationForm_KeyDown;
         }
 
-
-
         private void ApplicationForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -46,7 +38,7 @@ namespace SettingsManager
 
         private async void ApplicationForm_Shown(object sender, EventArgs e)
         {
-            await GetApplications(); 
+            await GetApplications();
             HideProgress();
         }
 
@@ -134,11 +126,11 @@ namespace SettingsManager
 
         private async void barButtonItemChangeKey_ItemClick(object sender, ItemClickEventArgs e)
         {
-            AskApiKeyForm form = new AskApiKeyForm(apiKey);
+            AskApiKeyForm form = new AskApiKeyForm(ConfigurationManager.Current.ApiKey);
 
             if (form.ShowDialog() == DialogResult.OK)
             {
-                apiKey = form.ApiKey;
+                ConfigurationManager.Current.ApiKey = form.ApiKey;
                 await GetApplications();
                 ShowStartScreen();
             }
@@ -205,7 +197,7 @@ namespace SettingsManager
 
         private async void barButtonItemVersions_ItemClick(object sender, ItemClickEventArgs e)
         {
-            VersionsForm form = new VersionsForm(applicationControl.Application.Name, settingsManager);
+            VersionsForm form = new VersionsForm(applicationControl.Application.Name);
             form.ShowDialog();
 
             if (form.Version != null)
@@ -235,9 +227,9 @@ namespace SettingsManager
         {
             try
             {
-                if(string.IsNullOrWhiteSpace(apiKey))
+                if (string.IsNullOrWhiteSpace(ConfigurationManager.Current.ApiKey))
                 {
-                    AskApiKeyForm form = new AskApiKeyForm(apiKey);
+                    AskApiKeyForm form = new AskApiKeyForm(ConfigurationManager.Current.ApiKey);
                     form.ShowDialog();
 
                     if (string.IsNullOrWhiteSpace(form.ApiKey))
@@ -245,10 +237,8 @@ namespace SettingsManager
                         MessageBox.Show("No API Key. Application will exit.");
                         this.Close();
                     }
-
-                    apiKey = form.ApiKey;
                 }
-                settingsManager = new SettingsAPIClient.SettingsManager(url, apiKey);
+                settingsManager = new SettingsAPIClient.SettingsManager(ConfigurationManager.Current.Url, ConfigurationManager.Current.ApiKey);
 
                 IEnumerable<SettingsApplication> applications = null;
                 try
@@ -275,16 +265,15 @@ namespace SettingsManager
 
                 if (application != null)
                 {
-                    await settingsManager.OpenApplicationAsync(application.Name);
                     gridControl1.Visible = false;
 
-                    applicationControl = new ApplicationUserControl(settingsManager);
+                    applicationControl = new ApplicationUserControl(application.Name);
+
                     applicationControl.ShowProgress += (a, b) => ShowProgress();
                     applicationControl.HideProgress += (a, b) => HideProgress();
                     applicationControl.Path = barStaticItemPath;
 
                     await applicationControl.Init();
-
 
                     applicationControl.Dock = DockStyle.Fill;
                     mainPanel.Controls.Add(applicationControl);
@@ -307,9 +296,8 @@ namespace SettingsManager
             applicationControl = null;
             ribbonPageGroupApplicationActions.Visible = false;
             barButtonBack.Visibility = BarItemVisibility.Never;
-            barStaticItemPath.Caption = string.Format("Path: {0}", url);
+            barStaticItemPath.Caption = string.Format("Path: {0}", ConfigurationManager.Current.Url);
             barButtonItemCopy.Visibility = BarItemVisibility.Never;
-
         }
 
         private async void barButtonItemCopy_ItemClick(object sender, ItemClickEventArgs e)
@@ -317,13 +305,11 @@ namespace SettingsManager
             try
             {
                 await applicationControl.CopyButtonClicked();
-
             }
             catch (SettingsException ex)
             {
                 MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
     }
 }

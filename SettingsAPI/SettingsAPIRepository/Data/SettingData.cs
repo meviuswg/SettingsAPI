@@ -51,5 +51,19 @@ namespace SettingsAPIRepository.Data
             return string.Equals(this.SettingKey, other.Key, StringComparison.CurrentCultureIgnoreCase)
                 && other.ObjectId == this.ObjecId;
         }
+
+        public static SettingData Copy(SettingData setting)
+        {
+            SettingData copy = new SettingData();
+            copy.VersionId = setting.VersionId;
+            copy.Created = setting.Created;
+            copy.DirectoryId = setting.DirectoryId;
+            copy.SettingInfo = setting.SettingInfo;
+            copy.SettingKey = setting.SettingKey;
+            copy.SettingTypeInfo = setting.SettingTypeInfo;
+            copy.SettingValue = setting.SettingValue;
+            copy.ObjecId = setting.ObjecId;
+            return copy;
+        }
     }
 }

@@ -12,14 +12,15 @@ namespace SettingsManager
         private SettingsAPIClient.SettingsManager settingsManager;
         private string applicationName;
         private int highVersion;
-
-        public VersionsForm(string applicationName, SettingsAPIClient.SettingsManager settingsManager)
+        private SettingsApplication application;
+        public VersionsForm(string applicationName)
         {
             InitializeComponent();
-            this.settingsManager = settingsManager;
+            this.settingsManager = new SettingsAPIClient.SettingsManager(ConfigurationManager.Current.Url, ConfigurationManager.Current.ApiKey);
             this.Shown += VersionsForm_Shown;
-            this.applicationName = applicationName;
 
+            this.applicationName = applicationName;
+            Task.Run(() => LoadApplication());  
             gridViewVersions.DoubleClick += GridViewVersions_DoubleClick;
         }
 
@@ -47,7 +48,7 @@ namespace SettingsManager
             {
                 await settingsManager.CreateApplicationVersionAsync(applicationName, highVersion + 1);
                 await LoadApplication();
-                Version = settingsManager.Application.Versions.OrderByDescending(v => v.Created).First();
+                Version = application.Versions.OrderByDescending(v => v.Created).First();
             }
             catch (SettingsException ex)
             {
@@ -74,7 +75,7 @@ namespace SettingsManager
 
                 if (version != null)
                 {
-                    if (settingsManager.Application.Versions.Count == 1)
+                    if (application.Versions.Count == 1)
                     {
                         MessageBox.Show("This version can not be deleted as it is the only version", "Only version", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
@@ -85,7 +86,7 @@ namespace SettingsManager
                         await settingsManager.DeleteApplicationVersionAsync(applicationName, version.Version);
                         await LoadApplication();
 
-                        Version = settingsManager.Application.Versions.OrderByDescending(v => v.Created).First();
+                        Version = application.Versions.OrderByDescending(v => v.Created).First();
                     }
                 }
             }
@@ -97,11 +98,11 @@ namespace SettingsManager
 
         private async Task LoadApplication()
         {
-            await settingsManager.OpenApplicationAsync(applicationName);
+            application = await settingsManager.GetApplication(applicationName); 
 
-            highVersion = settingsManager.Application.Versions.Max(v => v.Version);
+            highVersion = application.Versions.Max(v => v.Version);
 
-            gridControlVersions.DataSource = settingsManager.Application.Versions;
+            gridControlVersions.DataSource = application.Versions;
         }
     }
 }

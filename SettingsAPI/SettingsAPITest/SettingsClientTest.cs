@@ -5,6 +5,7 @@ using SettingsAPIClient;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SettingsAPIRepository.Util;
+using System.Drawing;
 
 namespace SettingsAPITest
 {
@@ -12,254 +13,94 @@ namespace SettingsAPITest
     public class SettingsClientTest
     {
         private readonly string _masterKey = "=a33a5f531f49480eac31d64d02163bcf";
-        private readonly string _url = "http://localhost/settings/api/"; 
+        private readonly string _url = "http://localhost/settings/api/";
         private string currentApplicationName;
-        private string currentDirectoryName;
-        private SettingsManager settingsManager;
 
-        [TestMethod]
+        private SettingsManager settingsManager;
+        private WorkingDirectoryObject currentDirectory;
+        private SettingsApplication currentApplication;
+
         public async Task CreateApplicationMasterAsync()
         {
-            settingsManager = new SettingsManager(_url, _masterKey);
+            if (currentApplication == null)
+            {
+                settingsManager = new SettingsManager(_url, _masterKey);
 
-            string applicationName = RandomString();
-            string description = RandomString();
-            await settingsManager.CreateApplicationAsync(applicationName, description);
-            Assert.AreEqual(settingsManager.Application.Name, applicationName);
-            Assert.AreEqual(settingsManager.Application.Description, description);
-            Assert.AreEqual(settingsManager.CurrentDirectory.Name, "root");
+                string applicationName = "Settings" + Util.RandomString();
+                string description = Util.RandomString();
 
-            currentApplicationName = settingsManager.Application.Name;
+                await settingsManager.CreateApplicationAsync(applicationName, description);
+                currentApplication = await settingsManager.GetApplication(applicationName);
+
+                Assert.AreEqual(currentApplication.Name, applicationName);
+                Assert.AreEqual(currentApplication.Description, description);
+
+                currentApplicationName = currentApplication.Name;
+
+                currentDirectory = await settingsManager.OpenDirectoryAsync(applicationName);
+            }
 
         }
 
         [TestMethod]
-        public async Task DeleteApplicationMasterAsync()
+        public async Task SaveBoolean()
         {
             await CreateApplicationMasterAsync();
 
-            try
-            {
-                bool isDeleted = await settingsManager.DeleteApplicationAsync(currentApplicationName);
+            await currentDirectory.SaveAsync("boolTrue", true);
+            await currentDirectory.SaveAsync("boolFalse", false);
+            await currentDirectory.SaveNullAsync("boolNull", ValueDataType.Bool);
 
-                Assert.IsTrue(isDeleted);
-
-                try
-                {
-                    await settingsManager.OpenApplicationAsync(currentApplicationName);
-                    Assert.Fail("Open application that was deleted");
-                }
-                catch (SettingNotFoundException)
-                {
-                    //Perfect;
-                }
-
-            }
-            catch (SettingsException ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+            Assert.IsTrue((await currentDirectory.GetBooleanAsync("boolTrue")).Value);
+            Assert.IsFalse((await currentDirectory.GetBooleanAsync("boolFalse")).Value);
+            Assert.IsNull((await currentDirectory.GetBooleanAsync("boolNull")));
         }
 
+
         [TestMethod]
-        public async Task CreateDirectoryMasterAsync()
+        public async Task SaveDateTime()
         {
             await CreateApplicationMasterAsync();
 
-            try
-            {
-                string directoryName = RandomString();
-                string directoryDescription = RandomString();
-                await settingsManager.CreateDirectoryAsync(currentApplicationName, directoryName, directoryDescription);
+            DateTime now = DateTime.Now;
 
-                Assert.AreEqual(directoryName, settingsManager.CurrentDirectory.Name);
-                Assert.AreEqual(directoryDescription, settingsManager.CurrentDirectory.Description);
+            await currentDirectory.SaveAsync("dateTime", now);
+            await currentDirectory.SaveNullAsync("dateTimeNull", ValueDataType.DateTime);
 
-                currentDirectoryName = settingsManager.CurrentDirectory.Name;
-
-            }
-            catch (SettingsException ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+            Assert.AreEqual((await currentDirectory.GetDateTimeAsync("dateTime")).Value.ToString(), now.ToString());
+            Assert.IsNull((await currentDirectory.GetBooleanAsync("dateTimeNull")));
         }
 
         [TestMethod]
-        public async Task DeleteDirectoryMasterAsync()
-        {
-            await CreateDirectoryMasterAsync();
-
-            try
-            {
-                bool isDeleted = await settingsManager.DeleteDirectoryAsync(currentApplicationName, currentDirectoryName);
-
-                Assert.IsTrue(isDeleted);
-
-                try
-                {
-                    await settingsManager.OpenDirectoryAsync(currentApplicationName, currentDirectoryName);
-                    Assert.Fail("Open directory that was deleted");
-                }
-                catch (SettingNotFoundException)
-                {
-                    //Perfect;
-                }
-
-            }
-            catch (SettingsException ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
-
-        [TestMethod]
-        public async Task CreateApplicationVersionMasterAsync()
+        public async Task SaveInt()
         {
             await CreateApplicationMasterAsync();
 
-            try
-            {
-                bool isCreated = await settingsManager.CreateApplicationVersionAsync(currentApplicationName, 2);
+            int number1 = 1;
+            int number2 = 2;
 
-                Assert.IsTrue(isCreated);
-                Assert.IsTrue(settingsManager.Application.Versions.Count == 2);
-            }
-            catch (SettingsException ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+            await currentDirectory.SaveAsync("number1", number1);
+            await currentDirectory.SaveAsync("number2", number2);
+            await currentDirectory.SaveNullAsync("numberNull", ValueDataType.Int);
+
+            Assert.AreEqual((await currentDirectory.GetIntAsync("number1")).Value, number1);
+            Assert.AreEqual((await currentDirectory.GetIntAsync("number2")).Value, number2);
+            Assert.IsNull((await currentDirectory.GetIntAsync("numberNull")));
         }
 
         [TestMethod]
-        public async Task DeleteApplicationVersionMasterAsync()
-        {
-            await CreateApplicationVersionMasterAsync();
-
-            try
-            {
-                Assert.IsTrue(settingsManager.Application.Versions.Count == 2);
-
-                bool isDeleted = await settingsManager.DeleteApplicationVersionAsync(currentApplicationName, 2);
-
-                Assert.IsTrue(settingsManager.Application.Versions.Count == 1);
-
-
-                Assert.IsTrue(isDeleted);
-            }
-            catch (SettingsException ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        } 
-
-        [TestMethod]
-        public async Task SaveSettingAsync()
+        public async Task SaveImage()
         {
             await CreateApplicationMasterAsync();
 
-            var items = settingsManager.CurrentDirectory.Items;
+            Image image = Image.FromFile("logo.png");
 
-            Assert.IsTrue(items.Count() == 0);
-            string settingKey = "Sample1";
-            string settingValue = RandomString();
+            await currentDirectory.SaveAsync("image", image); 
+            await currentDirectory.SaveNullAsync("imageNull", ValueDataType.Image);
 
-            bool IsSaved = await settingsManager.CurrentDirectory.SaveAsync(settingKey, settingValue);
-
-            var savedValues = await settingsManager.CurrentDirectory.GetStringAsync(settingKey);
-
-            Assert.AreEqual(settingValue, savedValues);
-            Assert.IsTrue(settingsManager.CurrentDirectory.Items.Count() == 1);
+            Assert.AreEqual((await currentDirectory.GetImageAsync("image")).RawFormat.ToString(), image.RawFormat.ToString()); 
+            Assert.IsNull((await currentDirectory.GetIntAsync("imageNull")));
         }
 
-        [TestMethod]
-        public async Task ExistsSettingAsync()
-        {
-            await SaveSettingAsync();
-
-            Assert.IsTrue(await settingsManager.CurrentDirectory.Exists(0,"Sample1"));
-            Assert.IsFalse(await settingsManager.CurrentDirectory.Exists(0,"Sample2"));
-
-            settingsManager.CurrentDirectory.UseCache = true;
-
-            Assert.IsTrue(await settingsManager.CurrentDirectory.Exists(0, "Sample1")); 
-            Assert.IsFalse(await settingsManager.CurrentDirectory.Exists(0, "Sample2"));
-
-        }
-
-        [TestMethod]
-        public async Task AuthenticateWrongAPIKey()
-        {
-            settingsManager = new SettingsManager(_url, "123");
-
-            try
-            {
-                await settingsManager.OpenApplicationAsync("SampleApplication");
-                Assert.Fail("Allowed access using wrong key");
-            }
-            catch (SettingAccessDeniedException)
-            {  }
-
-            try
-            {
-                //unknown resource
-                await settingsManager.OpenApplicationAsync(RandomString());
-                Assert.Fail("Allowed access using wrong key");
-            }
-            catch (SettingAccessDeniedException)
-            { }
-        }
-
-        [TestMethod]
-        public void OpenWrongStoreUrl()
-        {
-            try
-            {
-                settingsManager = new SettingsManager("123123", "123");
-            }
-            catch (SettingsException)
-            { 
-            } 
-        }
-
-        [TestMethod]
-        public void RexexTest()
-        { 
-            Assert.IsTrue(NameValidator.ValidateName("simple"));
-            Assert.IsTrue(NameValidator.ValidateName("simple's"));
-            Assert.IsTrue(NameValidator.ValidateName("simple-s"));
-            Assert.IsTrue(NameValidator.ValidateName("simpl_-s"));
-            Assert.IsTrue(NameValidator.ValidateName("simpl_-s"));
-            Assert.IsTrue(NameValidator.ValidateName("simple as is"));
-            Assert.IsTrue(NameValidator.ValidateName("simple as is"));
-            Assert.IsTrue(NameValidator.ValidateName("it's simple"));
-            Assert.IsTrue(NameValidator.ValidateName("simple "));
-            Assert.IsTrue(NameValidator.ValidateName("simple"));
-            Assert.IsTrue(NameValidator.ValidateName("sim ple"));
-            Assert.IsTrue(NameValidator.ValidateName("sim_ple"));
-            Assert.IsTrue(NameValidator.ValidateName("sim-ple"));
-            Assert.IsFalse(NameValidator.ValidateName("sim.ple"));
-            Assert.IsFalse(NameValidator.ValidateName("sim$ple"));
-            Assert.IsFalse(NameValidator.ValidateName("simple!"));
-            Assert.IsFalse(NameValidator.ValidateName(""));
-            Assert.IsFalse(NameValidator.ValidateName("."));
-            Assert.IsFalse(NameValidator.ValidateName("a"));
-            Assert.IsFalse(NameValidator.ValidateName("a"));
-        }
-
-        private static string RandomString()
-        {
-            return Guid.NewGuid().ToString().Replace("-", "").Substring(0, 8);
-        }
-
-
-        [TestMethod]
-        public async Task MyTestMethod()
-        {
-            settingsManager = new SettingsManager(_url, _masterKey);
-
-            await settingsManager.OpenDirectoryAsync("DeskPlan", "C726");
-
-
-        }
     }
 }

@@ -27,9 +27,15 @@ namespace SettingsAPIClient.Provider
             return await Get<Setting[]>();
         }
 
-        public async Task<Setting[]> Get(int objectId, string key)
+
+        public async Task<Setting[]> Get(int objectId)
         {
-            return await Get<Setting[]>(string.Concat(LocalPath, "/", objectId, "/", key));
+            return await Get<Setting[]>(string.Concat(LocalPath, "/", objectId));
+        }
+
+        public async Task<Setting> Get(int objectId, string key)
+        {
+            return await Get<Setting>(string.Concat(LocalPath, "/", objectId, "/", key));
         }
 
         public async Task<bool> Delete(int objectId, string key)
@@ -39,15 +45,7 @@ namespace SettingsAPIClient.Provider
 
         public async Task<bool> Exists(int objectId, string key)
         {
-            try
-            {
-                var result = await Get(objectId,key);
-                return true;
-            }
-            catch (SettingNotFoundException)
-            {
-                return false;
-            }      
+            return await Exists(string.Concat(LocalPath, "/", objectId, "/", key));
         }
 
         public override string LocalPath { get { return string.Concat("settings", "/", applicationName, "/", version, "/", directory); } }

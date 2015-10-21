@@ -3,6 +3,7 @@ using SettingsAPIRepository.Model;
 using SettingsAPIRepository.Util;
 using SettingsAPIShared;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
@@ -84,6 +85,54 @@ namespace SettingsAPIRepository
                 Store.Context.Versions.Remove(data);
                 Store.Context.SaveChanges();
 
+                scope.Complete();
+            }
+        }
+
+        public void CopyVersion(string applicationName, int newVersionNumber, int copyFromVersionNumber)
+        {
+            if (!Auth.AllowCreateVersion(applicationName))
+            {
+                throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
+            }
+
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
+
+            if (application == null)
+            {
+                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
+            }
+
+            var copyVersion = GetVersionData(application).SingleOrDefault(v => v.Version == copyFromVersionNumber);
+            var newVersion = GetVersionData(application).SingleOrDefault(v => v.Version == newVersionNumber);
+
+            if (newVersion != null)
+            {
+                throw new SettingsDuplicateException(Constants.ERROR_VERION_ALREADY_EXISTS);
+            }
+
+            if (copyVersion == null)
+            {
+                throw new SettingsNotFoundException(Constants.ERROR_VERION_UNKNOWN);
+            }
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                newVersion = new VersionData();
+                newVersion.ApplicationId = application.Id;
+                newVersion.Created = DateTime.UtcNow;
+                newVersion.Version = newVersionNumber;
+                application.Versions.Add(newVersion);
+                Store.Save();
+
+                foreach (var item in copyVersion.Settings)
+                {
+                    SettingData setting = SettingData.Copy(item);
+                    setting.VersionId = newVersion.Id;
+                    Store.Context.Settings.Add(setting);
+                }
+
+                Store.Save();
                 scope.Complete();
             }
         }
@@ -463,6 +512,28 @@ namespace SettingsAPIRepository
 
         #region Application
 
+        public ApplicationModel GetApplication(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new SettingsStoreException(Constants.ERROR_APPLICATION_NO_NAME);
+            }
+
+            var application = GetApplications(name).SingleOrDefault();
+
+            if (application == null)
+            {
+                throw new SettingsNotFoundException(name);
+            }
+
+            return application;
+        }
+
+        public IEnumerable<ApplicationModel> GetApplications()
+        {
+            return GetApplications(null);
+        }
+
         public ApplicationModel CreateApplication(string applicationName)
         {
             return CreateApplication(applicationName, string.Empty, string.Empty, string.Empty);
@@ -640,26 +711,40 @@ namespace SettingsAPIRepository
             }
         }
 
-        public ApplicationModel GetApplication(string name)
+        public void UpdateApplication(string applicationName, string newApplicationName, string newDescription)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(newApplicationName))
             {
-                throw new SettingsStoreException(Constants.ERROR_APPLICATION_NO_NAME);
+                throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
             }
 
-            var application = GetApplications(name).SingleOrDefault();
+            if (string.IsNullOrWhiteSpace(applicationName))
+            {
+                throw new SettingsStoreException(Constants.ERROR_DIRECTORY_NO_NAME);
+            } 
+
+            var application = GetApplicationsData(applicationName).SingleOrDefault();
 
             if (application == null)
             {
-                throw new SettingsNotFoundException(name);
+                throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
             }
 
-            return application;
-        }
+            if (!Auth.AllowCreateApplication(applicationName))
+            {
+                throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Write, newApplicationName, Auth.CurrentIdentity.Id);
+            }
 
-        public IEnumerable<ApplicationModel> GetApplications()
-        {
-            return GetApplications(null);
+            if (!NameValidator.ValidateName(newApplicationName))
+            {
+                throw new SettingsStoreException(Constants.ERROR_APPLICATION_NAME_INVALID);
+            } 
+ 
+
+            application.Name = newApplicationName.Trim();
+            application.Description = newDescription.Trim();
+
+            Store.Save();
         }
 
         public void CopyApplication(string applicationName, string newApplicationName, string newApplicationDescription)
@@ -667,7 +752,7 @@ namespace SettingsAPIRepository
             CopyApplication(applicationName, newApplicationName, newApplicationDescription, 0);
         }
 
-        private void CopyApplication(string applicationName, string newApplicationName, string newApplicationDescription, int version)
+        public void CopyApplication(string applicationName, string newApplicationName, string newApplicationDescription, int version)
         {
             if (!Auth.AllowCreateApplication(applicationName))
             {
@@ -686,15 +771,63 @@ namespace SettingsAPIRepository
                 throw new SettingsNotFoundException(Constants.ERROR_APPLICATION_UNKNOWN);
             }
 
-            CreateApplication(newApplicationName, newApplicationDescription);
-
-            var newApplication = GetApplicationsData(newApplicationName).Single();
-
-            foreach (var item in application.Directories)
+            using (TransactionScope scope = new TransactionScope())
             {
-                newApplication.Directories.Add(item);
-            }
+                CreateApplication(newApplicationName, newApplicationDescription);
 
+                var newApplication = GetApplicationsData(newApplicationName).Single();
+
+                List<DirectoryData> newDirectories = new List<DirectoryData>();
+                List<VersionData> copyVersions = new List<VersionData>();
+                List<SettingData> newSettings = new List<SettingData>();
+
+                foreach (var item in application.Directories)
+                {
+                    DirectoryData data = new DirectoryData
+                    {
+                        ApplicationId = newApplication.Id,
+                        Name = item.Name,
+                        Description = item.Description
+                    };
+
+                    newApplication.Directories.Add(data);
+                    newDirectories.Add(data);
+                }
+                if (version == 0)
+                {
+                    copyVersions.AddRange((from v in application.Versions
+                                           orderby v.Version descending
+                                           select v));
+                }
+                else
+                {
+                    copyVersions.Add((from v in application.Versions
+                                      orderby v.Version ascending
+                                      select v).First());
+                }
+
+                foreach (var item in copyVersions)
+                {
+                    VersionData newVersion = new VersionData();
+                    newVersion.Version = item.Version;
+                    newVersion.ApplicationId = newApplication.Id;
+                    newVersion.Created = DateTime.UtcNow;
+
+                    Store.Save();
+
+                    foreach (var setting in item.Settings)
+                    {
+                        SettingData newSetting = SettingData.Copy(setting);
+                        setting.VersionId = newVersion.Id;
+                        setting.DirectoryId = newDirectories.Single(d => d.Name == setting.Directory.Name).Id;
+                        newSettings.Add(newSetting);
+                    }
+                }
+
+                Store.Context.Settings.AddRange(newSettings);  
+                Store.Save();
+                scope.Complete();
+            }
         }
 
         private IEnumerable<ApplicationModel> GetApplications(string applicationName = null)

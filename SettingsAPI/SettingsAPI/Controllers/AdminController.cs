@@ -97,6 +97,22 @@ namespace SettingsAPI.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("{applicationName}/copy/{copyVersion:int=1}")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult DeleteApplication(string applicationName, int copyVersion, [FromBody] SaveApplicationModel value)
+        {
+            try
+            {
+                controller.CopyApplication(applicationName, value.Name, value.Description, copyVersion);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
+        }
+
         [HttpDelete]
         [Route("{applicationName}")]
         [ResponseType(typeof(void))]
@@ -138,7 +154,7 @@ namespace SettingsAPI.Controllers
         public IHttpActionResult CreateApiKey(string applicationName, [FromBody] SaveApiKeyModel apiKey)
         {
             try
-            { 
+            {
                 return Ok(keyController.CreateApiKey(applicationName, apiKey));
             }
             catch (Exception ex)

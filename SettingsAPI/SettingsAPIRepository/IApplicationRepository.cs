@@ -9,9 +9,13 @@ namespace SettingsAPIRepository
 
         ApplicationModel CreateApplication(string applicationName, string applicationDescription);
 
+        ApplicationModel CreateApplication(string applicationName, string applicationDescription, string directoryName, string directoryDescription);
+
         void UpdateApplication(string applicationName, string newApplicationName, string newApplicationDescription);
 
-        ApplicationModel CreateApplication(string applicationName, string applicationDescription, string directoryName, string directoryDescription);
+        void CopyApplication(string applicationName, string newApplicationName, string newApplicationDescription);
+
+        void CopyApplication(string applicationName, string newApplicationName, string newApplicationDescription, int version);
 
         IEnumerable<ApplicationModel> GetApplications();
 
@@ -34,6 +38,8 @@ namespace SettingsAPIRepository
         IEnumerable<VersionModel> GetVersions(string applicationName);
 
         void CreateVersion(string applicationName, int version);
+
+        void CopyVersion(string applicationName, int newVersion, int compyVersion);
 
         void DeleteVersion(string applicationName, int version);
 

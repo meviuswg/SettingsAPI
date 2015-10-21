@@ -10,14 +10,14 @@ namespace SettingsManager
     public partial class SettingEditForm : Form
     {
         private Setting setting;
-        private SettingsAPIClient.SettingsManager settingsManager;
+        private WorkingDirectoryObject directory;
 
-        public SettingEditForm(Setting setting, SettingsAPIClient.SettingsManager settingsManager)
+        public SettingEditForm(Setting setting, WorkingDirectoryObject directory)
         {
             InitializeComponent();
 
             this.setting = setting;
-            this.settingsManager = settingsManager;
+            this.directory = directory;
 
             comboBox1.DataSource = Enum.GetNames(typeof(ValueDataType)).OrderBy(s => s).ToArray();
             comboBox1.SelectedItem = "String";
@@ -168,7 +168,7 @@ namespace SettingsManager
                     return false;
                 }
 
-                if (setting == null && await settingsManager.CurrentDirectory.Exists(int.Parse(textObjectId.Text), textKey.Text))
+                if (setting == null && await directory.Exists(int.Parse(textObjectId.Text), textKey.Text))
                 {
                     textKey.ErrorText = "A Setting Key with this name already in exist";
                     return false;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -27,6 +28,49 @@ namespace SettingsAPIClient
             return await Get<T>(string.Empty);
         }
 
+        protected virtual async Task<bool> Exists(string localPath)
+        {
+            HttpResponseMessage responseMessage = null;
+            try
+            {
+                HttpClient client = CreateHttpClient();
+
+                string endpoint = GetEndpoint(localPath);
+
+                Debug.WriteLine("GET:{0}", new[] { endpoint });
+                responseMessage = await client.GetAsync(endpoint, HttpCompletionOption.ResponseContentRead);
+            }
+            catch (OperationCanceledException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (TimeoutException ex)
+            {
+                throw new SettingsException("The remote store operation did not complete within normal time. Reinitialize and try again.", ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new SettingsException("Could not connect to remote store", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new SettingsException(ex.Message, ex);
+            }
+
+            if (responseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            if (responseMessage.StatusCode == HttpStatusCode.NotFound)
+                return false;
+
+
+            await handleNotOk(responseMessage); 
+
+            return false;
+
+        }
+
         protected virtual async Task<bool> Delete()
         {
             return await Delete(string.Empty);
@@ -41,6 +85,7 @@ namespace SettingsAPIClient
 
                 string endpoint = GetEndpoint(localPath);
 
+                Debug.WriteLine("DEL:{0}", new[] { endpoint });
                 responseMessage = await client.DeleteAsync(endpoint);
             }
             catch (OperationCanceledException ex)
@@ -81,6 +126,7 @@ namespace SettingsAPIClient
 
                 string endpoint = GetEndpoint(localPath);
 
+                Debug.WriteLine("GET:{0}", new[] { endpoint });
                 responseMessage = await client.GetAsync(endpoint, HttpCompletionOption.ResponseContentRead);
             }
             catch (OperationCanceledException ex)
@@ -92,7 +138,7 @@ namespace SettingsAPIClient
                 throw new SettingsException("The remote store operation did not complete within normal time. Reinitialize and try again.", ex);
             }
             catch (HttpRequestException ex)
-            { 
+            {
                 throw new SettingsException("Could not connect to remote store", ex);
             }
             catch (Exception ex)
@@ -130,7 +176,10 @@ namespace SettingsAPIClient
             try
             {
                 HttpClient client = CreateHttpClient();
-                string endpoint = GetEndpoint(localPath); 
+
+                string endpoint = GetEndpoint(localPath);
+
+                Debug.WriteLine("POST:{0}", new[] { endpoint });
                 responseMessage = await client.PostAsJsonAsync(endpoint, data);
             }
             catch (OperationCanceledException ex)
@@ -173,6 +222,7 @@ namespace SettingsAPIClient
                 HttpClient client = CreateHttpClient();
                 string endpoint = GetEndpoint(localPath);
 
+                Debug.WriteLine("PUT:{0}", new[] { endpoint });
                 responseMessage = await client.PutAsJsonAsync(endpoint, data);
             }
             catch (OperationCanceledException ex)

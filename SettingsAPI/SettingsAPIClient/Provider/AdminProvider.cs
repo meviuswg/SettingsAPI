@@ -8,19 +8,11 @@ namespace SettingsAPIClient.Provider
         {
         }
 
-        public override string LocalPath { get { return string.Concat("admin", "/"); } }
+        public override string LocalPath { get { return string.Concat("admin"); } }
 
         public async Task<bool> ApplicationExists(string applicationName)
         {
-            try
-            {
-                await Get<SettingsApplication>(string.Concat(LocalPath, applicationName));
-                return true;
-            }
-            catch (SettingNotFoundException)
-            {
-                return false;
-            }
+            return await Exists(string.Concat(LocalPath , "/", applicationName));
         }
 
         public async Task<SettingsApplication[]> Applications()
@@ -38,9 +30,17 @@ namespace SettingsAPIClient.Provider
             return await Put(new SettingsApplication { Name = newApplicatinName, Description = description }, string.Concat(LocalPath, "/", applicationName));
         }
 
+        public async Task<bool> CopyApplication(string applicationName, string newApplicatinName, string description)
+        {
+            return await CopyApplication(applicationName, 0, newApplicatinName, description);
+        }
+        public async Task<bool> CopyApplication(string applicationName, int copyVersion, string newApplicatinName, string description)
+        {
+            return await Post(new SettingsApplication { Name = newApplicatinName, Description = description }, string.Concat(LocalPath, "/", applicationName, "/copy/", copyVersion));
+        }
         public async Task<bool> DeleteApplication(string applicationName)
         {
-            return await Delete(string.Concat(LocalPath, applicationName));
+            return await Delete(string.Concat(LocalPath, "/", applicationName));
         }
     }
 }

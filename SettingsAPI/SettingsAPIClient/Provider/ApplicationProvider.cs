@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SettingsAPIClient.Provider
 {
@@ -19,7 +18,7 @@ namespace SettingsAPIClient.Provider
             return await Get<SettingsApplication>();
         }
 
-        #endregion
+        #endregion Applications
 
         #region Versions
 
@@ -51,8 +50,7 @@ namespace SettingsAPIClient.Provider
             }
         }
 
-
-        #endregion
+        #endregion Versions
 
         #region Directories
 
@@ -78,7 +76,7 @@ namespace SettingsAPIClient.Provider
 
         public async Task<bool> CreateDirectory(string name, string description)
         {
-            return await Post<SettingsDirectory>(new SettingsDirectory { Name = name, Description = description }, string.Format("/{0}/directories/{1}", LocalPath, name));
+            return await Post<SettingsDirectory>(new SettingsDirectory { Name = name, Description = description }, string.Format("/{0}/directories", LocalPath));
         }
 
         public async Task<bool> UpdateDirectory(string directoryName, string newDirectoryName, string description)
@@ -93,22 +91,11 @@ namespace SettingsAPIClient.Provider
 
         public async Task<bool> DirectoryExists(string name)
         {
-            try
-            {
-                await GetDirectory(name);
-                return true;
-            }
-            catch (SettingNotFoundException)
-            {
-                return false;
-            }
-
+            return await Exists(string.Concat(LocalPath, "/directories/", name)); 
         }
 
-        #endregion
+        #endregion Directories
 
         public override string LocalPath { get { return string.Concat("application", "/", applicationName); } }
-
-
     }
 }

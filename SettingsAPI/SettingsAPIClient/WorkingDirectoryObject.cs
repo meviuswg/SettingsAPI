@@ -16,9 +16,10 @@ namespace SettingsAPIClient
         private Dictionary<string, Setting> _items;
         private SettingsProvider _provider;
 
-        public WorkingDirectoryObject(SettingsDirectory directory, string applicationName, int version, string url, string apiKey)
+        public WorkingDirectoryObject(SettingsDirectory directory, string applicationName,  int version, int objectId, string url, string apiKey)
         {
             this._directory = directory;
+            this._currentObjectId = objectId;
             this._provider = new SettingsProvider(url, apiKey, applicationName, version, directory.Name);
         }
 
@@ -86,12 +87,7 @@ namespace SettingsAPIClient
             get
             {
                 return _currentObjectId;
-            }
-
-            set
-            {
-                _currentObjectId = value;
-            }
+            } 
         }
 
         public bool UseCache { get; set; }
@@ -116,7 +112,7 @@ namespace SettingsAPIClient
         {
             var s = await GetKeyAsync(key);
 
-            if (s != null && s.Value != null)
+            if (s.Value != null)
                 return Convert.ToBoolean(s.Value);
 
             return null;
@@ -126,7 +122,7 @@ namespace SettingsAPIClient
         {
             var s = await GetKeyAsync(key);
 
-            if (s != null && s.Value != null)
+            if (s.Value != null)
                 return SerializationHelper.FromBase64String(s.Value);
 
             return null;
@@ -136,7 +132,7 @@ namespace SettingsAPIClient
         {
             var s = await GetKeyAsync(key);
 
-            if (s != null && s.Value != null)
+            if (s.Value != null)
                 return Convert.ToDateTime(s.Value);
 
             return null;
@@ -146,7 +142,7 @@ namespace SettingsAPIClient
         {
             var s = await GetKeyAsync(key);
 
-            if (s != null && s.Value != null)
+            if (s.Value != null)
                 return Convert.ToDouble(s.Value);
 
             return null;
@@ -156,7 +152,7 @@ namespace SettingsAPIClient
         {
             var s = await GetKeyAsync(key);
 
-            if (s != null && s.Value != null)
+            if (s.Value != null)
                 return SerializationHelper.ToImage(s.Value);
 
             return null;
@@ -166,7 +162,7 @@ namespace SettingsAPIClient
         {
             var s = await GetKeyAsync(key);
 
-            if (s != null && s.Value != null)
+            if (s.Value != null)
                 return Convert.ToInt32(s.Value);
 
             return null;
@@ -176,7 +172,7 @@ namespace SettingsAPIClient
         {
             var s = await GetKeyAsync(key);
 
-            if (s != null && s.Value != null)
+            if (s.Value != null)
                 return JsonConvert.DeserializeObject<T>(s.Value);
 
             return default(T);
@@ -184,38 +180,33 @@ namespace SettingsAPIClient
 
         public async Task<Setting> GetKeyAsync(string key)
         {
-            string id = string.Format("{0}{1}", ObjectID, key);
-
             if (string.IsNullOrWhiteSpace(key))
             {
                 throw new ArgumentNullException("key");
             }
 
-            if (UseCache)
+            if (await Exists(key))
             {
-                if (_items.ContainsKey(id))
+                if (UseCache)
                 {
-                    return _items[id];
+                    return _items[string.Format("{0}{1}", ObjectID, key).ToLower()];
                 }
                 else
                 {
-                    throw new SettingNotFoundException(key);
+                    return await _provider.Get(ObjectID, key);
                 }
             }
             else
             {
-                var result = await _provider.Get(ObjectID, key);
+                var setting = await _provider.Get(ObjectID, key);
 
-                if (result.Count() == 0)
+                if (setting == null)
                 {
                     throw new SettingNotFoundException(key);
                 }
                 else
                 {
-                    var setting = result.Single();
-
                     _items[setting.Id] = setting;
-
                     return setting;
                 }
             }
@@ -225,7 +216,7 @@ namespace SettingsAPIClient
         {
             var s = await GetKeyAsync(key);
 
-            if (s != null && s.Value != null)
+            if (s.Value != null)
                 return Convert.ToString(s.Value);
 
             return null;
@@ -249,6 +240,11 @@ namespace SettingsAPIClient
             SetInternalItemsCollection(settingsSet);
 
             return true;
+        }
+
+        public async Task<bool> SaveNullAsync(string key, ValueDataType type)
+        {
+            return await SaveAsync(key, null, type);
         }
 
         public async Task<bool> SaveAsync(string key, bool value)
