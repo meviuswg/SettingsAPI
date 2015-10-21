@@ -16,7 +16,7 @@ namespace SettingsAPIClient
         private Dictionary<string, Setting> _items;
         private SettingsProvider _provider;
 
-        public WorkingDirectoryObject(SettingsDirectory directory, string applicationName,  int version, int objectId, string url, string apiKey)
+        public WorkingDirectoryObject(SettingsDirectory directory, string applicationName, int version, int objectId, string url, string apiKey)
         {
             this._directory = directory;
             this._currentObjectId = objectId;
@@ -87,7 +87,17 @@ namespace SettingsAPIClient
             get
             {
                 return _currentObjectId;
-            } 
+            }
+
+            set
+            {
+                if (_currentObjectId >= -1 && _currentObjectId != value)
+                {
+                    _currentObjectId = value;
+
+                    Task.Run(() => Reload()).Wait();
+                }
+            }
         }
 
         public bool UseCache { get; set; }
@@ -189,16 +199,16 @@ namespace SettingsAPIClient
             {
                 if (UseCache)
                 {
-                    return _items[string.Format("{0}{1}", ObjectID, key).ToLower()];
+                    return _items[string.Format("{0}{1}", workingId, key).ToLower()];
                 }
                 else
                 {
-                    return await _provider.Get(ObjectID, key);
+                    return await _provider.Get(workingId, key);
                 }
             }
             else
             {
-                var setting = await _provider.Get(ObjectID, key);
+                var setting = await _provider.Get(workingId, key);
 
                 if (setting == null)
                 {
@@ -233,11 +243,20 @@ namespace SettingsAPIClient
         /// <returns></returns>
         public async Task<bool> Reload()
         {
-            var settingsSet = await _provider.Get();
+            Setting[] settings = null;
+
+            if (_currentObjectId == -1)
+            {
+                settings = await _provider.Get();
+            }
+            else
+            {
+                settings = await _provider.Get(workingId);
+            }
 
             _items = new Dictionary<string, Setting>();
 
-            SetInternalItemsCollection(settingsSet);
+            SetInternalItemsCollection(settings);
 
             return true;
         }
@@ -297,7 +316,7 @@ namespace SettingsAPIClient
 
         public async Task<bool> SaveAsync(string key, string value)
         {
-            return await SaveAsync(new Setting { ObjectId = _currentObjectId, Key = key, Value = value, ValueType = ValueDataType.String });
+            return await SaveAsync(new Setting { ObjectId = workingId, Key = key, Value = value, ValueType = ValueDataType.String });
         }
 
         public async Task<bool> SaveAsync(string key, string value, ValueDataType dataType)
@@ -328,7 +347,7 @@ namespace SettingsAPIClient
 
         public async Task<bool> Exists(string key)
         {
-            return await Exists(ObjectID, key);
+            return await Exists(workingId, key);
         }
 
         private void SetInternalItemsCollection(IEnumerable<Setting> settings)
@@ -339,6 +358,13 @@ namespace SettingsAPIClient
             }
         }
 
+        private int workingId
+        {
+            get
+            {
+                return _currentObjectId > 0 ? _currentObjectId : 0;
+            }
+        }
         #endregion Settings
     }
 }

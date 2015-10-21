@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SettingsAPIRepository.Util;
 using System.Drawing;
+using SettingsAPIClient.Util;
 
 namespace SettingsAPITest
 {
@@ -89,17 +90,73 @@ namespace SettingsAPITest
         }
 
         [TestMethod]
+        public async Task SaveString()
+        {
+            await CreateApplicationMasterAsync();
+ 
+            await currentDirectory.SaveAsync("string1", "string1");
+            await currentDirectory.SaveAsync("string2", "string2");
+            await currentDirectory.SaveNullAsync("stringNull", ValueDataType.String);
+
+            Assert.AreEqual(await currentDirectory.GetStringAsync("string1"), "string1");
+            Assert.AreEqual(await currentDirectory.GetStringAsync("string2"), "string2");
+            Assert.IsNull((await currentDirectory.GetStringAsync("stringNull")));
+        }
+
+        [TestMethod]
+        public async Task SaveByeArray()
+        {
+            await CreateApplicationMasterAsync();
+            ImageConverter converter = new ImageConverter(); 
+            byte[] byteArray = (byte[])converter.ConvertTo(Image.FromFile("logo.png"), typeof(byte[]));
+
+            await currentDirectory.SaveAsync("byteArray", byteArray);
+            await currentDirectory.SaveNullAsync("byteArrayNull", ValueDataType.ByteArray);
+
+
+            Assert.AreEqual((await currentDirectory.GetByteArrayAsync("byteArray")).Length, byteArray.Length); 
+            Assert.IsNull((await currentDirectory.GetByteArrayAsync("byteArrayNull")));
+        }
+
+        [TestMethod]
         public async Task SaveImage()
         {
             await CreateApplicationMasterAsync();
 
             Image image = Image.FromFile("logo.png");
 
-            await currentDirectory.SaveAsync("image", image); 
+            await currentDirectory.SaveAsync("image", image);
             await currentDirectory.SaveNullAsync("imageNull", ValueDataType.Image);
 
-            Assert.AreEqual((await currentDirectory.GetImageAsync("image")).RawFormat.ToString(), image.RawFormat.ToString()); 
+            Assert.AreEqual((await currentDirectory.GetImageAsync("image")).RawFormat.ToString(), image.RawFormat.ToString());
             Assert.IsNull((await currentDirectory.GetIntAsync("imageNull")));
+        }
+
+
+        [TestMethod]
+        public async Task SettingsPerObject()
+        {
+            await CreateApplicationMasterAsync();
+
+            List<Setting> settings = new List<Setting>();
+
+            settings.Add(new Setting { ObjectId = 0, Key = Util.RandomString(), Value = Util.RandomString() });
+            settings.Add(new Setting { ObjectId = 1, Key = Util.RandomString(), Value = Util.RandomString() });
+
+            await currentDirectory.SaveAsync(settings);
+
+
+            currentDirectory = await settingsManager.OpenDirectoryAsync(currentApplicationName, currentDirectory.Name); 
+            Assert.IsTrue(currentDirectory.Items.Count() == 2);
+
+            currentDirectory.ObjectID = 1; 
+            Assert.IsTrue(currentDirectory.Items.Count() == 1);
+
+
+            await currentDirectory.SaveAsync("test", "tst"); 
+            Assert.IsTrue(currentDirectory.Items.Count() == 2);
+
+            Assert.IsTrue(currentDirectory.Items.All(i => i.ObjectId == 1));
         }
 
     }

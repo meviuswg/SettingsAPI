@@ -55,6 +55,12 @@ namespace SettingsAPIClient
             if (string.Equals(typeof(int).ToString(), dataTypeName, StringComparison.CurrentCultureIgnoreCase))
                 return ValueDataType.Int;
 
+            if (string.Equals(typeof(Int32).ToString(), dataTypeName, StringComparison.CurrentCultureIgnoreCase))
+                return ValueDataType.Int;
+
+            if (string.Equals(typeof(Int16).ToString(), dataTypeName, StringComparison.CurrentCultureIgnoreCase))
+                return ValueDataType.Int;
+
             if (string.Equals(typeof(decimal).ToString(), dataTypeName, StringComparison.CurrentCultureIgnoreCase))
                 return ValueDataType.Decimal;
 

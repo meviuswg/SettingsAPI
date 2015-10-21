@@ -132,12 +132,12 @@ namespace SettingsAPIClient
 
         public async Task<WorkingDirectoryObject> OpenDirectoryAsync(string applicationName)
         {
-            return await OpenDirectoryAsync(applicationName, 1, _DEFAULT_DIR, 0);
+            return await OpenDirectoryAsync(applicationName, 1, _DEFAULT_DIR);
         }
 
         public async Task<WorkingDirectoryObject> OpenDirectoryAsync(string applicationName, string directory)
         {
-            return await OpenDirectoryAsync(applicationName, 1, directory, 0);
+            return await OpenDirectoryAsync(applicationName, 1, directory, -1);
         }
 
         public async Task<WorkingDirectoryObject> OpenDirectoryAsync(string applicationName, string directory, int objectId)
@@ -147,7 +147,7 @@ namespace SettingsAPIClient
 
         public async Task<WorkingDirectoryObject> OpenDirectoryAsync(string applicationName, int version, string directory)
         {
-            return await OpenDirectoryAsync(applicationName, version, directory, 0);
+            return await OpenDirectoryAsync(applicationName, version, directory, -1);
         }
 
         public async Task<WorkingDirectoryObject> OpenDirectoryAsync(string applicationName, int version, string directoryName, int objectId)
