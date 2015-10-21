@@ -265,15 +265,14 @@ namespace SettingsAPIClient
         private HttpClient CreateHttpClient()
         {
             HttpClientHandler handler = new HttpClientHandler
-            {
-                Proxy = new WebProxy("http://localhost:8888", false),
-                UseProxy = true
+            { 
+             
             };
 
             HttpClient client = new HttpClient(handler);
             client.DefaultRequestHeaders.Accept.Clear();
             client.Timeout = TimeSpan.FromSeconds(TIMEOUT);
-
+         
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             return client;
         }
