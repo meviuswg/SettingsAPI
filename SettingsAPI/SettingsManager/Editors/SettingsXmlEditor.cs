@@ -33,7 +33,7 @@ namespace SettingsManager.Editors
         {
             get
             {
-                return memoEdit1.ToString();
+                return memoEdit1.Text.ToString();
             }
 
             set

@@ -137,6 +137,7 @@ namespace SettingsAPIClient
 
             return null;
         }
+ 
 
         public async Task<Nullable<DateTime>> GetDateTimeAsync(string key)
         {
@@ -274,8 +275,8 @@ namespace SettingsAPIClient
         public async Task<bool> SaveAsync(string key, DateTime value)
         {
             return await SaveAsync(key, value.ToString(), ValueDataType.DateTime);
-        }
-
+        } 
+       
         public async Task<bool> SaveAsync(string key, decimal value)
         {
             return await SaveAsync(key, value.ToString(), ValueDataType.Decimal);
@@ -321,7 +322,7 @@ namespace SettingsAPIClient
 
         public async Task<bool> SaveAsync(string key, string value, ValueDataType dataType)
         {
-            return await SaveAsync(new Setting { Key = key, Value = value, ValueType = dataType });
+            return await SaveAsync(new Setting { ObjectId = workingId, Key = key, Value = value, ValueType = dataType });
         }
 
         /// <summary>

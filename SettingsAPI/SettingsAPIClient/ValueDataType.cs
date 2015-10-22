@@ -69,7 +69,7 @@ namespace SettingsAPIClient
 
             if (string.Equals(typeof(DateTime).ToString(), dataTypeName, StringComparison.CurrentCultureIgnoreCase))
                 return ValueDataType.DateTime;
-
+            
             if (string.Equals(typeof(bool).ToString(), dataTypeName, StringComparison.CurrentCultureIgnoreCase))
                 return ValueDataType.Bool;
 

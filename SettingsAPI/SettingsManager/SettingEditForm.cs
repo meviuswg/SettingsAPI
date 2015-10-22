@@ -60,7 +60,7 @@ namespace SettingsManager
         private void SetEditor(ValueDataType dataType)
         {
             switch (dataType)
-            {
+            { 
                 case ValueDataType.Int:
                     Editor = new SettingsIntEditor();
                     break;

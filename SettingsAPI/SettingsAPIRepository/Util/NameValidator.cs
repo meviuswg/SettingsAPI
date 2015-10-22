@@ -11,7 +11,7 @@ namespace SettingsAPIRepository.Util
     public class NameValidator
     {
         private static Regex nameRegex = new Regex(@"^[\w\s'-]{2,50}$");
-        private static Regex keyRegex = new Regex(@"^[a-zA-Z0-9]{2,50}$");
+        private static Regex keyRegex = new Regex(@"^[a-zA-Z0-9-_]{2,50}$");
 
         public static bool ValidateName(string name)
         {
