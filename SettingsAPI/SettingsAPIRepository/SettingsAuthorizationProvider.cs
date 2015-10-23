@@ -211,9 +211,9 @@ namespace SettingsAPIRepository
             return User.IsInRole(SecurityRoles.RoleWriteSetting(application, directoryName)) || IsMasterKey;
         }
 
-        public string[] GetApiRoles(ApiKeyData data)
+        public string[] GetApiRoles(string apiKey)
         {
-            return SettingsAuthorizationRoleProvider.ConstructRoles(data);
+            return SettingsAuthorizationRoleProvider.ConstructRoles(apiKey);
         }
 
         public void Invalidate()

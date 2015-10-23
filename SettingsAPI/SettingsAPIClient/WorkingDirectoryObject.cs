@@ -366,6 +366,12 @@ namespace SettingsAPIClient
                 return _currentObjectId > 0 ? _currentObjectId : 0;
             }
         }
+
+        public void Load(IEnumerable<Setting> settings)
+        {
+            _items.Clear();
+            SetInternalItemsCollection(settings);
+        }
         #endregion Settings
     }
 }

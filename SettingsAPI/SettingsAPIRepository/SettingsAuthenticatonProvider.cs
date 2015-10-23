@@ -1,12 +1,7 @@
-﻿using SettingsAPIRepository.Data;
-using SettingsAPIRepository.Model;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Security.Authentication;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SettingsAPIRepository
 {
@@ -18,7 +13,6 @@ namespace SettingsAPIRepository
         {
             this.repository = repository;
         }
-
 
         public bool ValidateAndSetPrincipal(object apiKey)
         {
@@ -49,17 +43,14 @@ namespace SettingsAPIRepository
                         return false;
                 }
 
-                //Force to reload any data of the key.  
-
-                ApiKeyData key = repository.GetKey(strKey); 
-
-                if (key != null && key.Active)
+                int keyId = 0;
+                if (repository.IsValid(strKey, out keyId))
                 {
-                    string[] roles = SettingsAuthorizationRoleProvider.ConstructRoles(key);
+                    string[] roles = SettingsAuthorizationRoleProvider.ConstructRoles(strKey);
 
-                    repository.SetUsed(key.ApiKey);
+                    repository.SetUsed(strKey);
 
-                    principal = (IPrincipal)new GenericPrincipal(new ApiIdentity(apiKey.ToString(), key.Id), roles.ToArray());
+                    principal = (IPrincipal)new GenericPrincipal(new ApiIdentity(apiKey.ToString(), keyId), roles.ToArray());
                     return true;
                 }
 

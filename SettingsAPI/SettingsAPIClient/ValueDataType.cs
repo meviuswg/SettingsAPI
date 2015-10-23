@@ -18,7 +18,7 @@ namespace SettingsAPIClient
         Json,
         Xml,
         Image,
-        Custom = 0,
+        Custom
     }
 
     public class TypeNameResolver

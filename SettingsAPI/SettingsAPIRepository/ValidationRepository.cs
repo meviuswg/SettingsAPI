@@ -1,69 +1,74 @@
 ﻿using SettingsAPIRepository.Data;
-using SettingsAPIRepository.Model;
 using SettingsAPIShared;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SettingsAPIRepository
 {
-    public class ValidationRepository : IValidationRepository
+    public class ValidationRepository : IValidationRepository, IDisposable
     {
-        private SettingsDbContext context;
+        private SettingsDbContext _context;
 
         public ValidationRepository()
         {
+            _context = new SettingsDbContext();
         }
 
-        private SettingsDbContext Context
+        public void Dispose()
         {
-            get
+            if (_context != null)
+                _context.Dispose();
+        }
+
+        public ApiKeyData GetApiKey(string apiKey)
+        {
+            return _context.ApiKeys.SingleOrDefault(a => a.ApiKey == apiKey);
+        }
+
+        public bool IsValid(string key, out int keyId)
+        {
+            keyId = 0;
+
+            try
             {
-
-                try
+                using (var context = new SettingsDbContext())
                 {
-                    context = new SettingsDbContext();
-                    var test = context.Applications.Count();
-                   
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex);
-                    throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE, ex);
-                }
-
-                try
-                {
-                    return context;
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex);
-                    throw new SettingsStoreException(Constants.ERROR_STORE_EXCEPTION, ex);
+                    ApiKeyData data = context.ApiKeys.SingleOrDefault(a => a.ApiKey == key);
+                    if (data != null)
+                    {
+                        keyId = data.Id;
+                        return data.Active;
+                    }
+                    return false;
                 }
             }
-        }
- 
-        
-
-        public ApiKeyData GetKey(string key)
-        {
-            ApiKeyData data = Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key);
-            return data;
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE, ex);
+            }
         }
 
         public void SetUsed(string apiKey)
         {
-            using (var context = new SettingsDbContext())
-            { 
-                var data = context.ApiKeys.SingleOrDefault(a => a.ApiKey == apiKey);
-
-                if (data != null)
+            try
+            {
+                using (var context = new SettingsDbContext())
                 {
-                    data.LastUsed = DateTime.UtcNow;
-                    context.SaveChanges();
+                    var data = context.ApiKeys.SingleOrDefault(a => a.ApiKey == apiKey);
+
+                    if (data != null)
+                    {
+                        data.LastUsed = DateTime.UtcNow;
+                        context.SaveChanges();
+                    }
                 }
             }
-        } 
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                throw new SettingsStoreException(Constants.ERROR_STORE_UNAVAILABLE, ex);
+            }
+        }
     }
 }

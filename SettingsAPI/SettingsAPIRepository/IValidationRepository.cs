@@ -4,7 +4,8 @@ namespace SettingsAPIRepository
 {
     public interface IValidationRepository
     {
-        ApiKeyData GetKey(string apiKey); 
+        ApiKeyData GetApiKey(string apiKey);
+        bool IsValid(string apiKey, out int keyId); 
         void SetUsed(string apiKey); 
     }
 }
