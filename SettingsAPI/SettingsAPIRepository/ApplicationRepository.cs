@@ -422,13 +422,16 @@ namespace SettingsAPIRepository
             if (directory == null)
             {
                 throw new SettingsNotFoundException(Constants.ERROR_DIRECTORY_UNKOWN);
-            }
+            } 
 
-            var newNameDirectory = Store.Context.Directories.FirstOrDefault(dir => dir.ApplicationId == application.Id && dir.Name == newDirectoryName);
-
-            if (newNameDirectory != null)
+            if (!string.Equals(directoryName, newDirectoryName, StringComparison.CurrentCultureIgnoreCase))
             {
-                throw new SettingsDuplicateException(Constants.ERROR_DIRECTORY_ALREADY_EXISTS);
+                var newNameDirectory = Store.Context.Directories.FirstOrDefault(dir => dir.ApplicationId == application.Id && dir.Name == newDirectoryName);
+
+                if (newNameDirectory != null)
+                {
+                    throw new SettingsDuplicateException(Constants.ERROR_DIRECTORY_ALREADY_EXISTS);
+                }
             }
 
             directory.Name = newDirectoryName.Trim();
@@ -735,11 +738,20 @@ namespace SettingsAPIRepository
                 throw new SettingsAuthorizationException(AuthorizationScope.Directory, AuthorizationLevel.Write, newApplicationName, Auth.CurrentIdentity.Id);
             }
 
-            if (!NameValidator.ValidateName(newApplicationName))
+            if (!string.Equals(applicationName, newApplicationName, StringComparison.CurrentCultureIgnoreCase))
             {
-                throw new SettingsStoreException(Constants.ERROR_APPLICATION_NAME_INVALID);
+                if (!NameValidator.ValidateName(newApplicationName))
+                {
+                    throw new SettingsStoreException(Constants.ERROR_APPLICATION_NAME_INVALID);
+                }
+
+                var newApplication = Store.Context.Applications.FirstOrDefault(app => app.Name == newApplicationName);
+
+                if (newApplication != null)
+                {
+                    throw new SettingsDuplicateException(Constants.ERROR_APPLICATION_ALREADY_EXISTS);
+                }
             } 
- 
 
             application.Name = newApplicationName.Trim();
             application.Description = newDescription.Trim();
