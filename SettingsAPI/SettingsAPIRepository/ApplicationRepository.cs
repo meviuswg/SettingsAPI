@@ -77,7 +77,7 @@ namespace SettingsAPIRepository
                 throw new SettingsAuthorizationException(AuthorizationScope.Version, AuthorizationLevel.Delete, applicationName, Auth.CurrentIdentity.Id);
             }
 
-            using (TransactionScope scope = new TransactionScope())
+            using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
             {
                 var settings = Store.Context.Settings.Where(s => s.VersionId == data.Id);
                 Store.Context.Settings.RemoveRange(settings);
@@ -116,7 +116,7 @@ namespace SettingsAPIRepository
                 throw new SettingsNotFoundException(Constants.ERROR_VERION_UNKNOWN);
             }
 
-            using (TransactionScope scope = new TransactionScope())
+            using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
             {
                 newVersion = new VersionData();
                 newVersion.ApplicationId = application.Id;
@@ -264,7 +264,7 @@ namespace SettingsAPIRepository
                 throw new SettingsNotFoundException(toVersion.ToString());
             }
 
-            using (TransactionScope scope = new TransactionScope())
+            using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
             {
                 //Create new directory
                 CreateDirectory(application.Name, toName, fromDirectory.Description);

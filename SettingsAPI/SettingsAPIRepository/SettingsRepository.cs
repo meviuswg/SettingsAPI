@@ -76,7 +76,7 @@ namespace SettingsAPIRepository
         {
             var currentSettings = GetSettingsFromStore(store);
 
-            using (TransactionScope scope = new TransactionScope())
+            using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
             {
                 foreach (var item in settings)
                 {

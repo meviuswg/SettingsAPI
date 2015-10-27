@@ -145,7 +145,7 @@ namespace SettingsAPIRepository
 
             var apiKeyData = new ApiKeyData();
 
-            using (TransactionScope scope = new TransactionScope())
+            using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
             {
                 apiKeyData.ApiKey = ApiKeyGenerator.Create();
                 apiKeyData.ApplicationId = application.Id;
@@ -217,7 +217,7 @@ namespace SettingsAPIRepository
                 throw new SettingsNotFoundException("Key");
             }
 
-            using (TransactionScope scope = new TransactionScope())
+            using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
             {
                
                 apiKeyData.Active = model.Active;
@@ -283,7 +283,7 @@ namespace SettingsAPIRepository
                 throw new SettingsNotFoundException("Key");
             }
 
-            using (TransactionScope scope = new TransactionScope())
+            using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
             { 
                 apiKeyData.Access.Clear();
                 Store.Save(); 

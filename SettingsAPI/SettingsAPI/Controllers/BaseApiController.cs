@@ -1,4 +1,5 @@
-﻿using SettingsAPIRepository;
+﻿using log4net;
+using SettingsAPIRepository;
 using SettingsAPIShared;
 using System;
 using System.Net;
@@ -9,6 +10,9 @@ namespace SettingsAPI.Controllers
 {
     public abstract class BaseApiController : ApiController
     {
+        private static ILog log = LogManager.GetLogger(typeof(BaseApiController));
+
+
         protected HttpResponseMessage OkResponse()
         {
             return Request.CreateResponse(HttpStatusCode.OK);
@@ -66,7 +70,8 @@ namespace SettingsAPI.Controllers
 
         protected IHttpActionResult Error(Exception ex)
         {
-            Log.Exception(ex);
+            Log.Exception(ex); 
+            log.Error(ex);
 
             if (ex is SettingsNotFoundException)
             {
