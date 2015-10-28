@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingEditForm));
             this.textKey = new DevExpress.XtraEditors.TextEdit();
             this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
             this.Description = new DevExpress.XtraEditors.LabelControl();
@@ -185,6 +186,7 @@
             this.Controls.Add(this.labelControl1);
             this.Controls.Add(this.textKey);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(474, 388);
             this.Name = "SettingEditForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

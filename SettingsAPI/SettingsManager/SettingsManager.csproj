@@ -12,6 +12,21 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +46,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>settings.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SettingsManager.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Data.v15.1, Version=15.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
@@ -160,12 +181,6 @@
     <Compile Include="DirectoryEditForm.Designer.cs">
       <DependentUpon>DirectoryEditForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DirectoryUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DirectoryUserControl.Designer.cs">
-      <DependentUpon>DirectoryUserControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="ApplicationUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -231,9 +246,6 @@
     <EmbeddedResource Include="DirectoryEditForm.resx">
       <DependentUpon>DirectoryEditForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DirectoryUserControl.resx">
-      <DependentUpon>DirectoryUserControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ApplicationUserControl.resx">
       <DependentUpon>ApplicationUserControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -274,6 +286,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Warning_64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="settings.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

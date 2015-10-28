@@ -31,15 +31,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VersionsForm));
             this.gridControlVersions = new DevExpress.XtraGrid.GridControl();
             this.gridViewVersions = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
-            this.barButtonItemNew = new DevExpress.XtraBars.BarButtonItem();
-            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.gridColumnVersion = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumnCreated = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            this.barButtonItemNew = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonItemDelete = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonItemCopy = new DevExpress.XtraBars.BarButtonItem();
+            this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
+            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
             ((System.ComponentModel.ISupportInitialize)(this.gridControlVersions)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewVersions)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
@@ -69,6 +69,24 @@
             this.gridViewVersions.OptionsView.ShowGroupPanel = false;
             this.gridViewVersions.OptionsView.ShowIndicator = false;
             // 
+            // gridColumnVersion
+            // 
+            this.gridColumnVersion.Caption = "Version";
+            this.gridColumnVersion.FieldName = "Version";
+            this.gridColumnVersion.Name = "gridColumnVersion";
+            this.gridColumnVersion.Visible = true;
+            this.gridColumnVersion.VisibleIndex = 0;
+            this.gridColumnVersion.Width = 121;
+            // 
+            // gridColumnCreated
+            // 
+            this.gridColumnCreated.Caption = "Created";
+            this.gridColumnCreated.FieldName = "Created";
+            this.gridColumnCreated.Name = "gridColumnCreated";
+            this.gridColumnCreated.Visible = true;
+            this.gridColumnCreated.VisibleIndex = 1;
+            this.gridColumnCreated.Width = 236;
+            // 
             // ribbonControl1
             // 
             this.ribbonControl1.ExpandCollapseItem.Id = 0;
@@ -90,13 +108,6 @@
             this.ribbonControl1.StatusBar = this.ribbonStatusBar1;
             this.ribbonControl1.Toolbar.ShowCustomizeItem = false;
             // 
-            // ribbonStatusBar1
-            // 
-            this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 170);
-            this.ribbonStatusBar1.Name = "ribbonStatusBar1";
-            this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
-            this.ribbonStatusBar1.Size = new System.Drawing.Size(359, 27);
-            // 
             // barButtonItemNew
             // 
             this.barButtonItemNew.Caption = "New";
@@ -106,39 +117,6 @@
             this.barButtonItemNew.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemNew.LargeGlyph")));
             this.barButtonItemNew.Name = "barButtonItemNew";
             this.barButtonItemNew.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemNew_ItemClick);
-            // 
-            // ribbonPage1
-            // 
-            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroup1});
-            this.ribbonPage1.Name = "ribbonPage1";
-            this.ribbonPage1.Text = "Start";
-            // 
-            // ribbonPageGroup1
-            // 
-            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItemNew);
-            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItemDelete);
-            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItemCopy);
-            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
-            this.ribbonPageGroup1.Text = "Start";
-            // 
-            // gridColumnVersion
-            // 
-            this.gridColumnVersion.Caption = "Version";
-            this.gridColumnVersion.FieldName = "Version";
-            this.gridColumnVersion.Name = "gridColumnVersion";
-            this.gridColumnVersion.Visible = true;
-            this.gridColumnVersion.VisibleIndex = 0;
-            this.gridColumnVersion.Width = 121;
-            // 
-            // gridColumnCreated
-            // 
-            this.gridColumnCreated.Caption = "Created";
-            this.gridColumnCreated.FieldName = "Created";
-            this.gridColumnCreated.Name = "gridColumnCreated";
-            this.gridColumnCreated.Visible = true;
-            this.gridColumnCreated.VisibleIndex = 1;
-            this.gridColumnCreated.Width = 236;
             // 
             // barButtonItemDelete
             // 
@@ -160,6 +138,28 @@
             this.barButtonItemCopy.Name = "barButtonItemCopy";
             this.barButtonItemCopy.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemCopy_ItemClick);
             // 
+            // ribbonPage1
+            // 
+            this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
+            this.ribbonPageGroup1});
+            this.ribbonPage1.Name = "ribbonPage1";
+            this.ribbonPage1.Text = "Start";
+            // 
+            // ribbonPageGroup1
+            // 
+            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItemNew);
+            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItemDelete);
+            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItemCopy);
+            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
+            this.ribbonPageGroup1.Text = "Start";
+            // 
+            // ribbonStatusBar1
+            // 
+            this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 170);
+            this.ribbonStatusBar1.Name = "ribbonStatusBar1";
+            this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
+            this.ribbonStatusBar1.Size = new System.Drawing.Size(359, 27);
+            // 
             // VersionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -169,6 +169,7 @@
             this.Controls.Add(this.ribbonControl1);
             this.Controls.Add(this.ribbonStatusBar1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(375, 236);
             this.Name = "VersionsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

@@ -2,8 +2,8 @@
 using SettingsAPIRepository.Model;
 using SettingsAPIShared;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -20,63 +20,74 @@ namespace SettingsAPI.Controllers
             this.controller = controller;
         }
 
-
         [HttpGet]
         [Route("{applicationName}")]
         [ResponseType(typeof(SettingModel[]))]
-        public IHttpActionResult Get(string applicationName)
+        public IHttpActionResult GetDefaultDirectory(string applicationName)
         {
-            return Get(new SettingStore(applicationName, 1, Constants.DEAULT_DIRECTORY_NAME));
+            return GetByDirectory(new SettingStore(applicationName, 1, Constants.DEAULT_DIRECTORY_NAME));
         }
-
-        
 
         [HttpPost]
         [Route("{applicationName}/{version}/{directory}/")]
         [ResponseType(typeof(SettingModel[]))]
         public IHttpActionResult SaveSettings(string applicationName, int version, string directory, [FromBody] IEnumerable<SettingModel> value)
         {
-            return Post(new SettingStore(applicationName, version, directory), value);
+            return SaveSettings(new SettingStore(applicationName, version, directory), value);
         }
 
         [HttpGet]
         [Route("{applicationName}/{version}/{directory}")]
         [ResponseType(typeof(SettingModel[]))]
-        public IHttpActionResult Get(string applicationName, int version, string directory)
+        public IHttpActionResult GetByDirectory(string applicationName, int version, string directory)
         {
-            return Get(new SettingStore(applicationName, version, directory));
+            return GetByDirectory(new SettingStore(applicationName, version, directory));
         }
 
         [HttpGet]
         [Route("{applicationName}/{version}/{directory}/{objectId}")]
         [ResponseType(typeof(SettingModel[]))]
-        public IHttpActionResult Get(string applicationName, int version, string directory, int objectId)
+        public IHttpActionResult GetByObjectId(string applicationName, int version, string directory, int objectId)
         {
-
             return GetSetttings(new SettingStore(applicationName, version, directory), objectId);
         }
 
         [HttpGet]
         [Route("{applicationName}/{version}/{directory}/{objectId}/{key}")]
         [ResponseType(typeof(SettingModel))]
-        public IHttpActionResult Get(string applicationName, int version, string directory, int objectId,  string key)
+        public IHttpActionResult GetByKey(string applicationName, int version, string directory, int objectId, string key)
         {
-
             return GetSettting(new SettingStore(applicationName, version, directory), key, objectId);
+        }
+
+        [HttpDelete]
+        [Route("{applicationName}/{version}/{directory}/{objectId}/{key}")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult DeleteKey(string applicationName, int version, string directory, int objectId, string key)
+        {
+            try
+            {
+                SettingStore store = new SettingStore(applicationName, version, directory);
+                controller.DeleteSetting(store, new SettingModel { Key = key, ObjectId = objectId });
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Error(ex);
+            }
         }
 
         [HttpPost]
         [Route("{applicationName}/{version}/{directory}/{objectId}/{key}")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult Post(string applicationName, int version, string directory, int objectId, string key, [FromBody]string value)
+        public IHttpActionResult SaveSetting(string applicationName, int version, string directory, int objectId, string key, [FromBody]string value)
         {
             var store = new SettingStore(applicationName, version, directory);
-            return Post(store, new SettingModel { Key = key, Value = value, ObjectId = objectId });
+            return SaveSetting(store, new SettingModel { Key = key, Value = value, ObjectId = objectId });
         }
 
-
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IHttpActionResult Post(SettingStore store, IEnumerable<SettingModel> value)
+        public IHttpActionResult SaveSettings(SettingStore store, IEnumerable<SettingModel> value)
         {
             try
             {
@@ -90,7 +101,7 @@ namespace SettingsAPI.Controllers
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IHttpActionResult Post(SettingStore store, SettingModel value)
+        public IHttpActionResult SaveSetting(SettingStore store, SettingModel value)
         {
             try
             {
@@ -104,24 +115,18 @@ namespace SettingsAPI.Controllers
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IHttpActionResult Get(SettingStore store)
+        public IHttpActionResult GetByDirectory(SettingStore store)
         {
             try
             {
                 return Ok<SettingModel[]>(controller.GetSettings(store).ToArray());
-
             }
             catch (Exception ex)
             {
                 return Error(ex);
             }
         }
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public IHttpActionResult Get(SettingStore store, string key)
-        {
-            return GetSettting(store, key, 0);
-        }
+         
 
         [ApiExplorerSettings(IgnoreApi = true)]
         public IHttpActionResult GetSettting(SettingStore store, string key, int objectId)
@@ -137,7 +142,7 @@ namespace SettingsAPI.Controllers
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        public IHttpActionResult GetSetttings(SettingStore store,int objectId)
+        public IHttpActionResult GetSetttings(SettingStore store, int objectId)
         {
             try
             {
@@ -148,6 +153,5 @@ namespace SettingsAPI.Controllers
                 return Error(ex);
             }
         }
-
     }
 }

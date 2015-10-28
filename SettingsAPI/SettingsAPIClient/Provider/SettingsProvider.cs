@@ -40,7 +40,7 @@ namespace SettingsAPIClient.Provider
 
         public async Task<bool> Delete(int objectId, string key)
         {
-            return await Post<string>(string.Concat(LocalPath, "/", objectId, "/", key));
+            return await Delete(string.Concat(LocalPath, "/", objectId, "/", key));
         }
 
         public async Task<bool> Exists(int objectId, string key)

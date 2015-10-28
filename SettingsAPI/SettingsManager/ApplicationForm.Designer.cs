@@ -61,6 +61,7 @@
             this.barStaticItemPath = new DevExpress.XtraBars.BarStaticItem();
             this.barEditItemProgress = new DevExpress.XtraBars.BarEditItem();
             this.repositoryItemMarqueeProgressBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemMarqueeProgressBar();
+            this.barButtonItemCopy = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonMiniToolbar1 = new DevExpress.XtraBars.Ribbon.RibbonMiniToolbar(this.components);
             this.ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -70,7 +71,6 @@
             this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
             this.applicationMenu1 = new DevExpress.XtraBars.Ribbon.ApplicationMenu(this.components);
             this.mainPanel = new DevExpress.XtraEditors.PanelControl();
-            this.barButtonItemCopy = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDirectories)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewApplications)).BeginInit();
@@ -401,6 +401,16 @@
             // 
             this.repositoryItemMarqueeProgressBar1.Name = "repositoryItemMarqueeProgressBar1";
             // 
+            // barButtonItemCopy
+            // 
+            this.barButtonItemCopy.Caption = "Copy";
+            this.barButtonItemCopy.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
+            this.barButtonItemCopy.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemCopy.Glyph")));
+            this.barButtonItemCopy.Id = 17;
+            this.barButtonItemCopy.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemCopy.LargeGlyph")));
+            this.barButtonItemCopy.Name = "barButtonItemCopy";
+            this.barButtonItemCopy.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemCopy_ItemClick);
+            // 
             // ribbonPage1
             // 
             this.ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
@@ -467,16 +477,6 @@
             this.mainPanel.Size = new System.Drawing.Size(646, 526);
             this.mainPanel.TabIndex = 7;
             // 
-            // barButtonItemCopy
-            // 
-            this.barButtonItemCopy.Caption = "Copy";
-            this.barButtonItemCopy.CategoryGuid = new System.Guid("6ffddb2b-9015-4d97-a4c1-91613e0ef537");
-            this.barButtonItemCopy.Glyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemCopy.Glyph")));
-            this.barButtonItemCopy.Id = 17;
-            this.barButtonItemCopy.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItemCopy.LargeGlyph")));
-            this.barButtonItemCopy.Name = "barButtonItemCopy";
-            this.barButtonItemCopy.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barButtonItemCopy_ItemClick);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -485,6 +485,7 @@
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.ribbonStatusBar1);
             this.Controls.Add(this.ribbonControl1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(504, 311);
             this.Name = "MainForm";
             this.Ribbon = this.ribbonControl1;

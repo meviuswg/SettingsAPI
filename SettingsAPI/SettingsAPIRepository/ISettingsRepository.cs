@@ -11,6 +11,8 @@ namespace SettingsAPIRepository
 
         void SaveSetting(SettingStore store, SettingModel setting);
 
+        void DeleteSetting(SettingStore store, SettingModel setting);
+
         void SaveSettings(SettingStore store, IEnumerable<SettingModel> settings); 
     }
 }

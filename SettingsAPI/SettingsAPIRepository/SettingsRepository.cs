@@ -25,7 +25,7 @@ namespace SettingsAPIRepository
             //will authenticate
             var value = (from setting in GetSettingsFromStore(store)
                          where (setting.SettingKey == settingKey)
-                         &&  setting.ObjecId == objectId
+                         && setting.ObjecId == objectId
                          select DataToModel(setting)).SingleOrDefault();
 
             if (value == null)
@@ -35,7 +35,7 @@ namespace SettingsAPIRepository
 
             return value;
         }
- 
+
 
         private SettingModel DataToModel(SettingData data)
         {
@@ -105,7 +105,7 @@ namespace SettingsAPIRepository
                     {
                         if (Auth.AllowCreateSetting(store.ApplicationName, store.DirectoryName))
                         {
-                            if(!NameValidator.ValidateKey(item.Key))
+                            if (!NameValidator.ValidateKey(item.Key))
                             {
                                 throw new SettingsStoreException(Constants.ERROR_SETTING_INVALID_KEY);
                             }
@@ -183,6 +183,41 @@ namespace SettingsAPIRepository
             return Store.Context.Settings.Where(s =>
                  s.VersionId == version.Id
               && s.DirectoryId == directory.Id);
+        }
+
+        public void DeleteSetting(SettingStore store, SettingModel setting)
+        {
+            var currentSettings = GetSettingsFromStore(store);
+
+            using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
+            { 
+                if (setting == null || string.IsNullOrWhiteSpace(setting.Key))
+                {
+                    throw new SettingsStoreException(Constants.ERROR_SETTING_NO_KEY);
+                }
+
+                var existing = currentSettings.SingleOrDefault(s => s.Equals(setting));
+
+                if (existing != null)
+                {
+                    if (Auth.AllowDeleteSetting(store.ApplicationName, store.DirectoryName))
+                    {
+                        Store.Context.Settings.Remove(existing);
+                    }
+                    else
+                    {
+                        throw new SettingsAuthorizationException(AuthorizationScope.Setting, AuthorizationLevel.Write, store.DirectoryName, Auth.CurrentIdentity.Id);
+                    }
+                }
+                else
+                {
+                    throw new SettingsNotFoundException(setting.Key);
+                }
+
+
+                Store.Save();
+                scope.Complete();
+            }
         }
     }
 }

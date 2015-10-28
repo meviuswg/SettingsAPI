@@ -71,7 +71,6 @@ namespace SettingsAPI.Controllers
         protected IHttpActionResult Error(Exception ex)
         {
             Log.Exception(ex); 
-            log.Error(ex);
 
             if (ex is SettingsNotFoundException)
             {
@@ -79,14 +78,19 @@ namespace SettingsAPI.Controllers
             }
 
             if (ex is SettingsAuthorizationException)
-            {
+            { 
+                log.Error("SettingsAuthorizationException", ex);
                 return Content<string>(HttpStatusCode.Forbidden, ex.Message);
             }
 
             if (ex is SettingsStoreException)
             {
+                log.Error("SettingsStoreException", ex);
                 return Content<string>(HttpStatusCode.InternalServerError, ex.Message);
+
             }
+
+            log.Error("InternalServer Error", ex);
 
             return Content<string>(HttpStatusCode.InternalServerError, Constants.ERROR_INTERNAL_ERROR);
         }
