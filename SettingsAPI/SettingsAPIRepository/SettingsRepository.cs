@@ -12,9 +12,9 @@ namespace SettingsAPIRepository
     public class SettingsRepository : ISettingsRepository
     {
         private ISettingsAuthorizationProvider Auth;
-        private ISettingsStore Store;
+        private ISettingsDatabase Store;
 
-        public SettingsRepository(ISettingsStore store, ISettingsAuthorizationProvider provider)
+        public SettingsRepository(ISettingsDatabase store, ISettingsAuthorizationProvider provider)
         {
             Store = store;
             Auth = provider;

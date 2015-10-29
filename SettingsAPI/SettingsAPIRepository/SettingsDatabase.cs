@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace SettingsAPIRepository
 {
-    public class SettingsStore : IDisposable, ISettingsStore
+    public class SettingsDatabase : IDisposable, ISettingsDatabase
     {
         private SettingsDbContext context;
 
-        public SettingsStore(SettingsDbContext context)
+        public SettingsDatabase(SettingsDbContext context)
         {
             this.context = context;
 

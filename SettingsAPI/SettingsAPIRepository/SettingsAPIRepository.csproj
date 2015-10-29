@@ -76,10 +76,10 @@
     <Compile Include="Security\PrincipalApiKey.cs" />
     <Compile Include="Security\SettingsAuthorizationRoleProvider.cs" />
     <Compile Include="Exception\SettingsDuplicateException.cs" />
-    <Compile Include="SettingsStore.cs" />
+    <Compile Include="SettingsDatabase.cs" />
     <Compile Include="Interface\IApiKey.cs" />
     <Compile Include="Interface\IApplicationRepository.cs" />
-    <Compile Include="Interface\ISettingsStore.cs" />
+    <Compile Include="Interface\ISettingsDatabase.cs" />
     <Compile Include="Interface\ISettingsRepository.cs" />
     <Compile Include="Model\ApplicationModel.cs" />
     <Compile Include="Model\DirectoryAccessModel.cs" />

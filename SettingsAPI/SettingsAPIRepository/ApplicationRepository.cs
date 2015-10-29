@@ -13,9 +13,9 @@ namespace SettingsAPIRepository
     public class ApplicationRepository : IApplicationRepository
     {
         private ISettingsAuthorizationProvider Auth;
-        private ISettingsStore Store;
+        private ISettingsDatabase Store;
 
-        public ApplicationRepository(ISettingsStore repository, ISettingsAuthorizationProvider authorizationProvider)
+        public ApplicationRepository(ISettingsDatabase repository, ISettingsAuthorizationProvider authorizationProvider)
         {
             Store = repository;
             Auth = authorizationProvider;

@@ -2,7 +2,7 @@
 
 namespace SettingsAPIRepository
 {
-    public interface ISettingsStore
+    public interface ISettingsDatabase
     {
         SettingsDbContext Context { get; }
 
