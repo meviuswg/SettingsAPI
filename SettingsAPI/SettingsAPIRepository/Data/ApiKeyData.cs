@@ -19,5 +19,6 @@ namespace SettingsAPIRepository.Data
         public System.DateTime Created { get; set; }
         public virtual ICollection<DirectoryAccessData> Access { get; set; }
         public virtual ApplicationData Application { get; set; }
+        public string Name { get;  set; }
     }
 }

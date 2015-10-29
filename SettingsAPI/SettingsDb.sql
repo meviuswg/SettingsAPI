@@ -48,6 +48,7 @@ CREATE TABLE dbo.settings_api_key (
 	[id] INT identity(1, 1)
 	,[application_id] INT NOT NULL
 	,[apikey] NVARCHAR(50)
+	,[name] VARCHAR(20)
 	,last_used DATETIME NULL
 	,admin_key BIT NOT NULL CONSTRAINT def_settings_api_key_edit_directories DEFAULT(1)
 	,[active] BIT NOT NULL CONSTRAINT def_settings_api_key_active DEFAULT(1)
@@ -56,6 +57,7 @@ CREATE TABLE dbo.settings_api_key (
 	,CONSTRAINT pk_settings_api_key_application_id FOREIGN KEY ([application_id]) REFERENCES settings_application(id)
 	,CONSTRAINT ck_settings_api_key_len CHECK (LEN([apikey]) >= 32)
 	,CONSTRAINT ux_settings_api_key UNIQUE ([apikey])
+	,CONSTRAINT ux_ux_settings_api_key_name UNIQUE ([name])
 	)
 GO
 

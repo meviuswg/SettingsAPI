@@ -18,6 +18,7 @@ namespace SettingsAPIRepository.Data.Mapping
             this.Property(t => t.Id).HasColumnName("id");
             this.Property(t => t.ApplicationId).HasColumnName("application_id");
             this.Property(t => t.ApiKey).HasColumnName("apikey");
+            this.Property(t => t.Name).HasColumnName("name");
             this.Property(t => t.LastUsed).HasColumnName("last_used");
             this.Property(t => t.AdminKey).HasColumnName("admin_key");
             this.Property(t => t.Active).HasColumnName("active");

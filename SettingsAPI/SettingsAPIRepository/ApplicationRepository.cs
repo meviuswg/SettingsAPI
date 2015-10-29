@@ -619,7 +619,7 @@ namespace SettingsAPIRepository
                 Store.Context.SaveChanges();
 
                 //Create default api key for applicaiton, a trigger maintains access for the master apikey to the application directories.
-                ApiKeyData apiKey = new ApiKeyData { ApiKey = ApiKeyGenerator.Create(), Application = application, Active = true, AdminKey = true, Created = DateTime.UtcNow };
+                ApiKeyData apiKey = new ApiKeyData { ApiKey = ApiKeyGenerator.Create(), Name = application.Name, Application = application, Active = true, AdminKey = true, Created = DateTime.UtcNow };
 
                 Store.Context.ApiKeys.Add(apiKey);
                 Store.Context.SaveChanges();
