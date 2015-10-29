@@ -75,7 +75,7 @@
     <Compile Include="Model\SaveDirectoryModel.cs" />
     <Compile Include="Security\PrincipalApiKey.cs" />
     <Compile Include="Security\SettingsAuthorizationRoleProvider.cs" />
-    <Compile Include="SettingsDuplicateException.cs" />
+    <Compile Include="Exception\SettingsDuplicateException.cs" />
     <Compile Include="SettingsStore.cs" />
     <Compile Include="Interface\IApiKey.cs" />
     <Compile Include="Interface\IApplicationRepository.cs" />
@@ -86,9 +86,9 @@
     <Compile Include="Model\DirectoryModel.cs" />
     <Compile Include="Model\VersionModel.cs" />
     <Compile Include="Model\SettingModel.cs" />
-    <Compile Include="SettingsAuthorizationException.cs" />
-    <Compile Include="SettingsNotFoundException.cs" />
-    <Compile Include="SettingsStoreException.cs" />
+    <Compile Include="Exception\SettingsAuthorizationException.cs" />
+    <Compile Include="Exception\SettingsNotFoundException.cs" />
+    <Compile Include="Exception\SettingsStoreException.cs" />
     <Compile Include="SettingStore.cs" />
     <Compile Include="SettingsRepository.cs" />
     <Compile Include="SettingsDbContext.cs" />
