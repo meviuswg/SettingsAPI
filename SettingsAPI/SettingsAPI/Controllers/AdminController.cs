@@ -180,13 +180,13 @@ namespace SettingsAPI.Controllers
         }
 
         [HttpGet]
-        [Route("{applicationName}/apikeys/{key}")]
+        [Route("{applicationName}/apikeys/{name}")]
         [ResponseType(typeof(ApiKeyModel[]))]
-        public IHttpActionResult GetAPiKey(string applicationName, string apiKey)
+        public IHttpActionResult GetAPiKey(string applicationName, string name)
         {
             try
             {
-                keyController.GetApiKey(applicationName, apiKey);
+                keyController.GetApiKey(applicationName, name);
                 return Ok();
             }
             catch (Exception ex)

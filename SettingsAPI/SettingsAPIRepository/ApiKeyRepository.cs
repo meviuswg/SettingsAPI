@@ -65,14 +65,14 @@ namespace SettingsAPIRepository
             return result;
         } 
 
-        public ApiKeyModel GetApiKey(string applicationName, string apiKey)
+        public ApiKeyModel GetApiKey(string applicationName, string name)
         {
             if (!Auth.AllowReadApiKeys(applicationName))
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.ApiKey, AuthorizationLevel.Read, applicationName, Auth.CurrentIdentity.Id);
             }
 
-            var data = GetKeyData(apiKey);
+            var data = GetKeyData(name);
 
             if (data != null)
             {
@@ -102,9 +102,9 @@ namespace SettingsAPIRepository
             return null;
         } 
 
-        private ApiKeyData GetKeyData(string key)
+        private ApiKeyData GetKeyData(string applicationName, string name)
         {
-            ApiKeyData data = Store.Context.ApiKeys.SingleOrDefault(a => a.ApiKey == key);
+            ApiKeyData data = Store.Context.ApiKeys.SingleOrDefault(a => a.Name  == name && a.Application.Name == applicationName);
             return data;
         }
 
@@ -152,7 +152,7 @@ namespace SettingsAPIRepository
                 apiKeyData.Active = true;
                 apiKeyData.AdminKey = model.AdminKey;
                 apiKeyData.Created = DateTime.Now;
-
+                apiKeyData.Name = model.Name;
                 Store.Context.ApiKeys.Add(apiKeyData);
                 Store.Save();
 
@@ -210,7 +210,7 @@ namespace SettingsAPIRepository
                 throw new SettingsNotFoundException(applicationName);
             }
 
-            var apiKeyData = GetKeyData(model.Key);
+            var apiKeyData = GetKeyData(applicationName, model.Key);
 
             if(apiKeyData == null)
             {
@@ -257,11 +257,11 @@ namespace SettingsAPIRepository
             }
         }
 
-        public void DeleteApiKey(string applicationName, string apiKey)
+        public void DeleteApiKey(string applicationName, string name)
         {
-            if (apiKey == null)
+            if (name == null)
             {
-                throw new ArgumentNullException("ApiKey");
+                throw new ArgumentNullException("name");
             }
 
             if (!Auth.AllowEditApiKeys(applicationName))
@@ -276,7 +276,7 @@ namespace SettingsAPIRepository
                 throw new SettingsNotFoundException(applicationName);
             }
 
-            var apiKeyData = GetKeyData(apiKey);
+            var apiKeyData = GetKeyData(applicationName, name);
 
             if (apiKeyData == null)
             {
