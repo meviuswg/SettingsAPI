@@ -15,6 +15,6 @@ namespace SettingsAPIRepository.Model
         public List<DirectoryAccessModel> Access { get; set; }
         public string Key { get; set; }
         public bool Active { get; set; }
-        public string Name { get; internal set; }
+        public string Name { get;  set; }
     }
 }

@@ -209,6 +209,47 @@ namespace SettingsAPIClient
             }
         }
 
+         protected virtual async Task<T> PostTResult<T>(T data, string localPath)
+        {
+            HttpResponseMessage responseMessage = null;
+            try
+            {
+                HttpClient client = CreateHttpClient();
+
+                string endpoint = GetEndpoint(localPath);
+
+                Debug.WriteLine("POST:{0}", new[] { endpoint });
+                responseMessage = await client.PostAsJsonAsync(endpoint, data);
+            }
+            catch (OperationCanceledException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (TimeoutException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new SettingsStoreException(responseMessage.RequestMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new SettingsException(ex.Message, ex);
+            }
+
+            if (responseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return await responseMessage.Content.ReadAsAsync<T>();
+            }
+            else
+            {
+                await handleNotOk(responseMessage);
+            }
+
+            return default(T);
+        }
+
         protected virtual async Task<bool> Put<T>(T data)
         {
             return await Post<T>(data, string.Empty);
@@ -279,6 +320,9 @@ namespace SettingsAPIClient
 
         private async Task<bool> handleNotOk(HttpResponseMessage response)
         {
+            string message = await response.Content.ReadAsStringAsync();
+
+
             if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
             {
                 throw new SettingsStoreException(response.RequestMessage, "Store unavailable");
@@ -286,21 +330,19 @@ namespace SettingsAPIClient
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                throw new SettingAccessDeniedException(response.RequestMessage);
+                throw new SettingAccessDeniedException(response.RequestMessage, message);
             }
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                throw new SettingNotFoundException(response.RequestMessage);
+                throw new SettingNotFoundException(response.RequestMessage, message);
             }
 
             if (response.StatusCode == HttpStatusCode.Forbidden)
             {
-                throw new SettingAccessDeniedException(response.RequestMessage);
-            }
-
-            string message = await response.Content.ReadAsStringAsync();
-
+                throw new SettingAccessDeniedException(response.RequestMessage, message);
+            } 
+          
             throw new SettingsStoreException(response.RequestMessage, string.Format("{0} {1}", response.StatusCode, message));
         }
     }

@@ -18,7 +18,7 @@ namespace SettingsAPIRepository
         {
             Store = store;
             Auth = provider;
-        } 
+        }
 
         public IEnumerable<ApiKeyModel> GetApplicationApiKeys(string applicationName)
         {
@@ -63,7 +63,7 @@ namespace SettingsAPIRepository
 
 
             return result;
-        } 
+        }
 
         public ApiKeyModel GetApiKey(string applicationName, string name)
         {
@@ -72,39 +72,41 @@ namespace SettingsAPIRepository
                 throw new SettingsAuthorizationException(AuthorizationScope.ApiKey, AuthorizationLevel.Read, applicationName, Auth.CurrentIdentity.Id);
             }
 
-            var data = GetKeyData(name);
+            var data = GetKeyData(applicationName, name);
 
-            if (data != null)
+            if (data == null)
             {
-                var model = new ApiKeyModel
-                {
-                    Active = data.Active,
-                    AdminKey = data.AdminKey,
-                    Key = data.ApiKey,
-                    ApplicationName = data.Application.Name
-                };
-
-                model.Access = new List<DirectoryAccessModel>();
-                foreach (var item in data.Access)
-                {
-                    model.Access.Add(new DirectoryAccessModel
-                    {
-                        Directory = item.Directory.Name,
-                        Create = item.AllowCreate,
-                        Delete = item.AllowDelete,
-                        Write = item.AllowWrite
-                    });
-                }
-
-                return model;
+                throw new SettingsNotFoundException("ApiKey");
             }
 
-            return null;
-        } 
+            var model = new ApiKeyModel
+            {
+                Active = data.Active,
+                AdminKey = data.AdminKey,
+                Key = data.ApiKey,
+                ApplicationName = data.Application.Name,
+                Name = data.Name
+            };
+
+            model.Access = new List<DirectoryAccessModel>();
+            foreach (var item in data.Access)
+            {
+                model.Access.Add(new DirectoryAccessModel
+                {
+                    Directory = item.Directory.Name,
+                    Create = item.AllowCreate,
+                    Delete = item.AllowDelete,
+                    Write = item.AllowWrite
+                });
+            }
+
+            return model;
+
+        }
 
         private ApiKeyData GetKeyData(string applicationName, string name)
         {
-            ApiKeyData data = Store.Context.ApiKeys.SingleOrDefault(a => a.Name  == name && a.Application.Name == applicationName);
+            ApiKeyData data = Store.Context.ApiKeys.SingleOrDefault(a => a.Name == name && a.Application.Name == applicationName);
             return data;
         }
 
@@ -128,19 +130,31 @@ namespace SettingsAPIRepository
         {
             if (model == null)
             {
-                throw new ArgumentNullException("ApiKey");
+                throw new ArgumentNullException("No Data");
             }
 
             if (!Auth.AllowEditApiKeys(applicationName))
             {
                 throw new SettingsAuthorizationException(AuthorizationScope.ApiKey, AuthorizationLevel.Create, applicationName, Auth.CurrentIdentity.Id);
-            } 
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                throw new SettingsStoreException("Key has no Name");
+            }
 
             var application = GetApplicationData(applicationName);
 
             if (application == null)
             {
                 throw new SettingsNotFoundException(applicationName);
+            }
+
+            var existingKey = GetKeyData(applicationName, model.Name);
+
+            if (existingKey != null)
+            {
+                throw new SettingsDuplicateException("Key with name already exist");
             }
 
             var apiKeyData = new ApiKeyData();
@@ -164,10 +178,7 @@ namespace SettingsAPIRepository
 
                         if (directiry == null)
                         {
-                            if (application == null)
-                            {
-                                throw new SettingsNotFoundException(item.Directory);
-                            }
+                            throw new SettingsNotFoundException(item.Directory);
                         }
 
                         DirectoryAccessData access = new DirectoryAccessData();
@@ -187,7 +198,7 @@ namespace SettingsAPIRepository
                 scope.Complete();
             }
 
-            return GetApiKey(applicationName, apiKeyData.ApiKey);
+            return GetApiKey(applicationName, apiKeyData.Name);
 
         }
 
@@ -212,16 +223,16 @@ namespace SettingsAPIRepository
 
             var apiKeyData = GetKeyData(applicationName, model.Key);
 
-            if(apiKeyData == null)
+            if (apiKeyData == null)
             {
                 throw new SettingsNotFoundException("Key");
             }
 
             using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
             {
-               
+
                 apiKeyData.Active = model.Active;
-                apiKeyData.AdminKey = model.AdminKey; 
+                apiKeyData.AdminKey = model.AdminKey;
 
                 if (model.Access != null)
                 {
@@ -284,10 +295,10 @@ namespace SettingsAPIRepository
             }
 
             using (TransactionScope scope = TransactionScopeFactory.CreateReaduncommited())
-            { 
+            {
                 apiKeyData.Access.Clear();
-                Store.Save(); 
-                Store.Context.ApiKeys.Remove(apiKeyData); 
+                Store.Save();
+                Store.Context.ApiKeys.Remove(apiKeyData);
                 Store.Save();
                 scope.Complete();
             }

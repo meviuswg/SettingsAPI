@@ -13,6 +13,7 @@ namespace SettingsAPIRepository.Model
         public bool Active { get; set; }
         public bool AdminKey { get; set; }
         public string ApplicationName { get; set; }
+        public string Name { get; set; }
         public DateTime? LastUsed { get; set; } 
         public List<DirectoryAccessModel> Access { get; set; }
     }

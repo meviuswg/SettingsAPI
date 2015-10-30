@@ -165,7 +165,7 @@ namespace SettingsAPI.Controllers
 
         [HttpPut]
         [Route("{applicationName}/apikeys")]
-        [ResponseType(typeof(ApiKeyModel))]
+        [ResponseType(typeof(void))]
         public IHttpActionResult UpdateApiKey(string applicationName, [FromBody] SaveApiKeyModel apiKey)
         {
             try
@@ -181,13 +181,12 @@ namespace SettingsAPI.Controllers
 
         [HttpGet]
         [Route("{applicationName}/apikeys/{name}")]
-        [ResponseType(typeof(ApiKeyModel[]))]
+        [ResponseType(typeof(ApiKeyModel))]
         public IHttpActionResult GetAPiKey(string applicationName, string name)
         {
             try
-            {
-                keyController.GetApiKey(applicationName, name);
-                return Ok();
+            { 
+                return Ok(keyController.GetApiKey(applicationName, name));
             }
             catch (Exception ex)
             {
@@ -197,7 +196,7 @@ namespace SettingsAPI.Controllers
 
         [HttpDelete]
         [Route("{applicationName}/apikeys/{key}")]
-        [ResponseType(typeof(ApiKeyModel[]))]
+        [ResponseType(typeof(void))]
         public IHttpActionResult DeleteAPiKey(string applicationName, string apiKey)
         {
             try

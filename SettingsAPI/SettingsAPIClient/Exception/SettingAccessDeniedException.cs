@@ -9,7 +9,7 @@ namespace SettingsAPIClient
 {
     public class SettingAccessDeniedException : SettingsStoreException
     {
-        public SettingAccessDeniedException(HttpRequestMessage message) : base(message, "Access to the resource was denied")
+        public SettingAccessDeniedException(HttpRequestMessage request, string message) : base(request, message)
         {
 
         } 

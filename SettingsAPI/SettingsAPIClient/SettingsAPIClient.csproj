@@ -55,23 +55,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\ApiAccess.cs" />
+    <Compile Include="Model\ApiKey.cs" />
     <Compile Include="WorkingDirectoryObject.cs" />
     <Compile Include="Provider\AdminProvider.cs" />
     <Compile Include="SettingsApiClient.cs" />
     <Compile Include="Provider\ApplicationProvider.cs" />
     <Compile Include="Provider\SettingsProvider.cs" />
-    <Compile Include="SettingAccessDeniedException.cs" />
-    <Compile Include="SettingNotFoundException.cs" />
-    <Compile Include="SettingsApplication.cs" />
-    <Compile Include="SettingsDirectory.cs" />
-    <Compile Include="SettingsStoreException.cs" />
-    <Compile Include="ValueDataType.cs" />
+    <Compile Include="Exception\SettingAccessDeniedException.cs" />
+    <Compile Include="Exception\SettingNotFoundException.cs" />
+    <Compile Include="Model\SettingsApplication.cs" />
+    <Compile Include="Model\SettingsDirectory.cs" />
+    <Compile Include="Exception\SettingsStoreException.cs" />
+    <Compile Include="Model\ValueDataType.cs" />
     <Compile Include="Util\SerializationHelper.cs" />
-    <Compile Include="SettingsException.cs" />
-    <Compile Include="Setting.cs" />
+    <Compile Include="Exception\SettingsException.cs" />
+    <Compile Include="Model\Setting.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SettingsVersion.cs" />
+    <Compile Include="Model\SettingsVersion.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

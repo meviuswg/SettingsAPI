@@ -235,6 +235,10 @@ namespace SettingsAPIClient
 
         public async Task<bool> DeleteAsync(int objectId, string key)
         {
+            if(!AllowDelete)
+            {
+                throw new SettingsException("Action is now allow");
+            }
             return await _provider.Delete(objectId, key);
         }
 
@@ -298,6 +302,11 @@ namespace SettingsAPIClient
             {
                 SetInternalItemsCollection(settings);
                 return true;
+            }
+
+            if(!AllowWrite)
+            {
+                throw new SettingsException("Action not allowed");
             }
 
             bool settingsSaved = await _provider.Save(settings);

@@ -9,7 +9,7 @@ namespace SettingsAPIClient
 {
     public class SettingNotFoundException : SettingsStoreException
     {
-        public SettingNotFoundException(HttpRequestMessage message) : base(message, "Resource not found")
+        public SettingNotFoundException(HttpRequestMessage request, string message) : base(request, message)
         {
 
         }

@@ -93,6 +93,27 @@ namespace SettingsAPIClient
 
         #endregion Application
 
+
+        #region Admin
+
+        public async Task<ApiKey> CreateApiKey(string applicationName, ApiKey key)
+        {
+            var adminProvider = new AdminProvider(_url, _apiKey);
+            return await adminProvider.CreateApiKey(applicationName, key);
+        }
+
+        public async Task<bool> ApiKeyExists(string applicationName, string apiKeyName)
+        {
+            var adminProvider = new AdminProvider(_url, _apiKey);
+            return await adminProvider.ApiKeyExists(applicationName, apiKeyName);
+        }
+
+        public async Task<ApiKey> GetApiKey(string applicationName, string apiKeyName)
+        {
+            var adminProvider = new AdminProvider(_url, _apiKey);
+            return await adminProvider.GetApiKey(applicationName, apiKeyName);
+        }
+        #endregion
         #region Direcotory
 
         public async Task<bool> CreateDirectoryAsync(string applicationName, string directoryName, string description)

@@ -464,23 +464,7 @@ namespace SettingsAPIRepository
                 if (item.Description != null)
                     model.Description = item.Description.Trim();
 
-                model.Name = item.Name.Trim();
-                model.Items = item.Settings.Count();
-
-                if (includeSettings)
-                {
-                    model.Settings = new List<SettingModel>();
-
-                    foreach (var setting in item.Settings)
-                    {
-                        SettingModel s = new SettingModel();
-                        s.Key = setting.SettingKey.Trim().Replace("  ", " ");
-                        s.Value = setting.SettingValue;
-                        s.Modified = setting.Modified;
-                        s.Created = setting.Created;
-                        model.Settings.Add(s);
-                    }
-                }
+                model.Name = item.Name.Trim(); 
                 directories.Add(model);
             }
 

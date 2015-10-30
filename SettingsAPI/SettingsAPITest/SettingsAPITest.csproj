@@ -75,6 +75,7 @@
     </Compile>
     <Compile Include="SettingsClientTest.cs" />
     <Compile Include="OtherTests.cs" />
+    <Compile Include="AdminTest.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
