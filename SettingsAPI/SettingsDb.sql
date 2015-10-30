@@ -57,7 +57,7 @@ CREATE TABLE dbo.settings_api_key (
 	,CONSTRAINT pk_settings_api_key_application_id FOREIGN KEY ([application_id]) REFERENCES settings_application(id)
 	,CONSTRAINT ck_settings_api_key_len CHECK (LEN([apikey]) >= 32)
 	,CONSTRAINT ux_settings_api_key UNIQUE ([apikey])
-	,CONSTRAINT ux_ux_settings_api_key_name UNIQUE ([name])
+	,CONSTRAINT ux_settings_api_key_name UNIQUE ([application_id],[name])
 	)
 GO
 
