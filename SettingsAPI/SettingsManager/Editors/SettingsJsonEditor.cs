@@ -66,7 +66,7 @@ namespace SettingsManager.Editors
         {
             try
             {
-                JToken.Parse(memoEdit1.Text);
+                JToken.Parse(value);
                 return true;
             }
             catch (Exception)

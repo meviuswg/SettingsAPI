@@ -45,8 +45,10 @@ namespace SettingsManager
 
             var selected = (ValueDataType)Enum.Parse(typeof(ValueDataType), comboBox1.SelectedItem.ToString());
 
-            if (Editor !=null && selected != Editor.ValueType)
-                SetEditor(selected);
+            if (Editor != null && selected != Editor.ValueType)
+            {
+                SetEditor(selected); 
+            }
         }
 
         public ISettingValueEditor Editor { get; set; }
@@ -125,11 +127,12 @@ namespace SettingsManager
             }
             catch (Exception)
             {
-                MessageBox.Show("Could not initialize the editor for type '{0}' with the provided value.", setting.ValueType.ToString());
+                MessageBox.Show(string.Format("Could not initialize the editor for type '{0}' with the provided value.", setting.ValueType.ToString()));
                 SetEditor(ValueDataType.Custom);
                 Editor.Value = setting.Value;
             }
         }
+
 
         private async void simpleButtonOk_Click(object sender, EventArgs e)
         {

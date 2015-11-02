@@ -226,7 +226,7 @@ namespace SettingsManager
             this.gridColumnSettingObjectId.Name = "gridColumnSettingObjectId";
             this.gridColumnSettingObjectId.Visible = true;
             this.gridColumnSettingObjectId.VisibleIndex = 0;
-            this.gridColumnSettingObjectId.Width = 131;
+            this.gridColumnSettingObjectId.Width = 41;
             // 
             // gridColumnSettingKey
             // 
@@ -235,7 +235,7 @@ namespace SettingsManager
             this.gridColumnSettingKey.Name = "gridColumnSettingKey";
             this.gridColumnSettingKey.Visible = true;
             this.gridColumnSettingKey.VisibleIndex = 1;
-            this.gridColumnSettingKey.Width = 96;
+            this.gridColumnSettingKey.Width = 109;
             // 
             // gridColumnSettingValue
             // 
@@ -244,7 +244,7 @@ namespace SettingsManager
             this.gridColumnSettingValue.Name = "gridColumnSettingValue";
             this.gridColumnSettingValue.Visible = true;
             this.gridColumnSettingValue.VisibleIndex = 2;
-            this.gridColumnSettingValue.Width = 130;
+            this.gridColumnSettingValue.Width = 147;
             // 
             // gridColumnValueType
             // 
@@ -252,8 +252,8 @@ namespace SettingsManager
             this.gridColumnValueType.FieldName = "ValueType";
             this.gridColumnValueType.Name = "gridColumnValueType";
             this.gridColumnValueType.Visible = true;
-            this.gridColumnValueType.VisibleIndex = 5;
-            this.gridColumnValueType.Width = 95;
+            this.gridColumnValueType.VisibleIndex = 4;
+            this.gridColumnValueType.Width = 181;
             // 
             // gridColumnSettingInfo
             // 
@@ -261,26 +261,30 @@ namespace SettingsManager
             this.gridColumnSettingInfo.FieldName = "Info";
             this.gridColumnSettingInfo.Name = "gridColumnSettingInfo";
             this.gridColumnSettingInfo.Visible = true;
-            this.gridColumnSettingInfo.VisibleIndex = 6;
-            this.gridColumnSettingInfo.Width = 104;
+            this.gridColumnSettingInfo.VisibleIndex = 3;
+            this.gridColumnSettingInfo.Width = 118;
             // 
             // gridColumnSettingCreated
             // 
             this.gridColumnSettingCreated.Caption = "Created";
+            this.gridColumnSettingCreated.DisplayFormat.FormatString = "yyyy-MM-dd HH:mm";
+            this.gridColumnSettingCreated.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
             this.gridColumnSettingCreated.FieldName = "Created";
             this.gridColumnSettingCreated.Name = "gridColumnSettingCreated";
             this.gridColumnSettingCreated.Visible = true;
-            this.gridColumnSettingCreated.VisibleIndex = 3;
-            this.gridColumnSettingCreated.Width = 131;
+            this.gridColumnSettingCreated.VisibleIndex = 5;
+            this.gridColumnSettingCreated.Width = 107;
             // 
             // gridColumnSettingModified
             // 
             this.gridColumnSettingModified.Caption = "Modified";
+            this.gridColumnSettingModified.DisplayFormat.FormatString = "yyyy-MM-dd HH:mm";
+            this.gridColumnSettingModified.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
             this.gridColumnSettingModified.FieldName = "Modified";
             this.gridColumnSettingModified.Name = "gridColumnSettingModified";
             this.gridColumnSettingModified.Visible = true;
-            this.gridColumnSettingModified.VisibleIndex = 4;
-            this.gridColumnSettingModified.Width = 95;
+            this.gridColumnSettingModified.VisibleIndex = 6;
+            this.gridColumnSettingModified.Width = 79;
             // 
             // gridView2
             // 
